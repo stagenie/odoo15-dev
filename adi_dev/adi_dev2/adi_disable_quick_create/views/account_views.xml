@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Désactiver création rapide dans les factures clients -->
+    <record id="view_move_form_no_quick_create" model="ir.ui.view">
+        <field name="name">account.move.form.no.quick.create</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Désactiver création rapide pour le partenaire -->
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </field>
+
+            <!-- Désactiver création rapide pour les produits dans les lignes de facture -->
+            <xpath expr="//field[@name='invoice_line_ids']/tree//field[@name='product_id']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Désactiver dans la vue liste des factures -->
+    <record id="view_invoice_tree_no_quick_create" model="ir.ui.view">
+        <field name="name">account.invoice.tree.no.quick.create</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </field>
+        </field>
+    </record>
+
+    <!-- Désactiver dans les paiements -->
+    <record id="view_account_payment_form_no_quick_create" model="ir.ui.view">
+        <field name="name">account.payment.form.no.quick.create</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

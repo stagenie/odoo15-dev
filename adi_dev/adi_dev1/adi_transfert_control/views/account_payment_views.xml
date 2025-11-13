@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vue formulaire héritée pour les paiements -->
+        <record id="view_account_payment_form_inherit" model="ir.ui.view">
+            <field name="name">account.payment.form.inherit</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Ajouter les informations de solde après le champ destination_journal_id -->
+                <xpath expr="//field[@name='destination_journal_id']" position="after">
+                    <field name="is_amount_exceeds_balance" invisible="1"/>
+
+                    <!-- Bloc d'information des soldes - VISIBLE UNIQUEMENT EN BROUILLON -->
+                    <group string="💰 Informations sur les Soldes"
+                           attrs="{'invisible': ['|', ('is_internal_transfer', '=', False), ('state', '!=', 'draft')]}"
+                           class="adi_balance_info_group"
+                           col="2">
+
+                        <group class="adi_balance_group">
+                            <field name="source_journal_name" invisible="1"/>
+                            <label for="source_journal_balance" string="Journal Source (qui donne)"/>
+                            <div class="adi_balance_content">
+                                <span class="adi_journal_name"><field name="source_journal_name" readonly="1" nolabel="1"/></span>
+                                <field name="source_journal_balance"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       nolabel="1"
+                                       class="adi_balance_amount"/>
+                                <span class="adi_balance_subtitle">Solde disponible</span>
+                            </div>
+                        </group>
+
+                        <group class="adi_balance_group">
+                            <field name="destination_journal_name" invisible="1"/>
+                            <label for="destination_journal_balance" string="Journal Destination (qui reçoit)"/>
+                            <div class="adi_balance_content">
+                                <span class="adi_journal_name"><field name="destination_journal_name" readonly="1" nolabel="1"/></span>
+                                <field name="destination_journal_balance"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       nolabel="1"
+                                       class="adi_balance_amount"/>
+                                <span class="adi_balance_subtitle">Solde actuel</span>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Message d'alerte si montant supérieur au solde - VISIBLE UNIQUEMENT EN BROUILLON -->
+                    <div class="alert alert-danger adi_insufficient_balance"
+                         role="alert"
+                         attrs="{'invisible': ['|', ('is_amount_exceeds_balance', '=', False), ('state', '!=', 'draft')]}">
+                        <i class="fa fa-exclamation-triangle"/>
+                        <strong>⛔ Attention - Transfert impossible !</strong>
+                        <br/><br/>
+                        Le montant à transférer (<field name="amount" class="adi_amount_red" widget="monetary"/>)
+                        est supérieur au solde disponible du journal
+                        <strong>"<field name="source_journal_name"/>"</strong>
+                        (<field name="source_journal_balance" widget="monetary"/>).
+                        <br/><br/>
+                        <span class="adi_alert_advice">
+                            💡 <strong>Solution:</strong> Réduisez le montant ou approvisionnez le journal source.
+                        </span>
+                    </div>
+                </xpath>
+
+                <!-- Encapsuler le champ amount dans un div avec classe conditionnelle -->
+                <xpath expr="//field[@name='amount']" position="before">
+                    <div attrs="{'invisible': [('is_amount_exceeds_balance', '=', False)]}"
+                         class="adi_amount_warning">
+                        <field name="amount"
+                               class="adi_amount_red"
+                               attrs="{'invisible': [('is_amount_exceeds_balance', '=', False)]}"/>
+                    </div>
+                </xpath>
+
+                <xpath expr="//field[@name='amount']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('is_amount_exceeds_balance', '=', True)]}</attribute>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

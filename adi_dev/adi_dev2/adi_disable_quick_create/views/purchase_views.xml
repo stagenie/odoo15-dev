@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Désactiver création rapide dans les bons de commande d'achat -->
+    <record id="purchase_order_form_no_quick_create" model="ir.ui.view">
+        <field name="name">purchase.order.form.no.quick.create</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Désactiver création rapide pour le fournisseur -->
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </field>
+
+            <!-- Désactiver création rapide pour les produits dans les lignes -->
+            <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+
+            <!-- Pour le formulaire popup -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Désactiver dans les demandes de prix -->
+    <record id="purchase_order_tree_no_quick_create" model="ir.ui.view">
+        <field name="name">purchase.order.tree.no.quick.create</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Odoo
+*.log
+filestore/
+sessions/
+.odoo_console_history
+
+# Configuration (peut contenir des mots de passe)
+odoo15.conf
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/

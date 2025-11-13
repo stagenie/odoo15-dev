@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire -->
+   <!-- Vue formulaire -->
+    <record id="view_attendance_daily_form" model="ir.ui.view">
+        <field name="name">attendance.daily.form</field>
+        <field name="model">attendance.daily</field>
+        <field name="arch" type="xml">
+            <form string="Pointage Quotidien">
+                <header>
+                    <button name="action_confirm"
+                            string="Confirmer"
+                            type="object"
+                            class="btn-primary"
+                            states="draft"/>
+                    <button name="action_process"
+                            string="Marquer comme traité"
+                            type="object"
+                            states="confirmed"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+<!--                            <field name="company_id" groups="base.group_multi_company"/>-->
+                        </group>
+                        <group>
+                            <field name="selection_type" widget="radio"/>
+                            <field name="department_ids"
+                                   widget="many2many_tags"
+                                   attrs="{'invisible': [('selection_type', '!=', 'department')],
+                                          'required': [('selection_type', '=', 'department')]}"/>
+                            <button name="action_generate_lines"
+                                    string="Générer les lignes"
+                                    type="object"
+                                    class="btn-secondary"
+                                    attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Lignes de pointage">
+                            <field name="attendance_line_ids">
+                                <tree editable="bottom">
+                                    <field name="employee_id" options="{'no_create': True}"/>
+                                    <field name="employee_name" optional="hide"/>
+                                    <field name="job_id" optional="show"/>
+                                    <field name="department_id" optional="show"/>
+                                    <field name="is_present"/>
+                                    <field name="is_absent"/>
+                                    <field name="standard_hours"
+                                           attrs="{'readonly': [('is_absent', '=', True)]}"/>
+                                    <field name="actual_hours"
+                                           attrs="{'invisible': ['|', ('is_absent', '=', True),
+                                                                 ('is_present', '=', True)]}"/>
+                                    <field name="overtime_hours"
+                                           attrs="{'readonly': [('is_absent', '=', True)]}"/>
+                                    <field name="is_processed" readonly="1" optional="hide"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue arbre -->
+    <record id="view_attendance_daily_tree" model="ir.ui.view">
+        <field name="name">attendance.daily.tree</field>
+        <field name="model">attendance.daily</field>
+        <field name="arch" type="xml">
+            <tree string="Pointages Quotidiens">
+                <field name="date"/>
+                <field name="selection_type"/>
+                <field name="department_ids" widget="many2many_tags"/>
+                <field name="state"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="view_attendance_daily_search" model="ir.ui.view">
+        <field name="name">attendance.daily.search</field>
+        <field name="model">attendance.daily</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher pointage">
+                <field name="date"/>
+                <field name="department_ids"/>
+                <filter name="draft" string="Brouillon" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirmé" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="processed" string="Traité" domain="[('state', '=', 'processed')]"/>
+                <separator/>
+                <filter name="this_month" string="Ce mois"
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Grouper par">
+                    <filter name="group_by_month" string="Mois" context="{'group_by': 'date:month'}"/>
+                    <filter name="group_by_state" string="État" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_attendance_daily" model="ir.actions.act_window">
+        <field name="name">Pointages Quotidiens</field>
+        <field name="res_model">attendance.daily</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un nouveau pointage quotidien
+            </p>
+            <p>
+                Gérez les présences quotidiennes de vos employés
+            </p>
+        </field>
+    </record>
+</odoo>

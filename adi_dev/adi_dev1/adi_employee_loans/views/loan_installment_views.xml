@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue arbre des échéances -->
+    <record id="view_loan_installment_tree" model="ir.ui.view">
+        <field name="name">loan.installment.tree</field>
+        <field name="model">loan.installment</field>
+        <field name="arch" type="xml">
+            <tree string="Échéances de prêt">
+                <field name="employee_name"/>
+                <field name="loan_id"/>
+                <field name="sequence" string="N°"/>
+                <field name="date"/>
+                <field name="amount" widget="monetary" sum="Total"/>
+                <field name="amount_paid" widget="monetary" sum="Total payé"/>
+                <field name="state" widget="badge"/>
+                <field name="is_processed" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action pour voir toutes les échéances -->
+    <record id="action_loan_installment" model="ir.actions.act_window">
+        <field name="name">Toutes les échéances</field>
+        <field name="res_model">loan.installment</field>  <!-- ICI : res_model au lieu de res.model -->
+        <field name="view_mode">tree</field>
+        <field name="domain">[('state', '!=', 'paid')]</field>
+    </record>
+
+</odoo>

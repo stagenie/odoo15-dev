@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire lot améliorée -->
+    <record id="view_payroll_batch_form" model="ir.ui.view">
+        <field name="name">payroll.batch.form</field>
+        <field name="model">payroll.batch</field>
+        <field name="arch" type="xml">
+            <form string="Lot de paie">
+                <header>
+                    <button name="action_generate_slips"
+                            string="Générer les bulletins"
+                            type="object"
+                            class="btn-primary"
+                            states="draft"/>
+                    <button name="action_compute_sheet"
+                            string="Calculer tout"
+                            type="object"
+                            states="generate"/>
+                    <button name="action_confirm"
+                            string="Confirmer"
+                            type="object"
+                            states="generate"/>
+                    <button name="action_done"
+                            string="Valider et comptabiliser"
+                            type="object"
+                            class="btn-success"
+                            states="confirm"
+                            confirm="Valider tous les bulletins et créer la facture groupée ?"/>
+                    <button name="action_print_batch_report"
+                            string="Imprimer l'état"
+                            type="object"
+                            states="confirm,done,paid"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,generate,confirm,done"/>
+                </header>
+                <sheet>
+                    <field name="invoice_id" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_slips"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-text-o">
+                            <field name="slip_count" widget="statinfo" string="Bulletins"/>
+                        </button>
+
+                        <!-- Smart button pour la facture -->
+                        <button name="action_view_invoice"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-invoice"
+                                attrs="{'invisible': [('invoice_id', '=', False)]}">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Facture</span>
+                                <field name="invoice_state" widget="badge"
+                                       decoration-success="invoice_state == 'posted'"
+                                       decoration-warning="invoice_state == 'draft'"/>
+                            </div>
+                        </button>
+
+                        <!-- Smart button pour le paiement -->
+                        <button name="action_view_invoice"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-money"
+                                attrs="{'invisible': [('invoice_id', '=', False)]}">
+                            <div class="o_stat_info">
+                                <field name="invoice_payment_state"
+                                       widget="badge"
+                                       decoration-success="invoice_payment_state in ('paid', 'in_payment')"
+                                       decoration-warning="invoice_payment_state == 'partial'"
+                                       decoration-danger="invoice_payment_state == 'not_paid'"/>
+                                <span class="o_stat_text">Paiement</span>
+                            </div>
+                        </button>
+                    </div>
+
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="period_id" options="{'no_create': True}"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+<!--                        <group>-->
+<!--                            <field name="company_id" groups="base.group_multi_company"/>-->
+<!--                        </group>-->
+                    </group>
+                    <group string="Sélection des employés">
+                        <div class="alert alert-info" role="alert">
+                            <i class="fa fa-info-circle"/>
+                            Sélectionnez des départements pour ajouter automatiquement leurs employés avec contrat
+                            actif.
+                        </div>
+                        <field name="department_ids"
+                               widget="many2many_tags"
+                               placeholder="Sélectionner des départements..."/>
+                        <field name="employee_ids"
+                               widget="many2many_tags"
+                               domain="[('contract_ids.state', '=', 'open')]"
+                               placeholder="Ou sélectionner des employés spécifiques..."/>
+                    </group>
+                    <group string="Totaux" attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <group>
+                            <field name="total_gross" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="total_net" widget="monetary"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Bulletins" attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <field name="slip_ids" readonly="1">
+                                <tree decoration-success="state == 'done'"
+                                      decoration-info="state == 'compute'"
+                                      decoration-warning="state == 'confirm'">
+                                    <field name="number"/>
+                                    <field name="employee_name"/>
+                                    <field name="contract_id"/>
+                                    <field name="worked_days"/>
+                                    <field name="total_earnings" widget="monetary" optional="show"/>
+                                    <field name="total_deductions" widget="monetary" optional="show"/>
+                                    <field name="total_net" widget="monetary" sum="Total"/>
+                                    <field name="state" widget="badge"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <!-- Vue arbre lot -->
+    <record id="view_payroll_batch_tree" model="ir.ui.view">
+        <field name="name">payroll.batch.tree</field>
+        <field name="model">payroll.batch</field>
+        <field name="arch" type="xml">
+            <tree string="Lots de paie">
+                <field name="name"/>
+                <field name="period_id"/>
+                <field name="slip_count"/>
+                <field name="total_net" widget="monetary" sum="Total"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action lot -->
+    <record id="action_payroll_batch" model="ir.actions.act_window">
+        <field name="name">Lots de paie</field>
+        <field name="res_model">payroll.batch</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un nouveau lot de paie
+            </p>
+            <p>
+                Un lot permet de générer et gérer plusieurs bulletins en même temps
+            </p>
+        </field>
+    </record>
+</odoo>

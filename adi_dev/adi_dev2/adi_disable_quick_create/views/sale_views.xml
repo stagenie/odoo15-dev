@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Désactiver création rapide dans les devis/commandes de vente -->
+    <record id="view_order_form_no_quick_create" model="ir.ui.view">
+        <field name="name">sale.order.form.no.quick.create</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Désactiver création rapide pour le client -->
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </field>
+
+            <!-- Désactiver création rapide pour les lignes de commande -->
+            <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+
+            <!-- Pour Odoo 17+ avec formulaire dans tree -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Désactiver dans les devis (si vue séparée) -->
+    <record id="view_quotation_tree_no_quick_create" model="ir.ui.view">
+        <field name="name">sale.quotation.tree.no.quick.create</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire -->
+    <!-- Vue formulaire avec colonnes séparées -->
+    <record id="view_payroll_slip_form" model="ir.ui.view">
+        <field name="name">payroll.slip.form</field>
+        <field name="model">payroll.slip</field>
+        <field name="arch" type="xml">
+            <form string="Bulletin de paie">
+                <header>
+                    <button name="action_compute_sheet"
+                            string="Calculer"
+                            type="object"
+                            class="btn-primary"
+                            states="draft,compute"/>
+                    <button name="action_confirm"
+                            string="Confirmer"
+                            type="object"
+                            states="compute"/>
+
+                    <!--                    <button name="action_done"-->
+                    <!--                            string="Valider"-->
+                    <!--                            type="object"-->
+                    <!--                            class="btn-success"-->
+                    <!--                            states="confirm"/>-->
+
+                    <button name="action_print_slip"
+                            string="Imprimer"
+                            type="object"
+                            states="confirm,done"/>
+                    <button name="action_cancel"
+                            string="Annuler"
+                            type="object"
+                            states="draft,compute,confirm"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,compute,confirm,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="number" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" options="{'no_create': True}"/>
+                            <field name="employee_name" invisible="1"/>
+                            <field name="job_id"/>
+                            <field name="department_id"/>
+                            <field name="marital"/>
+                        </group>
+                        <group>
+                            <field name="period_id"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="batch_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Informations contrat">
+                        <group>
+                            <field name="contract_id"/>
+                            <field name="wage" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="worked_days"/>
+                            <field name="working_days_per_month" string="Base mensuelle (jours)"/>
+                            <field name="daily_wage" widget="monetary"/>
+                        </group>
+
+                    </group>
+
+                    <separator string="Détails du bulletin"/>
+                    <!-- Dans la section du tree des lignes -->
+                    <field name="line_ids">
+                        <tree editable="bottom"
+                              decoration-success="category == 'earning'"
+                              decoration-warning="category == 'deduction'"
+                              create="true" delete="true">
+                            <field name="sequence" widget="handle" string="N°"/>
+                            <field name="code" string="Code" placeholder="CUSTOM"/>
+                            <field name="name" string="Rubrique" required="1"/>
+                            <field name="line_type" string="Type" widget="badge"
+                                   decoration-success="line_type == 'earning'"
+                                   decoration-danger="line_type == 'deduction'"/>
+                            <field name="quantity" string="Nbre/Taux"/>
+                            <field name="rate" widget="monetary" string="Montant Unitaire"/>
+                            <field name="amount_earning" widget="monetary" string="Gain"
+                                   sum="Total Gains" readonly="1"/>
+                            <field name="amount_deduction" widget="monetary" string="Retenue"
+                                   sum="Total Retenues" readonly="1"/>
+                            <field name="category" invisible="1"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="line_type" widget="radio"/>
+                                </group>
+                                <group>
+                                    <field name="quantity"/>
+                                    <field name="rate" widget="monetary"/>
+                                    <field name="sequence"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                    <group>
+                        <button name="action_add_custom_earning"
+                                string="➕ Ajouter un gain"
+                                type="object"
+                                class="btn-success"
+                                attrs="{'invisible': [('state', 'not in', ('draft', 'compute'))]}"/>
+                        <button name="action_add_custom_deduction"
+                                string="➖ Ajouter une retenue"
+                                type="object"
+                                class="btn-warning"
+                                attrs="{'invisible': [('state', 'not in', ('draft', 'compute'))]}"/>
+                    </group>
+
+
+                    <group col="6" class="mt-2">
+                        <group class="oe_subtotal_footer" colspan="2">
+                            <field name="total_earnings" widget="monetary" string="Total Gains"/>
+                            <field name="total_deductions" widget="monetary" string="Total Retenues"/>
+                            <div class="oe_subtotal_footer_separator" colspan="2">
+                                <label for="total_net"/>
+                            </div>
+                            <field name="total_net" widget="monetary" class="oe_subtotal_footer_separator"
+                                   string="Salaire Net"/>
+                        </group>
+                        <div colspan="4"/>
+                    </group>
+
+                    <div class="oe_clear"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Vue arbre -->
+    <record id="view_payroll_slip_tree" model="ir.ui.view">
+        <field name="name">payroll.slip.tree</field>
+        <field name="model">payroll.slip</field>
+        <field name="arch" type="xml">
+            <tree string="Bulletins de paie">
+                <field name="number"/>
+                <field name="employee_name"/>
+                <field name="job_id" optional="show"/>
+                <field name="period_id"/>
+                <field name="worked_days"/>
+                <field name="total_net" widget="monetary" sum="Total"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_payroll_slip" model="ir.actions.act_window">
+        <field name="name">Bulletins de paie</field>
+        <field name="res_model">payroll.slip</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un bulletin de paie
+            </p>
+        </field>
+    </record>
+</odoo>
