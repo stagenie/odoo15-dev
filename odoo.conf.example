@@ -1,0 +1,28 @@
+[options]
+# Configuration Odoo 15 - Development Environment
+# Copier ce fichier vers odoo.conf et adapter à votre environnement
+
+# Base de données
+admin_passwd = admin
+db_host = localhost
+db_port = 5432
+db_user = votre_utilisateur
+db_password = False
+
+# Addons
+addons_path = /chemin/vers/odoo15-dev/addons,/chemin/vers/odoo15-dev/adi_dev,/chemin/vers/odoo15-dev/adi_third_party
+
+# Serveur
+http_port = 8069
+xmlrpc_port = 8069
+
+# Logs
+logfile = /chemin/vers/odoo15-dev/odoo.log
+log_level = info
+
+# Performance
+workers = 0
+max_cron_threads = 1
+
+# Dev mode
+dev_mode = reload,qweb,werkzeug,xml

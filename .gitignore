@@ -25,6 +25,7 @@ sessions/
 .odoo_console_history
 
 # Configuration (peut contenir des mots de passe)
+odoo.conf
 odoo15.conf
 
 # OS
