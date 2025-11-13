@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.adi_auto_save</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Enregistrement Automatique" string="Enregistrement Automatique" data-key="adi_auto_save">
+                    <h2>Enregistrement Automatique</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="auto_save_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="auto_save_enabled"/>
+                                <div class="text-muted">
+                                    Active l'enregistrement automatique pour les formulaires
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" attrs="{'invisible': [('auto_save_enabled', '=', False)]}">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="auto_save_interval" string="Intervalle de sauvegarde"/>
+                                <div class="text-muted">
+                                    Temps en secondes entre chaque sauvegarde automatique
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="auto_save_interval" class="o_input_9ch"/>
+                                        <span> secondes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 attrs="{'invisible': [('auto_save_enabled', '=', False)]}">Modules Supportés</h3>
+                    <div class="row mt16 o_settings_container" attrs="{'invisible': [('auto_save_enabled', '=', False)]}">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="auto_save_sale_order"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="auto_save_sale_order"/>
+                                <div class="text-muted">
+                                    Active l'auto-save pour les devis et bons de commandes
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="auto_save_purchase_order"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="auto_save_purchase_order"/>
+                                <div class="text-muted">
+                                    Active l'auto-save pour les demandes et commandes d'achat
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
