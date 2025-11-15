@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vue tree du rapport -->
+        <record id="product_inventory_report_line_tree" model="ir.ui.view">
+            <field name="name">product.inventory.report.line.tree</field>
+            <field name="model">product.inventory.report.line</field>
+            <field name="arch" type="xml">
+                <tree string="Rapport Inventaire Produits" create="false" edit="false" delete="false">
+                    <field name="default_code" string="Référence"/>
+                    <field name="name" string="Désignation"/>
+                    <field name="categ_id" string="Catégorie" invisible="not context.get('show_category', True)"/>
+                    <field name="location_1_qty" string="Location 1" invisible="1"/>
+                    <field name="location_2_qty" string="Location 2" invisible="1"/>
+                    <field name="location_3_qty" string="Location 3" invisible="1"/>
+                    <field name="location_4_qty" string="Location 4" invisible="1"/>
+                    <field name="location_5_qty" string="Location 5" invisible="1"/>
+                    <field name="location_6_qty" string="Location 6" invisible="1"/>
+                    <field name="location_7_qty" string="Location 7" invisible="1"/>
+                    <field name="location_8_qty" string="Location 8" invisible="1"/>
+                    <field name="location_9_qty" string="Location 9" invisible="1"/>
+                    <field name="location_10_qty" string="Location 10" invisible="1"/>
+                    <field name="total_qty" string="Total" sum="Total"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>
