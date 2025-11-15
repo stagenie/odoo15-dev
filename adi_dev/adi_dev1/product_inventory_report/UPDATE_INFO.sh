@@ -1,0 +1,23 @@
+#!/bin/bash
+# Script de mise à jour du module product_inventory_report
+
+echo "🔄 Mise à jour du module product_inventory_report..."
+echo ""
+echo "Fichiers modifiés :"
+echo "  ✅ models/stock_move_line.py (nouveau)"
+echo "  ✅ views/stock_move_line_views.xml (nouveau)"
+echo "  ✅ __manifest__.py (mis à jour)"
+echo ""
+echo "📋 Pour mettre à jour le module dans Odoo :"
+echo ""
+echo "  Option 1 - Via interface Odoo :"
+echo "    1. Apps → Rechercher 'product_inventory_report'"
+echo "    2. Cliquer sur 'Mise à jour'"
+echo ""
+echo "  Option 2 - Via ligne de commande :"
+echo "    ./odoo-bin -c odoo.conf -u product_inventory_report -d VOTRE_BASE"
+echo ""
+echo "📍 Où trouver la colonne 'Partenaire' :"
+echo "    Inventaire → Rapports → Mouvements de Stock"
+echo "    Cliquer sur ⚙️ → Cocher 'Partenaire'"
+echo ""
