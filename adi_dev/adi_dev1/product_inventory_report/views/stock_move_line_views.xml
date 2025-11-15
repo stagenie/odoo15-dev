@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Hériter de la vue tree des mouvements de stock pour ajouter le partenaire -->
+        <record id="view_move_line_tree_inherit_partner" model="ir.ui.view">
+            <field name="name">stock.move.line.tree.inherit.partner</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_move_line_tree"/>
+            <field name="arch" type="xml">
+                <!-- Ajouter la colonne Partenaire après le produit -->
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="partner_id" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Hériter de la vue tree détaillée des opérations -->
+        <record id="view_stock_move_line_operation_tree_inherit_partner" model="ir.ui.view">
+            <field name="name">stock.move.line.operations.tree.inherit.partner</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+            <field name="arch" type="xml">
+                <!-- Ajouter la colonne Partenaire après le produit -->
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="partner_id" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Hériter de la vue tree détaillée (detailed operations) -->
+        <record id="view_stock_move_line_detailed_operation_tree_inherit_partner" model="ir.ui.view">
+            <field name="name">stock.move.line.detailed.tree.inherit.partner</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+            <field name="arch" type="xml">
+                <!-- Ajouter la colonne Partenaire après le produit -->
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="partner_id" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

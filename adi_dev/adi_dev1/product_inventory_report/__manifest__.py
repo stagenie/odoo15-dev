@@ -15,6 +15,7 @@
         - Support multi-emplacements et multi-entrepôts
         - Export et impression du rapport
         - Vue dynamique avec colonnes par emplacement
+        - Affichage du partenaire (client/fournisseur) dans les mouvements de stock
     """,
     'author': 'ADICOPS',
     'website': 'https://adicops-dz.com',
@@ -25,6 +26,7 @@
         'security/ir.model.access.csv',
         'wizard/product_inventory_report_wizard_views.xml',
         'views/product_inventory_report_views.xml',
+        'views/stock_move_line_views.xml',
         'reports/product_inventory_report_template.xml',
     ],
     'installable': True,

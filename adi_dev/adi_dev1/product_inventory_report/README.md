@@ -2,7 +2,7 @@
 
 ## Description
 
-Ce module Odoo 15 permet de générer un rapport d'inventaire détaillé affichant les quantités de produits par emplacement de stock.
+Ce module Odoo 15 permet de générer un rapport d'inventaire détaillé affichant les quantités de produits par emplacement de stock. Il ajoute également l'affichage du partenaire (client/fournisseur) dans les vues de mouvements de stock.
 
 ## Fonctionnalités
 
@@ -25,6 +25,12 @@ Ce module Odoo 15 permet de générer un rapport d'inventaire détaillé afficha
   - Quantité par emplacement (jusqu'à 10 emplacements)
   - Total des quantités
 
+- **Amélioration des mouvements de stock** :
+  - Ajout d'une colonne "Partenaire" dans les vues de mouvements de stock
+  - Affichage automatique du client ou fournisseur associé au mouvement
+  - Récupération du partenaire depuis le picking ou les emplacements partenaires
+  - Disponible dans toutes les vues tree des mouvements (standard, opérations, détaillées)
+
 ## Installation
 
 1. Copier le module dans le répertoire addons d'Odoo
@@ -32,6 +38,8 @@ Ce module Odoo 15 permet de générer un rapport d'inventaire détaillé afficha
 3. Installer le module "Rapport Inventaire Produits par Emplacement"
 
 ## Utilisation
+
+### Rapport d'inventaire
 
 1. Aller dans **Inventaire > Rapports > Rapport Inventaire Produits**
 2. Sélectionner les filtres souhaités :
@@ -41,6 +49,12 @@ Ce module Odoo 15 permet de générer un rapport d'inventaire détaillé afficha
    - Cocher "Uniquement produits en stock" si nécessaire
 3. Choisir le type de rapport (Écran ou PDF)
 4. Cliquer sur "Générer le rapport"
+
+### Affichage du partenaire dans les mouvements de stock
+
+1. Aller dans **Inventaire > Rapports > Mouvements de Stock**
+2. La colonne "Partenaire" est maintenant disponible et affiche automatiquement le client ou fournisseur associé
+3. Vous pouvez afficher/masquer cette colonne via les options de la vue (icône ⚙️)
 
 ## Exemple de rapport
 
