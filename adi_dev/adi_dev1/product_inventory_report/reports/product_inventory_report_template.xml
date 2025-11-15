@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action de rapport PDF -->
+        <record id="action_report_product_inventory" model="ir.actions.report">
+            <field name="name">Rapport Inventaire Produits</field>
+            <field name="model">product.inventory.report.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">product_inventory_report.report_product_inventory_document</field>
+            <field name="report_file">product_inventory_report.report_product_inventory_document</field>
+            <field name="binding_model_id" ref="model_product_inventory_report_wizard"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Template PDF -->
+        <template id="report_product_inventory_document">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class="text-center">Rapport Inventaire Produits par Emplacement</h2>
+                        <br/>
+
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr class="text-center" style="background-color: #f0f0f0;">
+                                    <th>Référence</th>
+                                    <th>Désignation</th>
+                                    <th t-if="data.get('show_category')">Catégorie</th>
+                                    <t t-foreach="data.get('locations', [])" t-as="location">
+                                        <th><t t-esc="location"/></th>
+                                    </t>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="data.get('report_lines', [])" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line.get('default_code', '')"/></td>
+                                        <td><t t-esc="line.get('name', '')"/></td>
+                                        <td t-if="data.get('show_category')">
+                                            <t t-if="line.get('categ_id')">
+                                                <t t-esc="env['product.category'].browse(line.get('categ_id')).name"/>
+                                            </t>
+                                        </td>
+                                        <t t-foreach="range(1, len(data.get('locations', [])) + 1)" t-as="i">
+                                            <td class="text-right">
+                                                <t t-esc="'{:,.2f}'.format(line.get('location_%s_qty' % i, 0.0))"/>
+                                            </td>
+                                        </t>
+                                        <td class="text-right">
+                                            <strong><t t-esc="'{:,.2f}'.format(line.get('total_qty', 0.0))"/></strong>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

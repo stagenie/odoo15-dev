@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vue formulaire du wizard -->
+        <record id="product_inventory_report_wizard_form" model="ir.ui.view">
+            <field name="name">product.inventory.report.wizard.form</field>
+            <field name="model">product.inventory.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Rapport Inventaire Produits">
+                    <group>
+                        <group>
+                            <field name="category_ids" widget="many2many_tags"/>
+                            <field name="warehouse_ids" widget="many2many_tags"/>
+                            <field name="location_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="only_available"/>
+                            <field name="show_category"/>
+                            <field name="report_type"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_generate_report" string="Générer le rapport" type="object" class="btn-primary"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action du wizard -->
+        <record id="action_product_inventory_report_wizard" model="ir.actions.act_window">
+            <field name="name">Rapport Inventaire Produits</field>
+            <field name="res_model">product.inventory.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menu -->
+        <menuitem
+            id="menu_product_inventory_report"
+            name="Rapport Inventaire Produits"
+            parent="stock.menu_warehouse_report"
+            action="action_product_inventory_report_wizard"
+            sequence="100"/>
+    </data>
+</odoo>
