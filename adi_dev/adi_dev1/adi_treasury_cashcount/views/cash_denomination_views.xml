@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Tree pour les dénominations -->
+    <record id="view_cash_denomination_tree" model="ir.ui.view">
+        <field name="name">cash.denomination.tree</field>
+        <field name="model">cash.denomination</field>
+        <field name="arch" type="xml">
+            <tree string="Dénominations">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="value" widget="monetary"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="type"/>
+                <field name="active" widget="boolean_toggle"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Form pour les dénominations -->
+    <record id="view_cash_denomination_form" model="ir.ui.view">
+        <field name="name">cash.denomination.form</field>
+        <field name="model">cash.denomination</field>
+        <field name="arch" type="xml">
+            <form string="Dénomination">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="value"/>
+                            <field name="currency_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="type"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action pour les dénominations -->
+    <record id="action_cash_denomination" model="ir.actions.act_window">
+        <field name="name">Dénominations</field>
+        <field name="res_model">cash.denomination</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une nouvelle dénomination
+            </p>
+            <p>
+                Les dénominations représentent les différents billets et pièces
+                utilisés pour le comptage lors de la clôture de caisse.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu pour les dénominations -->
+    <menuitem id="menu_cash_denomination"
+              name="Dénominations"
+              parent="adi_treasury.menu_treasury_config"
+              action="action_cash_denomination"
+              sequence="50"/>
+
+</odoo>
