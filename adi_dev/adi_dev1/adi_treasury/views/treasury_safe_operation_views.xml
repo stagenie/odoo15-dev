@@ -15,7 +15,7 @@
                 <field name="date"/>
                 <field name="operation_type"/>
                 <field name="amount" widget="monetary" sum="Total"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="bank_reference" optional="show"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'draft'"

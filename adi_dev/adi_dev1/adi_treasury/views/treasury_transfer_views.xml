@@ -18,7 +18,7 @@
                 <field name="cash_to_id" optional="show"/>
                 <field name="safe_to_id" optional="show"/>
                 <field name="amount" sum="Total" widget="monetary"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="user_id" widget="many2one_avatar_user" optional="show"/>
 
                 <field name="state"

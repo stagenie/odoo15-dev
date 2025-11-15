@@ -30,9 +30,9 @@
                 <field name="last_closing_date" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
                 <!-- Champs invisibles nécessaires pour les conditions -->
-                <field name="auto_close_days" column_invisible="True"/>
-                <field name="require_closing" column_invisible="True"/>
-                <field name="active" column_invisible="True"/>
+                <field name="auto_close_days" invisible="1"/>
+                <field name="require_closing" invisible="1"/>
+                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>

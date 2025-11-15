@@ -17,7 +17,7 @@
                 <field name="amount" widget="monetary"/>
                 <field name="partner_id" optional="show"/>
                 <field name="observations" optional="hide"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="reference" optional="show"/>
                 <field name="payment_id" optional="hide"/>
                 <field name="transfer_id" optional="hide"/>
