@@ -284,10 +284,10 @@ class TreasuryCash(models.Model):
             balance = 0.0
 
             # 1. Partir du solde de la dernière clôture validée
-            # 🔧 CORRECTION : Utiliser sorted() avec lambda au lieu de chaîne
+            # 🔧 CORRECTION ODOO 15 : Utiliser sorted() avec key au lieu de lambda directe
             last_closing = cash.closing_ids.filtered(
                 lambda c: c.state == 'validated'
-            ).sorted(lambda c: (c.closing_date, c.closing_number), reverse=True)[:1]
+            ).sorted(key=lambda c: (c.closing_date, c.closing_number), reverse=True)[:1]
 
             if last_closing:
                 # ✅ Partir du solde réel de la dernière clôture validée
@@ -335,10 +335,10 @@ class TreasuryCash(models.Model):
     def _compute_last_closing(self):
         """Déterminer la dernière clôture"""
         for cash in self:
-            # 🔧 CORRECTION : Utiliser sorted() avec lambda
+            # 🔧 CORRECTION ODOO 15 : Utiliser sorted() avec key au lieu de lambda directe
             last_closing = cash.closing_ids.filtered(
                 lambda c: c.state == 'validated'
-            ).sorted(lambda c: (c.closing_date, c.closing_number), reverse=True)[:1]
+            ).sorted(key=lambda c: (c.closing_date, c.closing_number), reverse=True)[:1]
 
             cash.last_closing_id = last_closing
 

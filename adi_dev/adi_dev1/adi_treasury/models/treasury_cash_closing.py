@@ -600,10 +600,10 @@ class TreasuryCashClosing(models.Model):
                 'closing_id': closing.id,
             })
 
-            # ✅ CORRECTION : Tri déterministe des opérations par date ET ID
+            # ✅ CORRECTION ODOO 15 : Tri déterministe des opérations par date ET ID
             operations = closing.operation_ids.filtered(
                 lambda o: o.state == 'posted'
-            ).sorted(lambda op: (op.date, op.id))  # 🔧 Tri par date puis par ID pour être déterministe
+            ).sorted(key=lambda op: (op.date, op.id))  # 🔧 Tri par date puis par ID pour être déterministe
 
             for seq, op in enumerate(operations, 1):
                 if op.operation_type == 'in':

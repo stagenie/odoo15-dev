@@ -28,7 +28,7 @@
 
                 <field name="difference" widget="monetary"
                        decoration-danger="difference != 0"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="state" widget="badge"/>
                 <field name="user_id" widget="many2one_avatar_user" optional="show"/>
             </tree>
@@ -220,7 +220,7 @@
                                     <field name="operation_type" widget="badge" string="Type"/>
 
                                     <!-- Origine de l'opération -->
-                                    <field name="operation_id" column_invisible="True"/>
+                                    <field name="operation_id" invisible="1"/>
                                     <field name="partner_id" string="Tiers"/>
                                     <field name="category_id" string="Catégorie"/>
                                     <field name="description" string="Description"/>
@@ -244,7 +244,7 @@
                                            decoration-success="cumulative_balance &gt; 0"
                                            decoration-danger="cumulative_balance &lt; 0"/>
 
-                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
 

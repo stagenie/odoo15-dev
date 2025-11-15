@@ -9,7 +9,7 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="current_balance" sum="Total" widget="monetary"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="location" optional="show"/>
                 <field name="last_operation_date" optional="show"/>
                 <field name="is_initialized" widget="boolean_toggle" optional="show"/>
