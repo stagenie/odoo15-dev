@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cash_denomination_user,cash.denomination user,model_cash_denomination,adi_treasury.group_treasury_user,1,0,0,0
+access_cash_denomination_manager,cash.denomination manager,model_cash_denomination,adi_treasury.group_treasury_manager,1,1,1,1
+access_treasury_cash_closing_count_user,treasury.cash.closing.count user,model_treasury_cash_closing_count,adi_treasury.group_treasury_user,1,1,1,1
+access_treasury_cash_closing_count_manager,treasury.cash.closing.count manager,model_treasury_cash_closing_count,adi_treasury.group_treasury_manager,1,1,1,1
