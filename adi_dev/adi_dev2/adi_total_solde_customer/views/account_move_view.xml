@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <template id="report_invoice_document_inherit" inherit_id="account.report_invoice_document">
+            <xpath expr="//div[@class='page']//div[@id='total']" position="before">
+                <div class="row mt32 mb32" id="client_solde_info">
+                    <div class="col-auto mw-100 mb-2">
+                        <strong>Solde Total Client:</strong>
+                        <span t-field="o.client_solde_total"
+                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

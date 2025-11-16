@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_adi_stock_transfer_requester,adi.stock.transfer.requester,model_adi_stock_transfer,group_stock_transfer_requester,1,1,1,0
+access_adi_stock_transfer_validator,adi.stock.transfer.validator,model_adi_stock_transfer,group_stock_transfer_validator,1,1,1,1
+access_adi_stock_transfer_line_requester,adi.stock.transfer.line.requester,model_adi_stock_transfer_line,group_stock_transfer_requester,1,1,1,1
+access_adi_stock_transfer_line_validator,adi.stock.transfer.line.validator,model_adi_stock_transfer_line,group_stock_transfer_validator,1,1,1,1

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire améliorée -->
+    <record id="view_global_delivery_form" model="ir.ui.view">
+        <field name="name">global.delivery.form</field>
+        <field name="model">global.delivery</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                    <button name="action_validate" 
+                            string="Valider" 
+                            type="object" 
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '=', 'done')]}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Produits">
+                            <field name="delivery_line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Bons de livraison source">
+                            <field name="picking_ids" widget ="many2many_tags" readonly="1"/>
+                        </page>
+                    </notebook>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste -->
+    <record id="view_global_delivery_tree" model="ir.ui.view">
+        <field name="name">global.delivery.tree</field>
+        <field name="model">global.delivery</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action du menu pour la liste des BL globaux -->
+    <record id="action_global_delivery_list" model="ir.actions.act_window">
+        <field name="name">Bons de livraison globaux</field>
+        <field name="res_model">global.delivery</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu principal pour les BL globaux -->
+    <menuitem id="menu_global_delivery_root"
+              name="BL Globaux"
+              parent="stock.menu_stock_root"
+              sequence="100"/>
+
+    <!-- Sous-menu pour la liste des BL globaux -->
+    <menuitem id="menu_global_delivery_list"
+              name="Liste des BL Globaux"
+              parent="menu_global_delivery_root"
+              action="action_global_delivery_list"
+              sequence="10"/>
+
+    <!-- Action pour créer un BL global depuis la liste des BL -->
+    <record id="action_create_global_delivery" model="ir.actions.act_window">
+        <field name="name">Créer BL Global</field>
+        <field name="res_model">create.global.delivery</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>

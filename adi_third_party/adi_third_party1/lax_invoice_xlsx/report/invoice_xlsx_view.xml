@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="lax_action_report_invoice_xlsx" model="ir.actions.report">
+        <field name="name">Xlsx Report</field>
+        <field name="model">account.move</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">lax_invoice_xlsx.report_invoice_xlsx</field>
+        <field name="report_file">lax_invoice_xlsx.report_invoice_xlsx</field>
+        <field name="print_report_name">'Invoices'</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

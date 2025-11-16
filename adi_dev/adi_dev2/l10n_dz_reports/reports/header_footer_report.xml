@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="external_layout_boxed_dz">
+        <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style" style="font-size:11px;">
+            <div class="o_boxed_header">
+                <div class="row mb8">
+                    <div class="col-6">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                    </div>
+                    <div class="col-6 text-right mb4">
+                        <h4 class="mt0" t-field="company.report_header"/>
+                        <div name="company_address" class="float-right mb4">
+                            <div><strong><span t-esc="company.name"/></strong></div>
+                            <div><span t-esc="company.street"/></div>
+                            <div><span t-esc="company.street2"/></div>
+                            <div><span t-esc="company.zip"/> <span t-esc="company.city"/> (<span t-esc="company.state_id.name"/>), <span t-esc="company.country_id.name"/></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div t-attf-class="article o_report_layout_boxed o_company_#{company.id}_layout" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <div class="pt-5">
+                <t t-call="web.address_layout"/>
+            </div>
+            <t t-raw="0"/>
+        </div>
+
+        <div t-attf-class="footer o_boxed_footer o_company_#{company.id}_layout" style="font-size:11px;">
+            <div class="text-center">
+                <ul class="list-inline mb4">
+                    <li t-if="company.capital_social" style="display:inline;"><span><span t-field="company.name"/>, <span t-esc="company.forme_juridique.code"/> au <strong>Capital social:</strong> </span><span t-field="company.capital_social"/>,</li>
+                    <li t-if="company.phone" style="display:inline;"><strong>Tél:</strong> <span t-field="company.phone"/> |</li>
+                    <li t-if="company.fax" style="display:inline;"><strong>Fax:</strong> <span t-field="company.fax"/> |</li>
+                    <li t-if="company.email" style="display:inline;"><strong>Courriel:</strong> <span t-field="company.email"/> |</li>
+                    <li t-if="company.website" style="display:inline;"><strong>Site web:</strong> <span t-field="company.website"/></li>
+                    <br/>
+                    <li t-if="company.rc" style="display:inline; padding-top:2px;"><span><strong>N° RC:</strong> </span><span t-field="company.rc"/> |</li>
+                    <li t-if="company.ai" style="display:inline; padding-top:2px;"><span><strong>AI:</strong> </span><span t-field="company.ai"/> |</li>
+                    <li t-if="company.nis" style="display:inline; padding-top:2px;"><span><strong>NIS:</strong> </span><span t-field="company.nis"/> |</li>
+                    <li t-if="company.nif" style="display:inline; padding-top:2px;"><span><strong>NIF:</strong> </span><span t-field="company.nif"/></li>
+                    <br/>
+                    <li t-if="company.partner_id.bank_ids" style="display:inline;">N° de compte: <span t-field="company.partner_id.bank_ids[0].bank_id"/> <span t-field="company.partner_id.bank_ids[0].acc_number"/></li>
+                </ul>
+                <div t-field="company.report_footer"/>
+                <div t-if="report_type == 'pdf'">
+                    Page: <span class="page"/> / <span class="topage"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="styles_company_report_dz" inherit_id="web.styles_company_report">
+        <t t-foreach="company_ids" t-as="company" t-translation="off">
+            <t t-set="font" t-value="company.font or 'Lato'" />
+            <t t-set="primary" t-value="company.primary_color or 'black'" />
+            <t t-set="secondary" t-value="company.secondary_color or 'black'" />
+            <t t-set="layout" t-value="company.external_report_layout_id.key or 'web.external_layout_standard'" />
+                .o_company_<t t-esc='company.id'/>_layout {
+                font-family: '<t t-esc="font" />';
+            <t t-if="layout == 'l10n_dz_reports.external_layout_boxed_dz'">
+                &amp;.o_report_layout_boxed {
+                    #total strong {
+                        color: <t t-esc='primary'/>;
+                    }
+                    #informations strong {
+                        color: <t t-esc='secondary'/>;
+                    }
+                    h2 span {
+                        color: <t t-esc='primary'/>;
+                    }
+                    table {
+                        thead {
+                            tr th {
+                                color: <t t-esc='secondary'/>;
+                            }
+                        }
+                        tbody tr td {
+                            &amp;.o_line_section td {
+                                    background-color: rgba(<t t-esc='primary'/>, 0.7);
+                                }
+                            &amp;.is-subtotal,
+                                td.o_price_total {
+                                    background-color: rgba(<t t-esc='secondary'/>, 0.1);
+                                }
+                        }
+                    }
+                }
+                .row > div > table,
+                div#total table {
+                    tr {
+                        &amp;.o_total td {
+                            background-color: rgba(<t t-esc='primary'/>, 0.9);
+                        }
+                    }
+                }
+            </t>
+            }
+        </t>
+    </template>
+</odoo>

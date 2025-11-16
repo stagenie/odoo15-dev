@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="external_layout_custom_header" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[@name='company_address']" position="replace">
+        
+            <!-- Vérification pour les devis/commandes clients -->
+            <t t-if="docs and docs[0]._name == 'sale.order'">
+                <t t-foreach="docs" t-as="doc">
+                    <div t-if="doc.team_id" style="display: inline-block;">
+                        <p>
+                            <span t-if="doc.team_id.team_address" t-field="doc.team_id.team_address"/><br/>
+                            <span t-if="doc.team_id.team_description" t-field="doc.team_id.team_description"/><br/>
+                            <t t-if="doc.team_id.rc"><span t-field="doc.team_id.rc"/> - </t>
+                            <t t-if="doc.team_id.ai"><span t-field="doc.team_id.ai"/> - </t>
+                            <t t-if="doc.team_id.nif"><span t-field="doc.team_id.nif"/> - </t>
+                            <t t-if="doc.team_id.nis"><span t-field="doc.team_id.nis"/></t><br/>
+                            <span t-if="doc.team_id.email" t-field="doc.team_id.email"/><br/>
+                            <span t-if="doc.team_id.tel" t-field="doc.team_id.tel"/>
+                        </p>
+                    </div>
+                </t>
+            </t>
+
+            <!-- Vérification pour les bons de livraison -->
+            <t t-if="docs and docs[0]._name == 'stock.picking'">
+                <t t-foreach="docs" t-as="o">
+                    <div t-if="o.sale_id and o.sale_id.team_id" style="display: inline-block;">
+                        <p>                
+                            <span t-if="o.sale_id.team_id.team_address" t-field="o.sale_id.team_id.team_address"/><br/>
+                            <span t-if="o.sale_id.team_id.team_description" t-field="o.sale_id.team_id.team_description"/><br/>
+                            <t t-if="o.sale_id.team_id.rc"><span t-field="o.sale_id.team_id.rc"/> - </t>
+                            <t t-if="o.sale_id.team_id.ai"><span t-field="o.sale_id.team_id.ai"/> - </t>
+                            <t t-if="o.sale_id.team_id.nif"><span t-field="o.sale_id.team_id.nif"/> - </t>
+                            <t t-if="o.sale_id.team_id.nis"><span t-field="o.sale_id.team_id.nis"/></t><br/>
+                            <span t-if="o.sale_id.team_id.email" t-field="o.sale_id.team_id.email"/><br/>
+                            <span t-if="o.sale_id.team_id.tel" t-field="o.sale_id.team_id.tel"/>
+                        </p>
+                    </div>
+                    <div t-else="" style="display: inline-block;">
+                        <p>                
+                            <span t-if="o.company_id.activity_description" t-field="o.company_id.activity_description"/><br/>
+                            <span t-if="o.company_id.street" t-field="o.company_id.street"/><br/>
+                            <t t-if="o.company_id.rc"><span>RC: </span><span t-field="o.company_id.rc"/> - </t>
+                            <t t-if="o.company_id.ai"><span>AI: </span><span t-field="o.company_id.ai"/> - </t>
+                            <t t-if="o.company_id.nif"><span>NIF: </span><span t-field="o.company_id.nif"/> - </t>
+                            <t t-if="o.company_id.nis"><span>NIS: </span><span t-field="o.company_id.nis"/></t><br/>
+                            <span t-if="o.company_id.email" t-field="o.company_id.email"/><br/>
+                            <span t-if="o.company_id.phone" t-field="o.company_id.phone"/>
+                        </p>
+                    </div>
+                </t>
+            </t>
+
+            <!-- Vérification pour les factures -->
+            <t t-if="docs and docs[0]._name == 'account.move'">
+                <t t-foreach="docs" t-as="o">
+                    <div t-if="o.team_id" style="display: inline-block;">
+                        <p>
+                            <span t-if="o.team_id.team_address" t-field="o.team_id.team_address"/><br/>
+                            <span t-if="o.team_id.team_description" t-field="o.team_id.team_description"/><br/>
+                            <t t-if="o.team_id.rc"><span t-field="o.team_id.rc"/> - </t>
+                            <t t-if="o.team_id.ai"><span t-field="o.team_id.ai"/> - </t>
+                            <t t-if="o.team_id.nif"><span t-field="o.team_id.nif"/> - </t>
+                            <t t-if="o.team_id.nis"><span t-field="o.team_id.nis"/></t><br/>
+                            <span t-if="o.team_id.email" t-field="o.team_id.email"/><br/>
+                            <span t-if="o.team_id.tel" t-field="o.team_id.tel"/>
+                        </p>
+                    </div>
+                </t>
+            </t>
+
+            <!-- Cas par défaut : demandes de prix, commandes fournisseurs, etc. -->
+            <t t-if="docs and docs[0]._name not in ['sale.order', 'stock.picking', 'account.move']">
+                <t t-foreach="docs" t-as="doc">
+                    <div style="display: inline-block;">
+                        <p>
+                            <span t-if="doc.company_id.activity_description" t-field="doc.company_id.activity_description"/><br/>
+                            <span t-if="doc.company_id.street" t-field="doc.company_id.street"/><br/>
+                            <t t-if="doc.company_id.rc"><span>RC: </span><span t-field="doc.company_id.rc"/> - </t>
+                            <t t-if="doc.company_id.ai"><span>AI: </span><span t-field="doc.company_id.ai"/> - </t>
+                            <t t-if="doc.company_id.nif"><span>NIF: </span><span t-field="doc.company_id.nif"/> - </t>
+                            <t t-if="doc.company_id.nis"><span>NIS: </span><span t-field="doc.company_id.nis"/></t><br/>
+                            <span t-if="doc.company_id.email" t-field="doc.company_id.email"/><br/>
+                            <span t-if="doc.company_id.phone" t-field="doc.company_id.phone"/>
+                        </p>
+                    </div>
+                </t>
+            </t>
+
+        </xpath>
+    </template>
+</odoo>

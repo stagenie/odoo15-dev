@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Modification du rapport de devis/commande -->
+    <template id="report_saleorder_document_inherited" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//table[contains(@class, 'table')]/thead/tr/th[1]" position="before">
+            <th class="text-left"><strong>N°</strong></th>
+        </xpath>
+        <xpath expr="//table[contains(@class, 'table')]/tbody/t/tr/t/td[1]" position="before">
+            <td class="text-left">
+                <span t-esc="line_index + 1"/>
+            </td>
+        </xpath>
+    </template>
+
+    <!-- Modification du rapport de facture -->
+    <template id="report_invoice_document_inherited" inherit_id="account.report_invoice_document">
+        <xpath expr="//table[contains(@class, 'table')]/thead/tr/th[1]" position="before">
+            <th class="text-left"><strong>N°</strong></th>
+        </xpath>
+        <xpath expr="//table[contains(@class, 'table')]/tbody/t/tr/t/td[1]" position="before">
+            <td class="text-left">
+                <span t-esc="line_index + 1"/>
+            </td>
+        </xpath>
+    </template>
+
+    <!-- Modification du rapport de bon de livraison -->
+    <template id="report_delivery_document_inherited" inherit_id="stock.report_delivery_document">
+        <xpath expr="//table/thead/tr/th[1]" position="before">
+            <th name="th_sequence" class="text-left"><strong>N°</strong></th>
+        </xpath>
+        <xpath expr="//table/tbody/tr/td[1]" position="before">
+            <td class="text-left" name="td_sequence">
+                <t t-esc="counter" t-set="counter" t-value="counter + 1"/>
+            </td>
+        </xpath>
+        <xpath expr="//table" position="before">
+            <t t-set="counter" t-value="1"/>
+        </xpath>
+    </template>
+
+
+      
+  
+</odoo>
+
+ 

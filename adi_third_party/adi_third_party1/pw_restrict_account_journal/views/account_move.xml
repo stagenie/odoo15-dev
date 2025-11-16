@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="adi_journal_restritef_invoice_form" model="ir.ui.view">
+        <field name="name">account.mov.view.inherit.accounting.restritedinvoicing</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+
+        <field name="arch" type="xml">
+
+
+            <field name="invoice_user_id" position="after">
+                <field name="restrict_journals"/>
+                <field name="supplier_ids" widget="many2many_tags"/>
+            </field>
+
+        </field>
+    </record>
+
+</odoo>
+

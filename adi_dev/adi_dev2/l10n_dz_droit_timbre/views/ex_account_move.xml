@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_timbre" model="ir.ui.view">
+        <field name="name">view.account.move.timbre.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@id='header_right_group']" position="inside">
+                <field name="payment_mode_id"
+                       attrs="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund'])], 'readonly': [('state','!=','draft')]}"/>
+                <field name="payment_mode_type" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_payments_widget']" position="before">
+                <field name="amount_timbre" attrs="{'invisible': [('payment_mode_type', '!=', 'espece')]}"/>
+                <field name="amount_total_with_timbre"
+                       class="oe_subtotal_footer_separator"
+                       attrs="{'invisible': [('payment_mode_type', '!=', 'espece')]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue recherche (Search View) -->
+    <record id="view_sales_order_filter_inherit_team" model="ir.ui.view">
+        <field name="name">sale.order.list.select.inherit.team</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter le filtre équipe après le filtre "Mes devis/commandes" -->
+            <xpath expr="//filter[@name='my_quotation']" position="after">
+                <filter string="Mon équipe commerciale" 
+                        name="my_sales_team" 
+                        domain="[('team_id', 'in', user.sale_team_ids.ids)]"/>
+            </xpath>
+
+            <!-- Ajouter le groupement par équipe -->
+            <xpath expr="//filter[@name='customer']" position="after">
+                <filter string="Équipe commerciale" 
+                        name="sales_team" 
+                        context="{'group_by': 'team_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue liste des devis (Quotation Tree View) -->
+    <record id="view_quotation_tree_inherit_team" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit.team</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="team_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue liste des commandes (Order Tree View) -->
+    <record id="view_order_tree_inherit_team" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit.team.sale</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="team_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue formulaire (Form View) -->
+    <record id="view_order_form_inherit_team" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.team</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="team_id" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue Kanban -->
+    <record id="view_sale_order_kanban_inherit_team" model="ir.ui.view">
+        <field name="name">sale.order.kanban.inherit.team</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sale_order_kanban"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter le champ team_id dans les champs disponibles -->
+            <field name="partner_id" position="after">
+                <field name="team_id"/>
+            </field>
+            
+            <!-- Afficher l'équipe dans la carte kanban -->
+            <xpath expr="//div[hasclass('oe_kanban_details')]" position="inside">
+                <div t-if="record.team_id.raw_value" class="text-muted">
+                    <small><i class="fa fa-users"/> <field name="team_id"/></small>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+  
+</odoo>

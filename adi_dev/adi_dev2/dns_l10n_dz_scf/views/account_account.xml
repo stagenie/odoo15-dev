@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_account_account_scf" model="ir.ui.view">
+            <field name="name">account.account.scf.view.form</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <group>
+                        <field name="debit"/>
+                        <field name="credit"/>
+                        <field name="solde"/>
+                    </group>
+                    <field name="move_line_ids" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='group_id']" position="attributes">
+                    <attribute name="string">Parent</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

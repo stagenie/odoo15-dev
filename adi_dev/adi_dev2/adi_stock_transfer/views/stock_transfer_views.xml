@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Formulaire de transfert de stock -->
+    <record id="view_stock_transfer_form" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.form</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_request" string="Soumettre la Demande" type="object" 
+                            states="draft" class="btn-primary"/>
+                    <button name="action_approve" string="Approuver" type="object" 
+                            states="requested" class="btn-success" 
+                            groups="adi_stock_transfer.group_stock_transfer_validator"/>
+                    <button name="action_start_transit" string="Démarrer le Transit" type="object" 
+                            states="approved" class="btn-primary"/>
+                    <button name="action_done" string="Terminer" type="object" 
+                            states="in_transit" class="btn-success"/>
+                    <button name="action_cancel" string="Annuler" type="object" 
+                            states="draft,requested,approved" class="btn-danger"/>
+                    <button name="action_draft" string="Remettre en Brouillon" type="object" 
+                            states="cancelled" class="btn-warning"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,requested,approved,in_transit,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_picking" type="object" class="oe_stat_button" 
+                                icon="fa-truck" attrs="{'invisible': [('picking_count', '=', 0)]}">
+                            <field name="picking_count" widget="statinfo" string="Transferts"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <!-- Dans le formulaire, après le div oe_title -->
+            <div class="alert alert-warning" attrs="{'invisible': [('is_inter_company', '=', False)]}" role="alert">
+                    <i class="fa fa-warning"/> Transfert Inter-Sociétés : Deux bons de transfert seront créés (sortie et entrée)
+                </div>
+
+                <!-- Ajouter le champ invisible -->
+                        <field name="is_inter_company" invisible="1"/>
+                        <field name="source_picking_id" invisible="1"/>
+                        <field name="dest_picking_id" invisible="1"/>
+
+                    <group>
+                        <group string="Informations Générales">
+                            <field name="requester_id"/>
+                            <field name="validator_id"/>
+                            <field name="request_date"/>
+                            <field name="scheduled_date"/>
+                        </group>
+                        <group string="Statistiques">
+                            <field name="total_products"/>
+                            <field name="total_quantity"/>
+                        </group>
+                    </group>
+                    <field name="is_single_company_mode" invisible="1"/>
+                    <group string="Configuration des Emplacements">
+                         <group string="Source">
+                            <!-- Masquer le champ société si mode mono-société -->
+                            <field name="source_company_id" 
+                                    options="{'no_create': True}"
+                                    attrs="{'invisible': [('is_single_company_mode', '=', True)]}"/>
+                            <field name="source_warehouse_id" options="{'no_create': True}"/>
+                            <field name="source_location_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Destination">
+                            <field name="dest_company_id" 
+                                   options="{'no_create': True}"
+                                   attrs="{'invisible': [('is_single_company_mode', '=', True)]}"/>
+                            <field name="dest_warehouse_id" options="{'no_create': True}"/>
+                            <field name="dest_location_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Produits à Transférer">
+                            <field name="transfer_line_ids">
+                                <tree editable="bottom" create="true" delete="true">
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="product_uom_id" options="{'no_create': True}" 
+                                           groups="uom.group_uom"/>
+                                    <field name="available_quantity" readonly="1" 
+                                           decoration-danger="available_quantity == 0"
+                                           decoration-warning="available_quantity &lt; quantity"/>
+                                    <field name="quantity" 
+                                           decoration-danger="quantity &gt; available_quantity"/>
+                                    <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <group>
+                                <field name="note" nolabel="1" placeholder="Notes internes..."/>
+                                <field name="rejection_reason" 
+                                       attrs="{'invisible': [('state', '!=', 'cancelled')]}"
+                                       placeholder="Raison du rejet/annulation..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Les autres vues restent identiques, je les ajoute pour être complet -->
+    
+    <!-- Vue Tree -->
+    <record id="view_stock_transfer_tree" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.tree</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state=='done'" 
+                  decoration-warning="state=='requested'"
+                  decoration-danger="state=='cancelled'"
+                  decoration-info="state=='in_transit'">
+                <field name="name"/>
+                <field name="requester_id"/>
+                <field name="source_warehouse_id"/>
+                <field name="dest_warehouse_id"/>
+                <field name="total_quantity"/>
+                <field name="request_date"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'requested'"
+                       decoration-danger="state == 'cancelled'"
+                       decoration-info="state == 'in_transit'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Kanban -->
+    <record id="view_stock_transfer_kanban" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.kanban</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" quick_create="false">
+                <field name="name"/>
+                <field name="requester_id"/>
+                <field name="source_warehouse_id"/>
+                <field name="dest_warehouse_id"/>
+                <field name="total_quantity"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>
+                                        <i class="fa fa-user"/> <field name="requester_id"/>
+                                    </div>
+                                    <div>
+                                        <i class="fa fa-warehouse"/> 
+                                        <field name="source_warehouse_id"/> → 
+                                        <field name="dest_warehouse_id"/>
+                                    </div>
+                                    <div>
+                                        <i class="fa fa-cubes"/> 
+                                        <field name="total_quantity"/> unités
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Search -->
+    <record id="view_stock_transfer_search" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.search</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="requester_id"/>
+                <field name="validator_id"/>
+                <field name="source_warehouse_id"/>
+                <field name="dest_warehouse_id"/>
+                <separator/>
+                <filter name="filter_draft" string="Brouillon" 
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_requested" string="En Attente de Validation" 
+                        domain="[('state', '=', 'requested')]"/>
+                <filter name="filter_approved" string="Approuvé" 
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="filter_in_transit" string="En Transit" 
+                        domain="[('state', '=', 'in_transit')]"/>
+                <filter name="filter_done" string="Terminé" 
+                        domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="filter_my_requests" string="Mes Demandes" 
+                        domain="[('requester_id', '=', uid)]"/>
+                <filter name="filter_to_validate" string="À Valider" 
+                        domain="[('state', '=', 'requested'), ('validator_id', '=', uid)]"/>
+                <separator/>
+                <group expand="0" string="Grouper par">
+                    <filter name="group_state" string="État" 
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_requester" string="Demandeur" 
+                            context="{'group_by': 'requester_id'}"/>
+                    <filter name="group_source_warehouse" string="Entrepôt Source" 
+                            context="{'group_by': 'source_warehouse_id'}"/>
+                    <filter name="group_dest_warehouse" string="Entrepôt Destination" 
+                            context="{'group_by': 'dest_warehouse_id'}"/>
+                    <filter name="group_date" string="Date de Demande" 
+                            context="{'group_by': 'request_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Window -->
+    <record id="action_stock_transfer" model="ir.actions.act_window">
+        <field name="name">Transferts de Stock</field>
+        <field name="res_model">adi.stock.transfer</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="context">{'search_default_filter_my_requests': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un nouveau transfert de stock
+            </p>
+            <p>
+                Gérez vos transferts de stock entre différents emplacements et entrepôts
+                avec un système de validation à deux niveaux.
+            </p>
+        </field>
+    </record>
+</odoo>

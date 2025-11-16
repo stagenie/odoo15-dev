@@ -1,0 +1,12 @@
+<odoo>
+    <record id="view_account_reconciliation_hide_rainbow_man" model="ir.ui.view">
+        <field name="name">account.reconciliation.hide.rainbow.man</field>
+        <field name="model">account.reconciliation.widget</field>
+        <field name="inherit_id" ref="account.reconciliation_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='o_reconciliation_mode']" position="attributes">
+                <attribute name="t-att-style">'display: none;'</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,6 @@
+<odoo>
+    <record id="group_sale_team_security" model="res.groups">
+        <field name="name">Accès Documents par Équipe</field>
+        <field name="category_id" ref="base.module_category_sales"/>
+    </record>
+</odoo>

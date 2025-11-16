@@ -1,0 +1,203 @@
+<odoo>
+<!-- Journal-->
+
+<record id="view_account_journal_form_inherit" model="ir.ui.view">
+    <field name="name">account.journal.form.inherit</field>
+    <field name="model">account.journal</field>
+    <field name="inherit_id" ref="account.view_account_journal_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='type']" position="after">
+            <field name="qte_Journal" string="Inclure dans le calcul des quantités"/>
+        </xpath>
+    </field>
+</record>
+
+
+<!-- Ligne Factures-->
+<record id="view_account_move_line_tree_custom" model="ir.ui.view">
+    <field name="name">account.move.line.tree.custom</field>
+    <field name="model">account.move.line</field>
+    <field name="arch" type="xml">
+        <tree string="Lignes de Facture">
+            <field name="invoice_date" string="Date de Facturation"/>  <!-- Ajout de la date -->
+            <field name="move_id" string="Numéro de Facture"/>
+            <field name="quantity" string="Quantité" sum="Quantité Totale"/>
+            <field name="price_unit" string="Prix Unitaire"/>
+            <field name="price_subtotal" string="Montant Total" sum="Montant Total"/>
+        </tree>
+    </field>
+</record>
+<!-- Fin Ligne Factures-->
+
+<record id="product_template_form_view_inherit" model="ir.ui.view">
+    <field name="name">product.template.form.inherit</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_form_view"/>
+    <field name="arch" type="xml">
+        <xpath expr="//page[@name='inventory']" position="inside">
+            <group string="Quantités Facturées" attrs="{'invisible': [('type', '!=', 'product')]}">
+                <field name="qte_af"/>
+                <field name="qte_vf" />
+                <field name="solde_qte"
+                 decoration-danger="solde_qte &lt; 0" 
+                 decoration-warning="solde_qte == 0" 
+                 decoration-success="solde_qte &gt; 0"
+                 
+                 />
+            </group>
+        </xpath>
+    </field>
+</record>  
+
+
+<record id="product_template_form_view_inherit_3" model="ir.ui.view">
+    <field name="name">product.template.form.inherit</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_form_view"/>
+    <field name="arch" type="xml">
+       
+         <xpath expr="//field[@name='description']" position="after">    
+           <group string="Quantités Facturées" attrs="{'invisible': [('type', '!=', 'product')]}">
+                <field name="qte_af"/>
+                <field name="qte_vf"/>
+                <field name="solde_qte"
+                 decoration-danger="solde_qte &lt; 0" 
+                 decoration-warning="solde_qte == 0" 
+                 decoration-success="solde_qte &gt; 0"/>
+            </group>
+            
+            </xpath>
+            
+        <div name="button_box" position="inside">    
+             <button    type="object" 
+                        name="action_view_invoice_supplier" 
+                        class="oe_stat_button" 
+                        icon="fa-file-text-o">
+                <field name="qte_af" widget="statinfo"/>
+                    <span>Qté FF</span>
+                </button>
+                <button  type="object" 
+                         name="action_view_invoice_customer" 
+                         class="oe_stat_button" 
+                         icon="fa-file-text-o">
+                         <field name="qte_vf" widget="statinfo"/>
+                    <span>Qté FC</span>
+                </button>
+        
+
+
+        </div>
+
+           
+         
+        
+    </field>
+</record>
+
+
+<record id="product_template_tree_view_inherit" model="ir.ui.view">
+    <field name="name">product.template.tree.inherit</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_tree_view"/>
+
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='default_code']" position="after">
+            <field name="qte_af" optional="show" string="QFF"/>
+            <field name="qte_vf" optional="show" string="QFC"/>
+            <field name="solde_qte" 
+                decoration-danger="solde_qte &lt; 0" 
+                decoration-warning="solde_qte == 0" 
+                decoration-success="solde_qte &gt; 0"
+                optional="show"
+                />
+        </xpath>
+    </field>
+</record>
+
+
+<record id="view_product_product_form_inherit_product" model="ir.ui.view">
+    <field name="name">product.product.form.inherit</field>
+    <field name="model">product.product</field>
+    <field name="inherit_id" ref="product.product_normal_form_view"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='description']" position="after">
+            <div class="o_stat_info">
+                <button type="object" 
+                    name="action_view_invoice_supplier" 
+                    class="oe_stat_button" 
+                    icon="fa-file-text-o" 
+                    string="Total Qté Facturée Fournisseur"/>
+                <button type="object" 
+                    name="action_view_invoice_customer" 
+                    class="oe_stat_button"
+                     icon="fa-file-text-o" 
+                     string="Total Qté Facturée Clients"/>
+            </div>
+        </xpath>
+    </field>
+</record>
+
+
+<record id="product_template_tree_view_account_invoice_inherit" model="ir.ui.view">
+    <field name="name">product.template.tree.inherit</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="account.product_template_view_tree"/>                                  
+
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='default_code']" position="after">
+            <field name="qte_af" optional="show" string="QFF"/>
+            <field name="qte_vf" optional="show" string="QFC"/>
+            <field name="solde_qte" 
+                decoration-danger="solde_qte &lt; 0" 
+                decoration-warning="solde_qte == 0" 
+                decoration-success="solde_qte &gt; 0"
+                optional="show"
+                />
+        </xpath>
+    </field>
+</record>
+
+
+
+
+
+    <record id="custom_product_search_view_liste" model="ir.ui.view">
+        <field name="name">product.product.search.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id"  ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter les champs dans la vue -->
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="qte_af" string="QFF" optional="show"/>
+                <field name="qte_vf" string="QFV" optional="show"/>
+                <field name="solde_qte" string="SQF" 
+                        decoration-danger="solde_qte &lt; 0" 
+                        decoration-warning="solde_qte == 0" 
+                        decoration-success="solde_qte &gt; 0"
+                        optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+<record id="custom_product_search_view" model="ir.ui.view">
+        <field name="name">product.template.search.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='consumable']" position="after">
+                <filter name="qty_available_filter" string="Quantités Dispo"
+                        domain="[('qty_available', '>', 0)]"/>
+                <filter name="qty_available_filter_invoice_d" string="QF Dispo"
+                        domain="[('solde_qte', '>', 0)]"/>
+
+                <filter name="qty_available_filter_invoice_nd" string="QF Non Dispo"
+                        domain="[('solde_qte', '&lt;', 0)]"/>
+                        
+
+                <filter name="qty_available_filter_invoice_zero" string="QF=0"
+                        domain="[('solde_qte', '=', 0)]"/>         
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

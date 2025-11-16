@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="droit_timbre_form">
+        <field name="name">droit.timbre.form</field>
+        <field name="model">droit.timbre</field>
+        <field name="arch" type="xml">
+            <form string="Droit de timbre">
+                <sheet>
+                    <field name="currency_id" invisible="1"/>
+                    <group>
+                        <group name="configuration_timbre" string="Configuration du droit de timbre">
+                            <field name="name"/>
+                            <field name="company_id" string="Société" groups="base.group_multi_company"/>
+                        </group>
+                        <group name="configuration_comptes" string="Comptes de contreparties">
+                            <field name="account_sale_id"/>
+                            <field name="account_purchase_id"/>
+                        </group>
+                        <group name="configuration_quotite" string="Quntité du timbre">
+                            
+                            <!-- 
+                                <field name="prix"/>
+                            <field name="tranche"/>
+
+                            -->
+                        <field name="montant_min_applicable"/>
+                        <field name="seuil_premiere_tranche"/>
+                        <field name="seuil_deuxieme_tranche"/>
+                        <field name="taux_premiere_tranche"/>
+                        <field name="taux_deuxieme_tranche" options="{'precision': 3}"/>
+                        <field name="taux_troisieme_tranche"/>
+
+    
+                            
+                        </group>
+                    </group>
+                    <group name="configuration_montant"  string="Montant/Limites du droit de timbre">
+                        <!-- 
+                            <group>
+                            <field name="montant_min"/>
+                            <field name="montant_max"/>
+                        </group>
+
+                         -->
+                       
+
+                
+                        <group>
+                            <!--<field name="montant_min_valid"/>
+                            <field name="montant_arrondit"/>
+                        -->
+                            <field name="montant_min_timbre"/>  
+                             <group>
+                                <field name="with_max_timbre"/>
+                                <field name="montant_max_timbre" 
+                                    attrs="{'invisible': [('with_max_timbre', '=', False)],
+                                     'required': [('with_max_timbre', '=', True)]}"/>
+                            </group>  
+                            
+                            
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="droit_timbre_tree" model="ir.ui.view">
+        <field name="name">droit.timbre.tree</field>
+        <field name="model">droit.timbre</field>
+        <field name="arch" type="xml">
+            <tree string="Droit de timbre">
+                <field name="name"/>
+                <field name="company_id" string="Société" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_droit_timbre">
+        <field name="name">Droit de Timbre (Timbre de quittances)</field>
+        <field name="res_model">droit.timbre</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_droit_timbre"
+        action="action_droit_timbre"
+        name="Droit de Timbre (Timbre de quittances)"
+        parent="account.account_account_menu"
+        sequence="200"/>
+</odoo>

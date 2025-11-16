@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Affichage du colonne Total Payé et mode de règlement -->
+
+
+    <!-- Factures clients -->
+        <record id="view_invoice_tree" model="ir.ui.view">
+            <field name="name">account.move.tree</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='activity_ids']" position="after">
+                    <field name="payment_mode_id" optional="show"/>                    
+                </xpath>
+                
+                <xpath expr="//field[@name='amount_total_signed']" position="after">                    
+                    <field name="amount_total_with_timbre" optional="show" sum="Total avec Timbre" />
+                    <field name="total_paid" optional="show" sum="Total payé"/>
+                </xpath>
+
+            </field>
+        </record>
+
+<!-- Factures fournisseurs -->
+        <record id="view_invoice_supplier_tree" model="ir.ui.view">
+            <field name="name">account.move.supplier.tree</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_in_invoice_bill_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='activity_ids']" position="after">
+                    <field name="payment_mode_id" optional="show"/>                    
+                </xpath>
+                <xpath expr="//field[@name='amount_total_signed']" position="after">                    
+                    <field name="amount_total_with_timbre" optional="show" sum="Total avec Timbre" />
+                    <field name="total_paid" optional="show" sum="Total payé"/>
+                   
+                </xpath>
+            </field>
+        </record>
+ 
+
+<!-- REcherche  -->
+  <record id="view_account_invoice_filter" model="ir.ui.view">
+        <field name="name">account.invoice.select</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='status']" position="after">
+                <filter string="Mode de règlement" name="payment_mode_groupby" context="{'group_by': 'payment_mode_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- -->
+    <record id="view_move_form_timbre" model="ir.ui.view">
+        <field name="name">view.account.move.timbre.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@id='header_right_group']" position="inside">
+                <field name="payment_mode_id"
+                       attrs="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])], 'readonly': [('state','!=','draft')]}"/>
+                <field name="payment_mode_type" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_payments_widget']" position="before">
+                <field name="amount_timbre" attrs="{'invisible': [('payment_mode_type', '!=', 'espece')]}"/>
+                 <field name="timbre_percentage" string="Pourcentage du timbre" attrs="{'invisible': [('payment_mode_type', '!=', 'espece')]}"/>
+                <field name="amount_total_with_timbre"
+                       class="oe_subtotal_footer_separator"
+                       attrs="{'invisible': [('payment_mode_type', '!=', 'espece')]}"/>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

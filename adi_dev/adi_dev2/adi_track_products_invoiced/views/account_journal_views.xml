@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_journal_form_inherited" model="ir.ui.view">
+        <field name="name">account.journal.form.inherited</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Quantity Tracking" attrs="{'invisible': [('type', 'not in', ['sale', 'purchase'])]}">
+                    <group>
+                        <group>
+                             
+                            <field name="check_quantity_purchased" 
+                                   attrs="{'invisible': [('type', '!=', 'purchase')]}"
+                                   help="Enable tracking of purchased quantities from this journal"/>
+                            <field name="check_quantity_saled" 
+                                   attrs="{'invisible': [('type', '!=', 'sale')]}"
+                                   help="Enable tracking of sold quantities from this journal"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+
+   
+</odoo>

@@ -1,0 +1,17 @@
+<odoo>
+    <record id="view_partner_form_credit_limit" model="ir.ui.view">
+        <field name="name">res.partner.form.credit.limit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Crédit">
+                    <group>
+                        <field name="credit_limit_active"/>
+                        <field name="credit_limit" attrs="{'invisible': [('credit_limit_active', '=', False)]}"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

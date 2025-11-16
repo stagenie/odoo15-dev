@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="external_layout_custom_header" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[@name='company_address']" position="replace">
+            <div  style="display: inline-block; vertical-align: top; margin-left: 20px;">
+              <!-- 
+               class="mt16"
+               style="display: inline-block;"
+              <strong>Sales Team:</strong>
+                <span t-field="doc.team_id.name"/><br/>
+              -->  
+                <p>
+                  
+                    <span t-field="doc.team_id.team_address"/><br/>
+                    <span t-field="doc.team_id.team_description" />
+                </p>
+            </div>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+  <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+    <!-- ... -->
+    <xpath expr="//div[@id='total']" position="replace">
+        <div id="total" class="row">
+            <!-- ... -->
+            <div class="col-6">
+                <table class="table table-sm">
+                    <t t-call="l10n_dz_droit_timbre.report_invoice_document_tax_totals"/>
+                </table>
+            </div>
+        </div>
+    </xpath>
+    <!-- ... -->
+</template>
+
+
+<template id="report_invoice_document_tax_totals">
+    <t t-if="tax_groups_totals">
+        <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
+            <tr class="border-black o_subtotal">
+                <td><strong t-esc="subtotal['name']"/></td>
+                <td class="text-right">
+                    <span t-att-class="oe_subtotal_footer_separator" t-esc="subtotal['formatted_amount']"/>
+                </td>
+            </tr>
+            <t t-set="subtotal_to_show" t-value="subtotal['name']"/>
+            <t t-call="account.tax_groups_totals"/>
+        </t>
+        <!-- Ligne pour le champ 'Timbre' -->
+        <tr t-if="o.payment_mode_type == 'espece'" class="border-black o_timbre">
+            <td><strong>Timbre</strong></td>
+            <td class="text-right">
+                <span t-field="o.amount_timbre"
+                    t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+            </td>
+        </tr>
+        <!-- Ligne pour le total avec/sans timbre -->
+        <tr class="border-black o_total">
+            <td><strong>Total</strong></td>
+            <td class="text-right">
+                <span t-if="o.payment_mode_type == 'espece'" t-field="o.amount_total_with_timbre"
+                    t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                <span t-else="" t-field="o.amount_total"
+                    t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+            </td>
+        </tr>
+    </t>
+</template>
+
+    </data>
+</odoo>

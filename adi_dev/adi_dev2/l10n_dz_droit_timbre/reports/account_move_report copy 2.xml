@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_invoice_document_droit_timbre" inherit_id="account.document_tax_totals">
+            <!-- Suppression du contenu générique -->
+            <xpath expr="." position="replace">
+                <!-- Cas pour les factures (invoices) -->
+                <t t-if="o and o.move_type in ['out_invoice', 'in_invoice']">
+                    <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
+                        <tr class="border-black o_subtotal">
+                            <td><strong t-esc="subtotal['name']"/></td>
+                            <td class="text-right">
+                                <span t-att-class="oe_subtotal_footer_separator" t-esc="subtotal['formatted_amount']"/>
+                            </td>
+                        </tr>
+                        <t t-set="subtotal_to_show" t-value="subtotal['name']"/>
+                        <t t-call="account.tax_groups_totals"/>
+                    </t>
+                    <!-- Ligne pour le champ 'Timbre' -->
+                    <tr t-if="o.payment_mode_type == 'espece'" class="border-black o_timbre">
+                        <td><strong>Timbre</strong></td>
+                        <td class="text-right">
+                            <span t-field="o.amount_timbre"
+                                t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </td>
+                    </tr>
+                    <!-- Ligne pour le total avec/sans timbre -->
+                    <tr class="border-black o_total">
+                        <td><strong>Total</strong></td>
+                        <td class="text-right">
+                            <span t-if="o.payment_mode_type == 'espece'" t-field="o.amount_total_with_timbre"
+                                t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            <span t-else="" t-field="o.amount_total"
+                                t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </td>
+                    </tr>
+                </t>
+
+                <!-- Cas pour les commandes client (SO) -->
+                <t t-if="doc and doc._name == 'sale.order'">
+                    <t t-foreach="doc.order_line" t-as="line">
+                        <tr class="border-black o_subtotal">
+                            <td><strong t-field="line.name"/></td>
+                            <td class="text-right">
+                                <span t-field="line.price_subtotal"
+                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                            </td>
+                        </tr>
+                    </t>
+                    <tr class="border-black o_total">
+                        <td><strong>Total</strong></td>
+                        <td class="text-right">
+                            <span t-field="doc.amount_total"
+                                t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        </td>
+                    </tr>
+                </t>
+
+                <!-- Cas pour les bons de commande (PO) -->
+                <t t-if="doc and doc._name == 'purchase.order'">
+                    <t t-foreach="doc.order_line" t-as="line">
+                        <tr class="border-black o_subtotal">
+                            <td><strong t-field="line.name"/></td>
+                            <td class="text-right">
+                                <span t-field="line.price_subtotal"
+                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                            </td>
+                        </tr>
+                    </t>
+                    <tr class="border-black o_total">
+                        <td><strong>Total</strong></td>
+                        <td class="text-right">
+                            <span t-field="doc.amount_total"
+                                t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        </td>
+                    </tr>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>

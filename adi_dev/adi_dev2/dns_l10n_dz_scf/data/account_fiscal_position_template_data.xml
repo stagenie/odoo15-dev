@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <delete model="account.fiscal.position.template" search="[('chart_template_id','=',ref('l10n_dz_scf_pcg_chart_template'))]"/>
+
+    <record id="fiscal_position_template_exo" model="account.fiscal.position.template">
+        <field name="name">Exonération TVA A la vente : ANSEJ, ANDI, Export,...</field>
+        <field name="chart_template_id" ref="l10n_dz_scf_pcg_chart_template"/>
+    </record>
+
+    <record id="fiscal_position_template_import_export" model="account.fiscal.position.template">
+        <field name="name">Fournisseurs étranger</field>
+        <field name="chart_template_id" ref="l10n_dz_scf_pcg_chart_template"/>
+    </record>
+
+    <record id="fp_tax_template_exo_vt_normale" model="account.fiscal.position.tax.template">
+        <field name="position_id" ref="fiscal_position_template_exo" />
+        <field name="tax_src_id" ref="tva_normale" />
+        <field name="tax_dest_id" ref="tva_0" />
+    </record>
+
+    <record id="fp_tax_template_exo_vt_intermediaire" model="account.fiscal.position.tax.template">
+        <field name="position_id" ref="fiscal_position_template_exo" />
+        <field name="tax_src_id" ref="tva_intermediaire" />
+        <field name="tax_dest_id" ref="tva_0" />
+    </record>
+
+    <record id="fp_tax_template_impexp_ha_normale" model="account.fiscal.position.tax.template">
+        <field name="position_id" ref="fiscal_position_template_import_export" />
+        <field name="tax_src_id" ref="tva_acq_normale" />
+        <field name="tax_dest_id" ref="tva_import_0" />
+    </record>
+
+    <record id="fp_tax_template_impexp_ha_intermediaire" model="account.fiscal.position.tax.template">
+        <field name="position_id" ref="fiscal_position_template_import_export" />
+        <field name="tax_src_id" ref="tva_acq_intermediaire" />
+        <field name="tax_dest_id" ref="tva_import_0" />
+    </record>
+</odoo>

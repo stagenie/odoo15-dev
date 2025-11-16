@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_quant_extended,access_quant_extended,stock.model_stock_quant,warehouse_restrictions_app_extension.group_warehouse_restrictions_extended,1,0,0,0

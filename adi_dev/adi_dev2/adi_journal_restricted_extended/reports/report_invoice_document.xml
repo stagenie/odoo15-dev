@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_document_inherit_custom" inherit_id="account.report_invoice_document">
+        <!-- Remplacer la section des informations de facture -->
+      <xpath expr="//div[@class='row mt32 mb32']" position="after">
+             <div class="row mt32 mb32">
+
+                     <div class="col-auto" t-if="o.purchase_order_number">
+                        <strong>N° Bon de Commande :</strong>
+                        <span t-field="o.purchase_order_number"/>
+                    </div>
+                    <div class="col-auto" t-if="o.contract_number">
+                        <strong>N° de Contrat :</strong>
+                        <span t-field="o.contract_number"/>
+                    </div>
+                    <div class="col-auto" t-if="o.delivery_note_number">
+                        <strong>BL N° :</strong>
+                        <span t-field="o.delivery_note_number"/>
+                    </div>
+                    <div class="col-auto"  t-if="o.invoice_object">
+                        <strong>Objet :</strong>
+                        <span t-field="o.invoice_object"/>
+                    </div>
+
+            </div>
+        </xpath>
+
+        
+    </template>
+</odoo>

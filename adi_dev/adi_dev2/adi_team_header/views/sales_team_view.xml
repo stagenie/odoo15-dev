@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sales_team_form_inherit" model="ir.ui.view">
+        <field name="name">crm.team.form.inherit</field>
+        <field name="model">crm.team</field>
+        <field name="inherit_id" ref="sales_team.crm_team_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="team_address"/>               
+                 <field name="team_description"/>    
+                <field name="rc"/>
+                <field name="nif"/>
+                <field name="ai"/>
+                <field name="nis"/>
+                <field name="email"/>
+                <field name="tel"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_company_form_inherit" model="ir.ui.view">
+        <field name="name">res.company.form.inherit</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <!-- Positionnement après le champ "name" -->
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="activity_description" 
+                       placeholder="Décrivez l'activité principale de votre société..."
+                       class="oe_inline"
+                       widget="textarea"
+                       options="{'rows': 4}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

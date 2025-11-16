@@ -1,0 +1,47 @@
+<odoo>
+    <!-- Menu principal -->
+     <!-- Action -->
+   
+    <record id="view_bom_form_kit_inherited" model="ir.ui.view">
+        <field name="name">mrp.bom.form.kit</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Masquer le champ 'type' -->
+            <xpath expr="//field[@name='type']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    
+ 
+
+    <record id="adi_action_pack_products" model="ir.actions.act_window">
+        <field name="name">Nomenclatures de type Kit</field>
+        <field name="res_model">mrp.bom</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type', '=', 'phantom')]</field>
+        <field name="context">{'default_type': 'phantom'}</field>
+    </record>
+
+    <!-- Vue liste et formulaire (optionnel si existantes) -->
+    <record id="view_mrp_bom_tree_kit" model="ir.ui.view">
+        <field name="name">mrp.bom.tree.kit</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    <menuitem
+    id="menu_pack_products" 
+        name="Pack Produits" 
+        sequence="10" 
+        action="adi_action_pack_products" 
+        web_icon="adi_pack_product_bom,static/description/icon.png" 
+    />
+
+   
+</odoo>

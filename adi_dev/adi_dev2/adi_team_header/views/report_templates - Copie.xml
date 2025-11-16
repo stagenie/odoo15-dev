@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="external_layout_custom_header" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[@name='company_address']" position="replace">
+            <!-- Vérification pour les devis/commandes -->
+            <t t-if="docs and docs[0]._name == 'sale.order'">
+                <t t-foreach="docs" t-as="doc">
+                    <div t-if="doc.team_id" style="display: inline-block;">
+                        <p>
+                            <span t-field="doc.team_id.team_address" t-if="doc.team_id.team_address"/><br/>
+                            <span t-field="doc.team_id.team_description" t-if="doc.team_id.team_description"/><br/>
+                            <span t-field="doc.team_id.rc" t-if="doc.team_id.rc"/><span>-</span>
+                            <span t-field="doc.team_id.ai" t-if="doc.team_id.ai"/><span>-</span>
+                            <span t-field="doc.team_id.nif" t-if="doc.team_id.nif"/><span>-</span>
+                            <span t-field="doc.team_id.nis" t-if="doc.team_id.nis"/><br/>
+                            <span t-field="doc.team_id.email" t-if="doc.team_id.email"/><br/>
+                            <span t-field="doc.team_id.tel" t-if="doc.team_id.tel"/>
+
+
+                        </p>
+                    </div>
+                </t>
+            </t>
+
+            <!-- Vérification pour les bons de livraison -->
+           <t t-if="docs and docs[0]._name == 'stock.picking'">
+    <t t-foreach="docs" t-as="o">
+        <div t-if="o.sale_id and o.sale_id.team_id" style="display: inline-block;">
+            <p>                
+                <span t-field="o.sale_id.team_id.team_address" t-if="o.sale_id.team_id.team_address"/><br/>
+                <span t-field="o.team_id.team_description" t-if="o.team_id.team_description"/><br/>
+                <span t-field="o.sale_id.team_id.rc" t-if="o.sale_id.team_id.rc"/><span>-</span>
+                <span t-field="o.sale_id.team_id.ai" t-if="o.sale_id.team_id.ai"/><span>-</span>
+                <span t-field="o.sale_id.team_id.nif" t-if="o.sale_id.team_id.nif"/><span>-</span>
+                <span t-field="o.sale_id.team_id.nis" t-if="o.sale_id.team_id.nis"/><br/>
+                <span t-field="o.sale_id.team_id.email" t-if="o.sale_id.team_id.email"/><br/>
+                <span t-field="o.sale_id.team_id.tel" t-if="o.sale_id.team_id.tel"/>
+            </p>
+        </div>
+        <div t-else="o.user_id" style="display: inline-block;">
+            <p>                
+               <span t-field="o.user_id.company_id.activity_description"/><br/>
+                <span t-field="o.user_id.company_id.street"/><br/>
+                <span>RC: </span><span t-field="o.user_id.company_id.rc"/><span>- </span>
+                <span>AI:</span><span t-field="o.user_id.company_id.ai"/><span>- </span>
+                <span>NIF:</span><span t-field="o.user_id.company_id.nif"/><span>- </span>
+                <span>NIS:</span><span t-field="o.user_id.company_id.nis"/><span></span> <br/>                          
+                <span t-field="o.user_id.company_id.email" t-if="o.user_id.company_id.email"/><br/>
+                <span t-field="o.user_id.company_id.phone" t-if="o.user_id.company_id.phone"/>
+            </p>
+        </div>
+    </t>
+</t>
+
+            <!-- Vérification pour les factures -->
+            <t t-if="docs and docs[0]._name == 'account.move'">
+                <t t-foreach="docs" t-as="o">
+                    <div t-if="o.team_id" style="display: inline-block;">
+                        
+                        <p>                         
+                            <span t-field="o.team_id.team_address" t-if="o.team_id.team_address"/><br/>
+                            <span t-field="o.team_id.team_description" t-if="o.team_id.team_description"/><br/>
+                          <span t-field="o.team_id.rc" t-if="o.team_id.rc"/><span>-</span>
+                            <span t-field="o.team_id.ai" t-if="o.team_id.ai"/><span>-</span>
+                           <span t-field="o.team_id.nif" t-if="o.team_id.nif"/><span>-</span>
+                              <span t-field="o.team_id.nis" t-if="o.team_id.nis"/> <br/>
+                            <span t-field="o.team_id.email" t-if="o.team_id.email"/><br/>
+                            <span t-field="o.team_id.tel" t-if="o.team_id.tel"/>
+                        </p>
+                    </div>
+                </t>
+            </t>
+
+             <!-- Cas par défaut : Afficher des informations générales -->
+            <t t-if="docs and docs[0]._name not in ['sale.order', 'stock.picking', 'account.move']">
+                <t t-foreach="docs" t-as="doc">
+                    <div style="display: inline-block;">
+                        
+                        <p>
+                            <span t-field="doc.company_id.activity_description"/><br/>
+                            <span t-field="doc.company_id.street"/><br/>
+                            <span>RC: </span><span t-field="doc.company_id.rc"/><span>- </span>
+                            <span>AI:</span><span t-field="doc.company_id.ai"/><span>- </span>
+                            <span>NIF:</span><span t-field="doc.company_id.nif"/><span>- </span>
+                            <span>NIS:</span><span t-field="doc.company_id.nis"/><span></span>                            
+                            <span t-field="doc.company_id.email" t-if="doc.company_id.email"/><br/>
+                            <span t-field="doc.company_id.phone" t-if="o.doc.company_id.phone"/>
+                            
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo>
+    <data noupdate='0'>
+        <record id='apm_e' model='account.payment.mode'>
+            <field name='type'>espece</field>
+            <field name='name'>Espèce</field>
+        </record>
+
+        <record id='apm_b' model='account.payment.mode'>
+            <field name='type'>banque</field>
+            <field name='name'>Banque</field>
+        </record>
+
+        <record id='apm_b2' model='account.payment.mode'>
+            <field name='type'>banque</field>
+            <field name='name'>Virement bancaire</field>
+        </record>
+
+        <record id='apm_b3' model='account.payment.mode'>
+            <field name='type'>banque</field>
+            <field name='name'>Versement bancaire</field>
+        </record>
+
+        <record id='apm_b4' model='account.payment.mode'>
+            <field name='type'>banque</field>
+            <field name='name'>Chèque</field>
+        </record>
+
+        <record id='apm_elect' model='account.payment.mode'>
+            <field name='type'>electronique</field>
+            <field name='name'>Paiement électronique</field>
+        </record>
+    </data>
+</odoo>

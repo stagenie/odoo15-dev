@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="report_layout_boxed_dz" model="report.layout">
+            <field name="name">DZ Report</field>
+            <field name="sequence">10</field>
+            <field name="view_id" ref="l10n_dz_reports.external_layout_boxed_dz"/>
+            <field name="image">/l10n_dz_reports/static/img/preview_boxed_dz.png</field>
+            <field name="pdf">/l10n_dz_reports/static/pdf/preview_boxed_dz.pdf</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<odoo>
+    <template id="report_saleorder_document_dz" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//t[@t-set='address']" position="replace">
+            <t t-set="address">
+                <div style="line-height: 1.5; font-size:14px;">
+                    <div>
+                        <strong><span t-field="doc.partner_id.name"/></strong>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <span t-field="doc.partner_id.street"/>
+                    </div>                    
+                   
+                    <!-- 
+                        <div style="padding-top:15px;">
+                        <span t-field="doc.partner_id.street2"/>
+                    </div>
+
+                        <div style="padding-top:15px;">
+                        <span t-field="doc.partner_id.zip"/> <span t-field="doc.partner_id.city"/> (<span t-esc="doc.partner_id.state_id.name"/>), <span t-field="doc.partner_id.country_id"/>
+                    </div>
+                    <div style="padding-top:15px;">
+                        <span t-if="doc.partner_id.phone"><strong>Tél :</strong> <span t-field="doc.partner_id.phone"/></span>
+                        <span t-if="doc.partner_id.mobile"><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><strong>Mobile :</strong> <span t-field="doc.partner_id.mobile"/></span>
+                    </div>
+                    -->                    
+                    
+                    <!-- 
+                        <div style="padding-top:15px;">
+                        <span t-if="doc.partner_id.fax"><strong>Fax :</strong> <span t-field="doc.partner_id.fax"/></span>
+                    </div>
+                    -->
+                    
+	            </div>
+
+                <div style="line-height: 1.5; padding-top:15px; font-size:12px;">
+	                <div>
+                        <span t-if="doc.partner_id.rc"><strong>N° RC :</strong> <span t-field="doc.partner_id.rc"/></span>
+	                    <span t-if="doc.partner_id.ai"><strong><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]>AI :</strong> <span t-field="doc.partner_id.ai"/></span>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <span t-if="doc.partner_id.nis"><strong>NIS :</strong>  <span t-field="doc.partner_id.nis" style="text-align:left"/></span>
+	                    <span t-if="doc.partner_id.nif"><strong><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]>NIF :</strong> <span t-field="doc.partner_id.nif" style="text-align:left"/></span>
+                    </div>
+	            </div>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[@class='clearfix']" position="inside">
+            <p class="col-xs-8 pull-left" name="montant_en_lettre" style="page-break-inside: always;">
+                <!-- 
+                    <div t-if="doc.delivery_date">
+                    <p>
+                        <strong>Date de livraison prévue :</strong>
+                        <span t-field="doc.delivery_date"/>
+                    </p>
+                </div>
+
+                -->
+                
+	            
+                <div>
+	                <strong>Arrêtée
+                    <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
+                        <span t-if="doc.state not in ['draft','sent']">le présent Bon de commande</span>
+                        <span t-if="doc.state in ['draft','sent']">le présent Devis</span>
+                    </t>
+                    <t t-if="env.context.get('proforma', False) or is_pro_forma">
+                        <span>la présente Proforma</span>
+                    </t>
+                    à la somme de :</strong>
+	                <p t-esc="doc.get_amount_to_text_dz()"/>
+	            </div>
+	        </p>
+            <br/>
+        </xpath>
+    </template>
+</odoo>

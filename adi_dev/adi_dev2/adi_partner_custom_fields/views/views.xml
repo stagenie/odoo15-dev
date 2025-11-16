@@ -1,0 +1,29 @@
+<odoo>
+    <record id="view_partner_form_custom" model="ir.ui.view">
+        <field name="name">res.partner.form.custom</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter les champs dans le formulaire -->
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="point_de_vente"/>
+                <field name="forme_juridique"/>
+                <field name="date_creation"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_tree_custom" model="ir.ui.view">
+        <field name="name">res.partner.tree.custom</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter les champs dans la vue Liste (masqués par défaut) -->
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="point_de_vente" optional="hide"/>
+                <field name="forme_juridique" optional="hide"/>
+                <field name="date_creation" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

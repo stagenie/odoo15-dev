@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_customer_form_inherit_due" model="ir.ui.view">
+            <field name="name">Montant Du</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Overdue/Balance">
+                        <group>
+                            <field name="invoice_ids" nolabel="1">
+                                <tree create="false">
+                                    <field name="name"/>
+                                    <field name="invoice_origin" optional="show" string="Document Source"/>
+                                    <field name="payment_reference" optional="hide"/>
+                                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" optional="show"/>
+                                    <field name="invoice_date"/>
+                                    <field name="invoice_date_due"/>
+                                    <field name="amount_untaxed_signed" string="Tax exclus" sum="Total" optional="show"/>
+                                    <field name="amount_tax_signed" string="Tax" sum="Total" optional="hide"/>
+                                    <field name="amount_total_signed" string="Total" sum="Total" optional="show"/>
+                                    <field name="amount_residual_signed" string="Montant Du" sum="Montant Du" optional="show"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="company_currency_id" invisible="1"/>
+                                    <field name="state" optional="show"/>
+                                    <field name="payment_state" optional="hide"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="overdue_amount"/>
+                                <field name="balance_due"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

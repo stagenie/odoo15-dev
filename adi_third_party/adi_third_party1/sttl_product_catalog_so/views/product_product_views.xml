@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_product_view_kanban" model="ir.ui.view">
+        <field name="name">product.product.view.kanban</field>
+        <field name="model">product.product</field>
+        <field name="arch" type="xml">
+            <kanban edit="0" create="0" class="o_kanban_mobile o_cart_kanban">
+                <field name="id" />
+                <field name="name" />
+                <field name="product_template_attribute_value_ids" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="o_product_quantity d-flex flex-column justify-content-between"
+                            style="min-height: 100px">
+                            <div class="o_kanban_image">
+                                <img
+                                    t-att-src="kanban_image('product.product', 'image_128', record.id.raw_value)"
+                                    alt="Product" class="o_image_64_contain" />
+                            </div>
+                            <div class="oe_kanban_details p-2 d-flex">
+                                <div class="o_kanban_record_top flex-column w-100 "
+                                    style="justify-content: space-between;">
+                                    <div class="o_kanban_record_title">
+                                        <strong>
+                                            <field name="name" />
+                                        </strong>
+                                    </div>
+                                    <div class="o_kanban_tags_section">
+                                        <field name="product_template_attribute_value_ids"
+                                            groups="product.group_product_variant" />
+                                    </div>
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <ul>
+                                            <li>
+                                                <strong>Price: <field name="lst_price"
+                                                        widget="monetary"
+                                                        options="{'currency_field': 'currency_id'}"></field>
+                                                </strong>
+                                            </li>
+                                            <field name="currency_id" invisible="1" />
+                                            <div>
+                                                <span>On Hand: </span>
+                                                <field name="qty_available" />
+                                                <field name="uom_id" class="ms-1"
+                                                    groups="uom.group_uom" />
+                                            </div>
+                                        </ul>
+                                    </div>
+                                    <div name="_quantity"
+                                        class="h-100 ml-2 d-flex align-items-center o_product_quantity o_field_widget o_quick_editable"
+                                        style="z-index:1;align-items: center;">
+                                        <button id="remove_quantity"
+                                            class="btn d-flex align-items-center justify-content-center o_qty_button btn-light text-muted"
+                                            type="object" name="remove_quantity_button_so">
+                                            <i class="fa fa-minus center" title="Decrease" />
+                                        </button>
+                                        <span style="font-size:1.5rem;"
+                                            t-attf-class="{{record.id.value}}"
+                                            onclick="change_input_so(this)">
+                                            <field name="_quantity"></field>
+                                        </span>
+                                        <button id="add_quantity"
+                                            class="btn d-flex align-items-center justify-content-center o_qty_button btn-light text-muted"
+                                            type="object" name="add_quantity_button_so">
+                                            <i class="fa fa-plus" title="Increase" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+</odoo>

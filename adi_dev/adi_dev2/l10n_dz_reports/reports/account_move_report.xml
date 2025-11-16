@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<odoo>
+    <template id="report_invoice_document_dz" inherit_id="account.report_invoice_document">
+        <!-- Enlever le montant en lettre par défaut-->
+        <xpath expr="//div[@style='margin-top:30px; margin-bottom:20px;']" position="replace"/>
+        <!-- Enlever merci d'utiliser cette information comme moyen de communication-->
+        <xpath expr="//p[@name='payment_communication']" position="replace"/>
+
+        <xpath expr="//t[@t-set='address']" position="replace">
+            <t t-set="address">
+               <div style="line-height: 1.5; font-size:14px;">
+                    <div>
+                        <strong><span t-field="o.partner_id.name"/></strong>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <span t-field="o.partner_id.street"/>
+                    </div>                    
+                   
+                    <!-- 
+                        <div style="padding-top:15px;">
+                        <span t-field="doc.partner_id.street2"/>
+                    </div>
+
+                        <div style="padding-top:15px;">
+                        <span t-field="doc.partner_id.zip"/> <span t-field="doc.partner_id.city"/> (<span t-esc="doc.partner_id.state_id.name"/>), <span t-field="doc.partner_id.country_id"/>
+                    </div>
+                    <div style="padding-top:15px;">
+                        <span t-if="doc.partner_id.phone"><strong>Tél :</strong> <span t-field="doc.partner_id.phone"/></span>
+                        <span t-if="doc.partner_id.mobile"><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><strong>Mobile :</strong> <span t-field="doc.partner_id.mobile"/></span>
+                    </div>
+                    -->                    
+                    
+                    <!-- 
+                        <div style="padding-top:15px;">
+                        <span t-if="doc.partner_id.fax"><strong>Fax :</strong> <span t-field="doc.partner_id.fax"/></span>
+                    </div>
+                    -->
+                    
+                </div>
+
+                <div style="line-height: 1.5; padding-top:15px; font-size:12px;">
+                    <div>
+                        <span t-if="o.partner_id.rc"><strong>N° RC :</strong> <span t-field="o.partner_id.rc"/></span>
+                        <span t-if="o.partner_id.ai"><strong><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]>AI :</strong> <span t-field="o.partner_id.ai"/></span>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <span t-if="o.partner_id.nis"><strong>NIS :</strong>  <span t-field="o.partner_id.nis" style="text-align:left"/></span>
+                        <span t-if="o.partner_id.nif"><strong><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]>NIF :</strong> <span t-field="o.partner_id.nif" style="text-align:left"/></span>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[@class='clearfix']" position="inside">
+            <p class="col-xs-8 pull-left" name="montant_en_lettre" style="page-break-inside: always;">
+                 
+	            <div>
+	                <strong>Arrêtée la présente
+                    <t t-if="o.state != 'draft'">Facture</t>
+                    <t t-if="o.state == 'draft'">Proforma</t>
+                    à la somme de :</strong>
+                    <p t-esc="o.get_amount_to_text_dz()"/>
+	            </div>
+	        </p>
+        </xpath>
+    </template>
+</odoo>

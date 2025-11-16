@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_account_group_scf_search" model="ir.ui.view">
+            <field name="name">account.group.scf.view.search</field>
+            <field name="model">account.group</field>
+            <field name="inherit_id" ref="account.view_account_group_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <searchpanel class="account_root">
+                        <field name="root_id" icon="fa-filter" limit="0"/>
+                    </searchpanel>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_group_scf_tree" model="ir.ui.view">
+            <field name="name">account.group.scf.view.form</field>
+            <field name="model">account.group</field>
+            <field name="inherit_id" ref="account.view_account_group_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="replace">
+                    <tree string="Account Group"
+                        decoration-warning="code_prefix_start == '!'"
+                        decoration-info="code_prefix_start in ['!0-8-9','!1-5','!6-7']"
+                        decoration-success="code_prefix_start in ['0','1','2','3','4','5','6','7','8','9']">
+                        <field name="code_prefix_start" string="Code"/>
+                        <field name="code_prefix_end" invisible="1"/>
+                        <field name="name"/>
+                        <field name="debit"/>
+                        <field name="credit"/>
+                        <field name="solde"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </tree>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_group_scf_form" model="ir.ui.view">
+            <field name="name">account.group.scf.view.form</field>
+            <field name="model">account.group</field>
+            <field name="inherit_id" ref="account.view_account_group_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="replace">
+                    <form>
+                        <sheet>
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="code_prefix_start"/>
+                                    <field name="code_prefix_end" invisible="1"/>
+                                    <field name="parent_id"/>
+                                </group>
+                                <group>
+                                    <field name="debit"/>
+                                    <field name="credit"/>
+                                    <field name="solde"/>
+                                </group>
+                            </group>
+
+                            <notebook>
+                                <page string="Comptes liés">
+                                    <field name="account_ids">
+                                        <tree>
+                                            <field name="code"/>
+                                            <field name="name"/>
+                                            <field name="debit"/>
+                                            <field name="credit"/>
+                                            <field name="solde"/>
+                                        </tree>
+                                    </field>
+                                </page>
+
+                                <page string="Groupes liés">
+                                    <field name="group_ids">
+                                        <tree>
+                                            <field name="code_prefix_start" string="Code"/>
+                                            <field name="code_prefix_end" invisible="1"/>
+                                            <field name="name"/>
+                                            <field name="debit"/>
+                                            <field name="credit"/>
+                                            <field name="solde"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                            </notebook>
+                        </sheet>
+                    </form>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_account_group_scf" model="ir.actions.act_window">
+            <field name="name">Classes/Chapitres</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.group</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_account_group_scf"
+            name="Classes / Chapitres"
+            action="dns_l10n_dz_scf.action_account_group_scf"
+            parent="account.account_account_menu"
+            sequence="0"/>
+    </data>
+</odoo>

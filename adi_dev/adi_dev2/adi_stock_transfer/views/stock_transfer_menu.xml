@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu principal -->
+    <menuitem id="menu_stock_transfer_root"
+              name="Transferts Inter-Dépôts"
+              sequence="5"
+              web_icon="adi_stock_transfer,static/description/transfer.png"/>
+    
+    <!-- Sous-menu Opérations -->
+    <menuitem id="menu_stock_transfer_operations"
+              name="Opérations"
+              parent="menu_stock_transfer_root"
+              sequence="10"/>
+    
+    <!-- Menu Transferts -->
+    <menuitem id="menu_stock_transfer"
+              name="Transferts de Stock"
+              parent="menu_stock_transfer_operations"
+              action="action_stock_transfer"
+              sequence="10"/>
+    
+    <!-- Menu Configuration -->
+    <menuitem id="menu_stock_transfer_config"
+              name="Configuration"
+              parent="menu_stock_transfer_root"
+              sequence="100"
+              groups="base.group_system"/>
+</odoo>

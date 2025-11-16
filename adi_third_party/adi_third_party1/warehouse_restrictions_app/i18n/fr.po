@@ -1,0 +1,71 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* warehouse_restrictions_app
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-26 10:12+0000\n"
+"PO-Revision-Date: 2022-09-26 10:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: warehouse_restrictions_app
+#: model:ir.model.fields,field_description:warehouse_restrictions_app.field_res_users__available_location_ids
+msgid "Allowed Locations"
+msgstr "Emplacements autorisés"
+
+#. module: warehouse_restrictions_app
+#: model:ir.model.fields,field_description:warehouse_restrictions_app.field_res_users__available_warehouse_ids
+msgid "Allowed Warehouse"
+msgstr "Entrepôt autorisé"
+
+#. module: warehouse_restrictions_app
+#: model:ir.model.fields,field_description:warehouse_restrictions_app.field_res_users__restrict_location
+msgid "Restrict Location"
+msgstr "Restreindre l'emplacement"
+
+#. module: warehouse_restrictions_app
+#: model:ir.model.fields,field_description:warehouse_restrictions_app.field_res_users__restrict_warehouse_operation
+msgid "Restrict Operation"
+msgstr "Restreindre l'opération"
+
+#. module: warehouse_restrictions_app
+#: model:ir.model.fields,field_description:warehouse_restrictions_app.field_res_users__restrict_stock_warehouse_operation
+msgid "Restrict Stock Warehouse"
+msgstr "Restreindre Stock Entrepôt"
+
+#. module: warehouse_restrictions_app
+#: model:res.groups,name:warehouse_restrictions_app.group_restrict_stock_warehouse
+msgid "Restrict Stock Warehouse Operations / Locations "
+msgstr "Restreindre les opérations / emplacements des entrepôts de stockage"
+
+#. module: warehouse_restrictions_app
+#: model_terms:ir.ui.view,arch_db:warehouse_restrictions_app.view_users_form_mail
+msgid "Stock Warehouse Operation Restrictions"
+msgstr "Restrictions d'exploitation de l'entrepôt de stockage"
+
+#. module: warehouse_restrictions_app
+#: model:ir.model,name:warehouse_restrictions_app.model_res_users
+msgid "Users"
+msgstr "Utilisateurs"
+
+#. module: warehouse_restrictions_app
+#: model_terms:ir.ui.view,arch_db:warehouse_restrictions_app.view_users_form_mail
+msgid "Warehouse Location Restrictions"
+msgstr "Restrictions relatives à l'emplacement de l'entrepôt"
+
+#. module: warehouse_restrictions_app
+#: model:ir.model.fields,field_description:warehouse_restrictions_app.field_res_users__picking_type_ids
+msgid "Warehouse Operation"
+msgstr "Opération d'entrepôt"
+
+#. module: warehouse_restrictions_app
+#: model_terms:ir.ui.view,arch_db:warehouse_restrictions_app.view_users_form_mail
+msgid "Warehouse Operation Restrictions"
+msgstr "Restrictions d'exploitation de l'entrepôt"

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_dz_tag_salaires" model="account.account.tag">
+        <field name="name">Salaires</field>
+        <field name="applicability">accounts</field>
+    </record>
+
+    <record id="account_dz_tag_charges_sociales" model="account.account.tag">
+        <field name="name">Charges Sociales</field>
+        <field name="applicability">accounts</field>
+    </record>
+
+    <record id="l10n_dz_scf_pcg_chart_template" model="account.chart.template">
+        <field name="property_account_receivable_id" ref="pcg_411000"/>
+        <field name="property_account_payable_id" ref="pcg_401000"/>
+        <field name="property_account_expense_categ_id" ref="pcg_600100"/>
+        <field name="property_account_income_categ_id" ref="pcg_700100"/>
+
+        <field name="income_currency_exchange_account_id" ref="pcg_766000"/>
+        <field name="expense_currency_exchange_account_id" ref="pcg_666000"/>
+
+        <field name="currency_id" ref="base.DZD"/>
+    </record>
+</odoo>

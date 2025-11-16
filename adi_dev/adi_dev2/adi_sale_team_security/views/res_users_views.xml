@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_inherit_sale_team_access" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.sale.team.access</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+             <xpath expr="//field[@name='tz']" position="after">
+                <field name="sale_team_access"/>
+                <field name="sale_team_ids" 
+                       attrs="{'invisible': [('sale_team_access', '!=', 'team')],
+                              'required': [('sale_team_access', '=', 'team')]}"
+                       widget="many2many_tags"/>
+            </xpath>
+        </field>        
+    </record>
+
+    <record id="view_order_form_inherit_team" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.team</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Remplacer le champ user_id existant -->
+            <xpath expr="//field[@name='user_id']" position="replace">
+                <field name="user_id" 
+                       readonly="1"
+                       groups="sales_team.group_sale_salesman"/>
+                <field name="user_id" 
+                       groups="sales_team.group_sale_manager"/>
+            </xpath>
+
+            <!-- Remplacer le champ team_id existant -->
+            <xpath expr="//field[@name='team_id']" position="replace">
+                <field name="team_id" 
+                       options="{'no_create': True}"
+                       readonly="1"
+                       groups="sales_team.group_sale_salesman"/>
+                <field name="team_id" 
+                       options="{'no_create': True}"
+                       groups="sales_team.group_sale_manager"/>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

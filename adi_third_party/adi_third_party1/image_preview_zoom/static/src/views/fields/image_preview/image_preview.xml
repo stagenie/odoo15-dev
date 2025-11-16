@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="image_preview_zoom.AttachmentViewer" owl="1">
+        <div class="o_Dialog modal o_DialogManager_dialog">
+            <div class="o_AttachmentViewer" t-on-click="_onClick" t-on-keydown="_onKeydown" tabindex="0">
+                <t t-if="attachmentViewer">
+                    <div class="o_AttachmentViewer_header" t-on-click="_onClickHeader">
+                        <div class="o_AttachmentViewer_headerItem o_AttachmentViewer_icon">
+                            <i class="fa fa-picture-o" role="img" title="Image"/>
+                        </div>
+                        <div class="o_AttachmentViewer_headerItem o_AttachmentViewer_name">
+                            <span class="o_AttachmentViewer_nameText text-truncate" t-esc="attachmentViewer.displayName"/>
+                        </div>
+                        <div class="o-autogrow"/>
+                        <div class="o_AttachmentViewer_buttonDownload o_AttachmentViewer_headerItem o_AttachmentViewer_headerItemButton"
+                             t-on-click="_onClickDownload" role="button" title="Download">
+                            <span>Download</span>
+                        </div>
+                        <div class="o_AttachmentViewer_headerItem o_AttachmentViewer_headerItemButton o_AttachmentViewer_headerItemButtonClose"
+                             t-on-click="_onClickClose" role="button" title="Close (Esc)" aria-label="Close">
+                            <i class="fa fa-fw fa-times" role="img"/>
+                        </div>
+                    </div>
+                    <div class="o_AttachmentViewer_main o_with_img" t-on-mousemove="_onMousemoveView">
+                        <div class="o_AttachmentViewer_zoomer" t-ref="zoomer">
+                            <img class="o_AttachmentViewer_view o_AttachmentViewer_viewImage" t-on-click="_onClickImage"
+                                 t-on-mousedown="_onMousedownImage" t-on-wheel="_onWheelImage" t-on-load="_onLoadImage"
+                                 t-att-src="attachmentViewer.imageUrl" t-att-style="state.imageStyle" draggable="false"
+                                 alt="Viewer" t-ref="image"/>
+                        </div>
+                    </div>
+                    <div class="o_AttachmentViewer_toolbar" role="toolbar">
+                    <div class="o_AttachmentViewer_toolbarButton" t-on-click="_onClickZoomIn" title="Zoom In (+)"
+                         role="button">
+                        <i class="fa fa-fw fa-plus" role="img"/>
+                    </div>
+                    <div class="o_AttachmentViewer_toolbarButton"
+                         t-att-class="{ o_disabled: attachmentViewer.scale === 1 }" t-on-click="_onClickZoomReset"
+                         role="button" title="Reset Zoom (0)">
+                            <i class="fa fa-fw fa-search" role="img"/>
+                        </div>
+                    <div class="o_AttachmentViewer_toolbarButton"
+                         t-att-class="{ o_disabled: attachmentViewer.scale === MIN_SCALE }" t-on-click="_onClickZoomOut"
+                         title="Zoom Out (-)" role="button">
+                            <i class="fa fa-fw fa-minus" role="img"/>
+                        </div>
+                    <div class="o_AttachmentViewer_toolbarButton" t-on-click="_onClickRotate" title="Rotate (r)"
+                         role="button">
+                            <i class="fa fa-fw fa-repeat" role="img"/>
+                        </div>
+                    <div class="o_AttachmentViewer_toolbarButton" t-on-click="_onClickPrint" title="Print"
+                         role="button">
+                            <i class="fa fa-fw fa-print" role="img"/>
+                        </div>
+                    <div class="o_AttachmentViewer_buttonDownload o_AttachmentViewer_toolbarButton"
+                         t-on-click="_onClickDownload" title="Download" role="button">
+                            <i class="fa fa-download fa-fw" role="img"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

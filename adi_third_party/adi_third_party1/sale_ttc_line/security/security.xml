@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Catégorie de groupes -->
+    <record id="module_category_stock_transfer" model="ir.module.category">
+        <field name="name">Gestion des Transferts de Stock</field>
+        <field name="description">Gestion des transferts inter-dépôts</field>
+        <field name="sequence">20</field>
+    </record>
+    
+    <!-- Groupe Demandeur -->
+    <record id="group_stock_transfer_requester" model="res.groups">
+        <field name="name">Demandeur de Transfert</field>
+        <field name="category_id" ref="module_category_stock_transfer"/>
+        <field name="implied_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+    </record>
+    
+    <!-- Groupe Validateur -->
+    <record id="group_stock_transfer_validator" model="res.groups">
+        <field name="name">Validateur de Transfert</field>
+        <field name="category_id" ref="module_category_stock_transfer"/>
+        <field name="implied_ids" eval="[(4, ref('group_stock_transfer_requester'))]"/>
+    </record>
+    
+    <!-- Groupe Manager -->
+    <record id="group_stock_transfer_manager" model="res.groups">
+        <field name="name">Manager de Transfert</field>
+        <field name="category_id" ref="module_category_stock_transfer"/>
+        <field name="implied_ids" eval="[(4, ref('group_stock_transfer_validator'))]"/>
+    </record>
+    
+    <!-- Règles d'accès spéciales pour les emplacements -->
+    <record id="rule_stock_location_requester" model="ir.rule">
+        <field name="name">Accès complet aux emplacements pour demandeurs (dans le formulaire)</field>
+        <field name="model_id" ref="stock.model_stock_location"/>
+        <field name="groups" eval="[(4, ref('group_stock_transfer_requester'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- Règles pour les transferts -->
+    <record id="rule_stock_transfer_requester" model="ir.rule">
+        <field name="name">Demandeur: Voir ses propres demandes</field>
+        <field name="model_id" ref="model_adi_stock_transfer"/>
+        <field name="groups" eval="[(4, ref('group_stock_transfer_requester'))]"/>
+        <field name="domain_force">[('requester_id', '=', user.id)]</field>
+    </record>
+    
+    <record id="rule_stock_transfer_validator" model="ir.rule">
+        <field name="name">Validateur: Voir toutes les demandes</field>
+        <field name="model_id" ref="model_adi_stock_transfer"/>
+        <field name="groups" eval="[(4, ref('group_stock_transfer_validator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

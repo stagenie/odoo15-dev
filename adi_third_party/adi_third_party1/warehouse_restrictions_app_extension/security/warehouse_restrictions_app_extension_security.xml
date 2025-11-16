@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="group_warehouse_restrictions_extended" model="res.groups">
+            <field name="name">Extended Warehouse Access</field>
+            <field name="category_id" ref="base.module_category_inventory"/>
+        </record>
+
+        <record id="rule_stock_quant_read_all_locations" model="ir.rule">
+            <field name="name">Read All Stock Quants (No Write)</field>
+            <field name="model_id" ref="stock.model_stock_quant"/>
+            <field name="global">False</field>
+            <field name="domain_force">[]</field>
+            <field name="perm_read">True</field>
+            <field name="perm_write">False</field>
+            <field name="perm_create">False</field>
+            <field name="perm_unlink">False</field>
+            <field name="groups" eval="[(4, ref('warehouse_restrictions_app_extension.group_warehouse_restrictions_extended'))]"/>
+        </record>
+    </data>
+</odoo>
