@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Séquence pour les dépenses de caisse -->
+        <record id="sequence_cash_expense" model="ir.sequence">
+            <field name="name">Dépense de Caisse</field>
+            <field name="code">cash.expense</field>
+            <field name="prefix">DEP/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Catégories d'opérations de trésorerie -->
+
+        <!-- Catégorie pour les remboursements -->
+        <record id="category_reimbursement" model="treasury.operation.category">
+            <field name="name">Remboursement employé</field>
+            <field name="code">REMB</field>
+            <field name="operation_type">out</field>
+            <field name="description">Remboursement de frais à un employé</field>
+        </record>
+
+        <!-- Catégorie pour les avances -->
+        <record id="category_advance" model="treasury.operation.category">
+            <field name="name">Avance employé</field>
+            <field name="code">AVANC</field>
+            <field name="operation_type">out</field>
+            <field name="description">Avance de caisse à un employé</field>
+        </record>
+
+        <!-- Catégorie pour les retours d'avance -->
+        <record id="category_advance_return" model="treasury.operation.category">
+            <field name="name">Retour d'avance</field>
+            <field name="code">RETAV</field>
+            <field name="operation_type">in</field>
+            <field name="description">Retour d'argent d'une avance non utilisée</field>
+        </record>
+
+        <!-- Catégorie pour les paiements supplémentaires -->
+        <record id="category_additional_payment" model="treasury.operation.category">
+            <field name="name">Paiement supplémentaire</field>
+            <field name="code">SUPPL</field>
+            <field name="operation_type">out</field>
+            <field name="description">Paiement supplémentaire pour une avance dépassée</field>
+        </record>
+    </data>
+</odoo>
