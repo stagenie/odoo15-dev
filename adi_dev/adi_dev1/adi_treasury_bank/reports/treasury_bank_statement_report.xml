@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Rapport de relevé bancaire -->
+    <record id="action_report_bank_statement" model="ir.actions.report">
+        <field name="name">Relevé de Compte Bancaire</field>
+        <field name="model">treasury.bank</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_treasury_bank.report_bank_statement_document</field>
+        <field name="report_file">adi_treasury_bank.report_bank_statement_document</field>
+        <field name="binding_model_id" ref="model_treasury_bank"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Template QWeb -->
+    <template id="report_bank_statement_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- En-tête -->
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <h2>RELEVÉ DE COMPTE BANCAIRE</h2>
+                            </div>
+                        </div>
+
+                        <!-- Informations du compte -->
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <strong>Compte :</strong> <span t-field="o.name"/><br/>
+                                <strong>Code :</strong> <span t-field="o.code"/><br/>
+                                <strong>Banque :</strong> <span t-field="o.bank_name"/><br/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Numéro :</strong> <span t-field="o.account_number"/><br/>
+                                <strong>IBAN :</strong> <span t-field="o.iban"/><br/>
+                                <strong>Date :</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/><br/>
+                            </div>
+                        </div>
+
+                        <!-- Soldes -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <table class="table table-sm table-bordered">
+                                    <tr class="table-active">
+                                        <td><strong>Solde actuel (comptable)</strong></td>
+                                        <td class="text-right">
+                                            <strong>
+                                                <span t-field="o.current_balance" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Solde disponible</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="o.available_balance" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Découvert autorisé</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="o.overdraft_limit" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Liste des opérations récentes -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h4>Dernières opérations</h4>
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr class="table-active">
+                                            <th>Date</th>
+                                            <th>Référence</th>
+                                            <th>Catégorie</th>
+                                            <th>Partenaire</th>
+                                            <th>Description</th>
+                                            <th>Méthode</th>
+                                            <th class="text-right">Entrées</th>
+                                            <th class="text-right">Sorties</th>
+                                            <th class="text-center">État</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="operations" t-value="o.operation_ids.filtered(lambda x: x.state in ['posted', 'reconciled']).sorted(key=lambda x: x.date, reverse=True)[:50]"/>
+                                        <t t-foreach="operations" t-as="op">
+                                            <tr>
+                                                <td><span t-field="op.date" t-options="{'widget': 'date'}"/></td>
+                                                <td><span t-field="op.name"/></td>
+                                                <td><span t-field="op.category_id.name"/></td>
+                                                <td><span t-field="op.partner_id.name"/></td>
+                                                <td><span t-field="op.description"/></td>
+                                                <td><span t-field="op.payment_method"/></td>
+                                                <td class="text-right text-success">
+                                                    <span t-if="op.operation_type == 'in'" t-field="op.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                                <td class="text-right text-danger">
+                                                    <span t-if="op.operation_type == 'out'" t-field="op.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-if="op.is_reconciled" class="badge badge-success">Rapproché</span>
+                                                    <span t-else="" class="badge badge-warning">Non rapproché</span>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                                <p class="text-muted"><em>Affichage des 50 dernières opérations</em></p>
+                            </div>
+                        </div>
+
+                        <!-- Informations complémentaires -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <p>
+                                    <strong>Nombre total d'opérations :</strong> <span t-esc="o.operation_count"/><br/>
+                                    <strong>Dernière clôture :</strong> <span t-field="o.last_closing_date"/>
+                                    (<span t-field="o.last_closing_balance" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Séquences pour les opérations bancaires -->
+        <record id="seq_treasury_bank_operation" model="ir.sequence">
+            <field name="name">Opération Bancaire</field>
+            <field name="code">treasury.bank.operation</field>
+            <field name="prefix">OPB/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Séquences pour les rapprochements bancaires -->
+        <record id="seq_treasury_bank_closing" model="ir.sequence">
+            <field name="name">Rapprochement Bancaire</field>
+            <field name="code">treasury.bank.closing</field>
+            <field name="prefix">RAP/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Catégories d'opérations bancaires -->
+
+        <!-- Entrées bancaires -->
+        <record id="category_bank_customer_in" model="treasury.operation.category">
+            <field name="name">Encaissement Client (Banque)</field>
+            <field name="code">BANK_CUSTOMER_IN</field>
+            <field name="operation_type">in</field>
+            <field name="is_customer_payment" eval="True"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="category_bank_transfer_in" model="treasury.operation.category">
+            <field name="name">Virement Entrant</field>
+            <field name="code">BANK_TRANSFER_IN</field>
+            <field name="operation_type">in</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="category_bank_interest_in" model="treasury.operation.category">
+            <field name="name">Intérêts Créditeurs</field>
+            <field name="code">BANK_INTEREST_IN</field>
+            <field name="operation_type">in</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="category_bank_refund_supplier" model="treasury.operation.category">
+            <field name="name">Remboursement Fournisseur (Banque)</field>
+            <field name="code">BANK_REFUND_SUPPLIER</field>
+            <field name="operation_type">in</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="category_bank_deposit" model="treasury.operation.category">
+            <field name="name">Dépôt Espèces</field>
+            <field name="code">BANK_DEPOSIT</field>
+            <field name="operation_type">in</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- Sorties bancaires -->
+        <record id="category_bank_supplier_out" model="treasury.operation.category">
+            <field name="name">Paiement Fournisseur (Banque)</field>
+            <field name="code">BANK_SUPPLIER_OUT</field>
+            <field name="operation_type">out</field>
+            <field name="is_vendor_payment" eval="True"/>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="category_bank_transfer_out" model="treasury.operation.category">
+            <field name="name">Virement Sortant</field>
+            <field name="code">BANK_TRANSFER_OUT</field>
+            <field name="operation_type">out</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <record id="category_bank_check_out" model="treasury.operation.category">
+            <field name="name">Paiement par Chèque</field>
+            <field name="code">BANK_CHECK_OUT</field>
+            <field name="operation_type">out</field>
+            <field name="sequence">80</field>
+        </record>
+
+        <record id="category_bank_fees" model="treasury.operation.category">
+            <field name="name">Frais Bancaires</field>
+            <field name="code">BANK_FEES</field>
+            <field name="operation_type">out</field>
+            <field name="sequence">90</field>
+        </record>
+
+        <record id="category_bank_interest_out" model="treasury.operation.category">
+            <field name="name">Intérêts Débiteurs / Agios</field>
+            <field name="code">BANK_INTEREST_OUT</field>
+            <field name="operation_type">out</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <record id="category_bank_direct_debit" model="treasury.operation.category">
+            <field name="name">Prélèvement Automatique</field>
+            <field name="code">BANK_DIRECT_DEBIT</field>
+            <field name="operation_type">out</field>
+            <field name="sequence">110</field>
+        </record>
+
+        <record id="category_bank_withdrawal" model="treasury.operation.category">
+            <field name="name">Retrait Espèces</field>
+            <field name="code">BANK_WITHDRAWAL</field>
+            <field name="operation_type">out</field>
+            <field name="sequence">120</field>
+        </record>
+
+        <record id="category_bank_refund_customer" model="treasury.operation.category">
+            <field name="name">Remboursement Client (Banque)</field>
+            <field name="code">BANK_REFUND_CUSTOMER</field>
+            <field name="operation_type">out</field>
+            <field name="sequence">130</field>
+        </record>
+
+        <!-- Catégories mixtes -->
+        <record id="category_bank_ajust" model="treasury.operation.category">
+            <field name="name">Ajustement Bancaire</field>
+            <field name="code">BANK_AJUST</field>
+            <field name="operation_type">both</field>
+            <field name="sequence">140</field>
+        </record>
+
+        <record id="category_bank_card" model="treasury.operation.category">
+            <field name="name">Paiement Carte Bancaire</field>
+            <field name="code">BANK_CARD</field>
+            <field name="operation_type">both</field>
+            <field name="sequence">150</field>
+        </record>
+
+        <record id="category_bank_other" model="treasury.operation.category">
+            <field name="name">Autre Opération Bancaire</field>
+            <field name="code">BANK_OTHER</field>
+            <field name="operation_type">both</field>
+            <field name="sequence">999</field>
+        </record>
+
+    </data>
+</odoo>

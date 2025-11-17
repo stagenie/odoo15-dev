@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire du rapprochement bancaire -->
+    <record id="view_treasury_bank_closing_form" model="ir.ui.view">
+        <field name="name">treasury.bank.closing.form</field>
+        <field name="model">treasury.bank.closing</field>
+        <field name="arch" type="xml">
+            <form string="Rapprochement Bancaire">
+                <header>
+                    <button name="action_load_operations" string="Charger opérations" type="object"
+                            states="draft" class="oe_highlight"/>
+                    <button name="action_confirm" string="Confirmer" type="object"
+                            states="draft" class="oe_highlight"/>
+                    <button name="action_validate" string="Valider" type="object"
+                            states="confirmed" class="oe_highlight"/>
+                    <button name="action_back_to_draft" string="Retour brouillon" type="object"
+                            states="confirmed,validated"/>
+                    <button name="action_cancel" string="Annuler" type="object"
+                            states="draft,confirmed" confirm="Êtes-vous sûr de vouloir annuler ce rapprochement ?"/>
+                    <button name="action_print_report" string="Imprimer" type="object"
+                            states="validated" icon="fa-print"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Informations Générales">
+                            <field name="bank_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="closing_date"/>
+                            <field name="period_start"/>
+                            <field name="period_end" invisible="1"/>
+                        </group>
+                        <group string="Statistiques">
+                            <field name="reconciled_count"/>
+                            <field name="unreconciled_count"/>
+                            <field name="reconciliation_rate" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Soldes">
+                            <field name="balance_start" widget="monetary"/>
+                            <field name="total_in" widget="monetary"/>
+                            <field name="total_out" widget="monetary"/>
+                            <field name="balance_end_theoretical" widget="monetary"/>
+                        </group>
+                        <group string="Rapprochement">
+                            <field name="balance_end_bank" widget="monetary"/>
+                            <field name="difference" widget="monetary"/>
+                            <field name="adjustment_operation_id" attrs="{'invisible': [('adjustment_operation_id', '=', False)]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lignes de détail">
+                            <field name="line_ids" readonly="1">
+                                <tree>
+                                    <field name="sequence" invisible="1"/>
+                                    <field name="date"/>
+                                    <field name="reference"/>
+                                    <field name="category_id"/>
+                                    <field name="partner_id"/>
+                                    <field name="description"/>
+                                    <field name="amount_in" sum="Total entrées"/>
+                                    <field name="amount_out" sum="Total sorties"/>
+                                    <field name="cumulative_balance" sum="Solde"/>
+                                    <field name="is_reconciled" widget="boolean_toggle"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Opérations">
+                            <field name="operation_ids">
+                                <tree decoration-success="is_reconciled==True">
+                                    <field name="date"/>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                    <field name="partner_id"/>
+                                    <field name="payment_method"/>
+                                    <field name="operation_type"/>
+                                    <field name="amount"/>
+                                    <field name="is_reconciled" widget="boolean_toggle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Non rapprochées" attrs="{'invisible': [('unreconciled_count', '=', 0)]}">
+                            <field name="unreconciled_operation_ids">
+                                <tree decoration-warning="1">
+                                    <field name="date"/>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                    <field name="partner_id"/>
+                                    <field name="payment_method"/>
+                                    <field name="amount"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste des rapprochements bancaires -->
+    <record id="view_treasury_bank_closing_tree" model="ir.ui.view">
+        <field name="name">treasury.bank.closing.tree</field>
+        <field name="model">treasury.bank.closing</field>
+        <field name="arch" type="xml">
+            <tree string="Rapprochements Bancaires" decoration-success="state=='validated'"
+                  decoration-info="state=='confirmed'" decoration-muted="state=='cancel'">
+                <field name="name"/>
+                <field name="bank_id"/>
+                <field name="closing_date"/>
+                <field name="balance_start" widget="monetary"/>
+                <field name="balance_end_theoretical" widget="monetary"/>
+                <field name="balance_end_bank" widget="monetary"/>
+                <field name="difference" widget="monetary"/>
+                <field name="reconciliation_rate" widget="progressbar"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="view_treasury_bank_closing_search" model="ir.ui.view">
+        <field name="name">treasury.bank.closing.search</field>
+        <field name="model">treasury.bank.closing</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="bank_id"/>
+                <filter name="draft" string="Brouillon" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirmé" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="validated" string="Validé" domain="[('state', '=', 'validated')]"/>
+                <separator/>
+                <filter name="with_difference" string="Avec écart" domain="[('difference', '!=', 0)]"/>
+                <group expand="0" string="Grouper par">
+                    <filter name="group_by_bank" string="Compte bancaire" context="{'group_by': 'bank_id'}"/>
+                    <filter name="group_by_date" string="Date" context="{'group_by': 'closing_date:month'}"/>
+                    <filter name="group_by_state" string="État" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_treasury_bank_closing" model="ir.actions.act_window">
+        <field name="name">Rapprochements Bancaires</field>
+        <field name="res_model">treasury.bank.closing</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un nouveau rapprochement bancaire
+            </p>
+        </field>
+    </record>
+
+</odoo>
