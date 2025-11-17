@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Rapport de rapprochement bancaire -->
+    <record id="action_report_bank_closing" model="ir.actions.report">
+        <field name="name">Rapport de Rapprochement Bancaire</field>
+        <field name="model">treasury.bank.closing</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_treasury_bank.report_bank_closing_document</field>
+        <field name="report_file">adi_treasury_bank.report_bank_closing_document</field>
+        <field name="binding_model_id" ref="model_treasury_bank_closing"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Template QWeb -->
+    <template id="report_bank_closing_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- En-tête -->
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <h2>RAPPORT DE RAPPROCHEMENT BANCAIRE</h2>
+                            </div>
+                        </div>
+
+                        <!-- Informations générales -->
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <strong>Référence :</strong> <span t-field="o.name"/><br/>
+                                <strong>Compte bancaire :</strong> <span t-field="o.bank_id.name"/><br/>
+                                <strong>Numéro de compte :</strong> <span t-field="o.bank_id.account_number"/><br/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Date de clôture :</strong> <span t-field="o.closing_date"/><br/>
+                                <strong>Période :</strong> du <span t-field="o.period_start"/> au <span t-field="o.closing_date"/><br/>
+                                <strong>État :</strong> <span t-field="o.state"/><br/>
+                            </div>
+                        </div>
+
+                        <!-- Soldes -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <table class="table table-sm table-bordered">
+                                    <tr>
+                                        <td><strong>Solde initial</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="o.balance_start" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total entrées</strong></td>
+                                        <td class="text-right text-success">
+                                            + <span t-field="o.total_in" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total sorties</strong></td>
+                                        <td class="text-right text-danger">
+                                            - <span t-field="o.total_out" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-active">
+                                        <td><strong>Solde final théorique</strong></td>
+                                        <td class="text-right">
+                                            <strong>
+                                                <span t-field="o.balance_end_theoretical" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Solde final banque</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="o.balance_end_bank" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.difference != 0" class="table-warning">
+                                        <td><strong>Écart</strong></td>
+                                        <td class="text-right">
+                                            <strong>
+                                                <span t-field="o.difference" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Détail des opérations -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h4>Détail des opérations</h4>
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr class="table-active">
+                                            <th>Date</th>
+                                            <th>Référence</th>
+                                            <th>Catégorie</th>
+                                            <th>Partenaire</th>
+                                            <th>Description</th>
+                                            <th class="text-right">Entrées</th>
+                                            <th class="text-right">Sorties</th>
+                                            <th class="text-right">Solde cumulé</th>
+                                            <th class="text-center">Rapp.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.line_ids" t-as="line">
+                                            <tr t-att-class="'table-success' if line.is_reconciled else ''">
+                                                <td><span t-field="line.date" t-options="{'widget': 'date'}"/></td>
+                                                <td><span t-field="line.reference"/></td>
+                                                <td><span t-field="line.category_id.name"/></td>
+                                                <td><span t-field="line.partner_id.name"/></td>
+                                                <td><span t-field="line.description"/></td>
+                                                <td class="text-right text-success">
+                                                    <span t-if="line.amount_in > 0" t-field="line.amount_in" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                                <td class="text-right text-danger">
+                                                    <span t-if="line.amount_out > 0" t-field="line.amount_out" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-field="line.cumulative_balance" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-if="line.is_reconciled">✓</span>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Statistiques de rapprochement -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <p>
+                                    <strong>Taux de rapprochement : </strong>
+                                    <span t-esc="'%.1f' % o.reconciliation_rate"/> %
+                                    (<span t-esc="o.reconciled_count"/> rapprochées / <span t-esc="len(o.operation_ids)"/> total)
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-6">
+                                <strong>Créé par :</strong><br/>
+                                <span t-field="o.user_id.name"/><br/>
+                                <span t-field="o.create_date" t-options="{'widget': 'datetime'}"/>
+                            </div>
+                            <div class="col-6">
+                                <strong t-if="o.validated_by">Validé par :</strong><br/>
+                                <span t-if="o.validated_by" t-field="o.validated_by.name"/><br/>
+                                <span t-if="o.validated_date" t-field="o.validated_date" t-options="{'widget': 'datetime'}"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Extension de la vue formulaire des transferts -->
+    <record id="view_treasury_transfer_form_bank" model="ir.ui.view">
+        <field name="name">treasury.transfer.form.bank</field>
+        <field name="model">treasury.transfer</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_transfer_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les champs bancaires dans le groupe source -->
+            <xpath expr="//field[@name='safe_from_id']" position="after">
+                <field name="bank_from_id" attrs="{'invisible': [('transfer_type', 'not in', ['bank_to_cash', 'bank_to_safe', 'bank_to_bank'])], 'required': [('transfer_type', 'in', ['bank_to_cash', 'bank_to_safe', 'bank_to_bank'])]}"/>
+            </xpath>
+
+            <!-- Ajouter les champs bancaires dans le groupe destination -->
+            <xpath expr="//field[@name='safe_to_id']" position="after">
+                <field name="bank_to_id" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'safe_to_bank', 'bank_to_bank'])], 'required': [('transfer_type', 'in', ['cash_to_bank', 'safe_to_bank', 'bank_to_bank'])]}"/>
+            </xpath>
+
+            <!-- Ajouter les champs de méthode et référence bancaire -->
+            <xpath expr="//field[@name='amount']" position="after">
+                <field name="payment_method" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}"/>
+                <field name="bank_reference" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}"/>
+            </xpath>
+
+            <!-- Ajouter les opérations bancaires dans le notebook -->
+            <xpath expr="//page[@string='Opérations']" position="after">
+                <page string="Opérations Bancaires" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}">
+                    <group>
+                        <group string="Sortie bancaire">
+                            <field name="bank_operation_out_id" readonly="1"/>
+                            <field name="bank_from_balance_before" widget="monetary" attrs="{'invisible': [('bank_operation_out_id', '=', False)]}"/>
+                            <field name="bank_from_balance_after" widget="monetary" attrs="{'invisible': [('bank_operation_out_id', '=', False)]}"/>
+                        </group>
+                        <group string="Entrée bancaire">
+                            <field name="bank_operation_in_id" readonly="1"/>
+                            <field name="bank_to_balance_before" widget="monetary" attrs="{'invisible': [('bank_operation_in_id', '=', False)]}"/>
+                            <field name="bank_to_balance_after" widget="monetary" attrs="{'invisible': [('bank_operation_in_id', '=', False)]}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

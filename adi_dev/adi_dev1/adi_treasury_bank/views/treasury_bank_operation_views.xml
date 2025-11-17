@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire des opérations bancaires -->
+    <record id="view_treasury_bank_operation_form" model="ir.ui.view">
+        <field name="name">treasury.bank.operation.form</field>
+        <field name="model">treasury.bank.operation</field>
+        <field name="arch" type="xml">
+            <form string="Opération Bancaire">
+                <header>
+                    <button name="action_post" string="Comptabiliser" type="object"
+                            states="draft" class="oe_highlight"/>
+                    <button name="action_reconcile" string="Rapprocher" type="object"
+                            states="posted" class="oe_highlight"/>
+                    <button name="action_unreconcile" string="Annuler rapprochement" type="object"
+                            states="reconciled"/>
+                    <button name="action_draft" string="Remettre en brouillon" type="object"
+                            states="posted,cancel"/>
+                    <button name="action_cancel" string="Annuler" type="object"
+                            states="draft,posted" confirm="Êtes-vous sûr de vouloir annuler cette opération ?"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Informations Principales">
+                            <field name="bank_id" options="{'no_create': True}"/>
+                            <field name="operation_type"/>
+                            <field name="category_id" domain="[('operation_type', 'in', [operation_type, 'both'])]"/>
+                            <field name="amount" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Dates et Références">
+                            <field name="date"/>
+                            <field name="value_date"/>
+                            <field name="payment_method"/>
+                            <field name="bank_reference"/>
+                            <field name="check_number" attrs="{'invisible': [('payment_method', '!=', 'check')]}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Partenaire">
+                            <field name="partner_id"/>
+                        </group>
+                        <group string="Informations Complémentaires">
+                            <field name="is_reconciled"/>
+                            <field name="reconciliation_date" attrs="{'invisible': [('is_reconciled', '=', False)]}"/>
+                            <field name="closing_id" attrs="{'invisible': [('closing_id', '=', False)]}"/>
+                            <field name="is_manual" readonly="1"/>
+                            <field name="payment_id" attrs="{'invisible': [('payment_id', '=', False)]}" readonly="1"/>
+                            <field name="transfer_id" attrs="{'invisible': [('transfer_id', '=', False)]}" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste des opérations bancaires -->
+    <record id="view_treasury_bank_operation_tree" model="ir.ui.view">
+        <field name="name">treasury.bank.operation.tree</field>
+        <field name="model">treasury.bank.operation</field>
+        <field name="arch" type="xml">
+            <tree string="Opérations Bancaires" decoration-success="state=='reconciled'"
+                  decoration-info="state=='posted'" decoration-muted="state=='cancel'">
+                <field name="date"/>
+                <field name="name"/>
+                <field name="bank_id"/>
+                <field name="category_id"/>
+                <field name="partner_id"/>
+                <field name="operation_type"/>
+                <field name="payment_method"/>
+                <field name="amount" widget="monetary"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state"/>
+                <field name="is_reconciled" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="view_treasury_bank_operation_search" model="ir.ui.view">
+        <field name="name">treasury.bank.operation.search</field>
+        <field name="model">treasury.bank.operation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="bank_id"/>
+                <field name="partner_id"/>
+                <field name="category_id"/>
+                <field name="bank_reference"/>
+                <filter name="entries" string="Entrées" domain="[('operation_type', '=', 'in')]"/>
+                <filter name="exits" string="Sorties" domain="[('operation_type', '=', 'out')]"/>
+                <separator/>
+                <filter name="draft" string="Brouillon" domain="[('state', '=', 'draft')]"/>
+                <filter name="posted" string="Comptabilisé" domain="[('state', '=', 'posted')]"/>
+                <filter name="reconciled" string="Rapproché" domain="[('state', '=', 'reconciled')]"/>
+                <separator/>
+                <filter name="not_reconciled" string="Non rapproché" domain="[('is_reconciled', '=', False), ('state', '=', 'posted')]"/>
+                <filter name="is_reconciled" string="Rapproché" domain="[('is_reconciled', '=', True)]"/>
+                <separator/>
+                <filter name="today" string="Aujourd'hui" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <filter name="this_month" string="Ce mois" domain="[('date', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + relativedelta(day=31)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Grouper par">
+                    <filter name="group_by_bank" string="Compte bancaire" context="{'group_by': 'bank_id'}"/>
+                    <filter name="group_by_date" string="Date" context="{'group_by': 'date:month'}"/>
+                    <filter name="group_by_category" string="Catégorie" context="{'group_by': 'category_id'}"/>
+                    <filter name="group_by_payment_method" string="Méthode" context="{'group_by': 'payment_method'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_treasury_bank_operation" model="ir.actions.act_window">
+        <field name="name">Opérations Bancaires</field>
+        <field name="res_model">treasury.bank.operation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une nouvelle opération bancaire
+            </p>
+        </field>
+    </record>
+
+</odoo>

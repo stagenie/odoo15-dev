@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire du compte bancaire -->
+    <record id="view_treasury_bank_form" model="ir.ui.view">
+        <field name="name">treasury.bank.form</field>
+        <field name="model">treasury.bank</field>
+        <field name="arch" type="xml">
+            <form string="Compte Bancaire">
+                <header>
+                    <button name="action_create_operation" string="Nouvelle Opération" type="object" class="oe_highlight"/>
+                    <button name="action_create_closing" string="Nouveau Rapprochement" type="object" class="oe_highlight"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_operations" type="object" class="oe_stat_button" icon="fa-list">
+                            <field name="operation_count" string="Opérations" widget="statinfo"/>
+                        </button>
+                        <button name="action_view_closings" type="object" class="oe_stat_button" icon="fa-balance-scale">
+                            <field name="closing_count" string="Rapprochements" widget="statinfo"/>
+                        </button>
+                        <button name="action_view_transfers" type="object" class="oe_stat_button" icon="fa-exchange">
+                            <field name="transfer_count" string="Transferts" widget="statinfo"/>
+                        </button>
+                        <button name="action_view_journal" type="object" class="oe_stat_button" icon="fa-book">
+                            <span>Journal</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Nom du compte"/></h1>
+                    </div>
+                    <group>
+                        <group string="Informations Générales">
+                            <field name="code"/>
+                            <field name="currency_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Informations Bancaires">
+                            <field name="journal_id"/>
+                            <field name="bank_id"/>
+                            <field name="account_number"/>
+                            <field name="iban"/>
+                            <field name="bic"/>
+                            <field name="branch"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Soldes">
+                            <field name="current_balance" widget="monetary"/>
+                            <field name="available_balance" widget="monetary"/>
+                            <field name="overdraft_limit" widget="monetary"/>
+                            <field name="last_closing_date"/>
+                            <field name="last_closing_balance" widget="monetary"/>
+                        </group>
+                        <group string="Responsabilité">
+                            <field name="responsible_id"/>
+                            <field name="user_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste des comptes bancaires -->
+    <record id="view_treasury_bank_tree" model="ir.ui.view">
+        <field name="name">treasury.bank.tree</field>
+        <field name="model">treasury.bank</field>
+        <field name="arch" type="xml">
+            <tree string="Comptes Bancaires">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="bank_name"/>
+                <field name="account_number"/>
+                <field name="current_balance" widget="monetary"/>
+                <field name="available_balance" widget="monetary"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="view_treasury_bank_search" model="ir.ui.view">
+        <field name="name">treasury.bank.search</field>
+        <field name="model">treasury.bank</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="account_number"/>
+                <field name="bank_id"/>
+                <filter name="active" string="Actif" domain="[('state', '=', 'active')]"/>
+                <filter name="suspended" string="Suspendu" domain="[('state', '=', 'suspended')]"/>
+                <group expand="0" string="Grouper par">
+                    <filter name="group_bank" string="Banque" context="{'group_by': 'bank_id'}"/>
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_treasury_bank" model="ir.actions.act_window">
+        <field name="name">Comptes Bancaires</field>
+        <field name="res_model">treasury.bank</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un nouveau compte bancaire
+            </p>
+            <p>
+                Gérez vos comptes bancaires et suivez vos opérations bancaires.
+            </p>
+        </field>
+    </record>
+
+</odoo>

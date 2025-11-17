@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu racine - Extension du menu Trésorerie -->
+    <menuitem id="menu_treasury_bank_root"
+              name="Banques"
+              parent="adi_treasury.menu_treasury_main"
+              sequence="5"/>
+
+    <!-- Sous-menus -->
+    <menuitem id="menu_treasury_bank"
+              name="Comptes Bancaires"
+              parent="menu_treasury_bank_root"
+              action="action_treasury_bank"
+              sequence="10"/>
+
+    <menuitem id="menu_treasury_bank_operation"
+              name="Opérations Bancaires"
+              parent="menu_treasury_bank_root"
+              action="action_treasury_bank_operation"
+              sequence="20"/>
+
+    <menuitem id="menu_treasury_bank_closing"
+              name="Rapprochements Bancaires"
+              parent="menu_treasury_bank_root"
+              action="action_treasury_bank_closing"
+              sequence="30"/>
+
+</odoo>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Catégorie du module -->
+        <record id="module_category_treasury_bank" model="ir.module.category">
+            <field name="name">Trésorerie Bancaire</field>
+            <field name="description">Gestion de la trésorerie bancaire</field>
+            <field name="sequence">15</field>
+        </record>
+
+        <!-- Groupe Utilisateur Banque -->
+        <record id="group_treasury_bank_user" model="res.groups">
+            <field name="name">Utilisateur Banque</field>
+            <field name="category_id" ref="module_category_treasury_bank"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">L'utilisateur peut consulter et utiliser les comptes bancaires qui lui sont autorisés</field>
+        </record>
+
+        <!-- Groupe Manager Banque -->
+        <record id="group_treasury_bank_manager" model="res.groups">
+            <field name="name">Manager Banque</field>
+            <field name="category_id" ref="module_category_treasury_bank"/>
+            <field name="implied_ids" eval="[(4, ref('group_treasury_bank_user'))]"/>
+            <field name="comment">Le manager peut gérer tous les comptes bancaires et configurations</field>
+        </record>
+
+        <!-- Règles d'accès pour les utilisateurs -->
+        <record id="treasury_bank_user_rule" model="ir.rule">
+            <field name="name">Comptes bancaires - Utilisateur</field>
+            <field name="model_id" ref="model_treasury_bank"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('user_ids', 'in', [user.id]),
+                ('responsible_id', '=', user.id),
+                ('create_uid', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_treasury_bank_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règles d'accès pour les managers -->
+        <record id="treasury_bank_manager_rule" model="ir.rule">
+            <field name="name">Comptes bancaires - Manager</field>
+            <field name="model_id" ref="model_treasury_bank"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_treasury_bank_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Règles pour les opérations bancaires - Utilisateur -->
+        <record id="treasury_bank_operation_user_rule" model="ir.rule">
+            <field name="name">Opérations bancaires - Utilisateur</field>
+            <field name="model_id" ref="model_treasury_bank_operation"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('bank_id.user_ids', 'in', [user.id]),
+                ('bank_id.responsible_id', '=', user.id),
+                ('bank_id.create_uid', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_treasury_bank_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règles pour les opérations bancaires - Manager -->
+        <record id="treasury_bank_operation_manager_rule" model="ir.rule">
+            <field name="name">Opérations bancaires - Manager</field>
+            <field name="model_id" ref="model_treasury_bank_operation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_treasury_bank_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Règles pour les rapprochements - Utilisateur -->
+        <record id="treasury_bank_closing_user_rule" model="ir.rule">
+            <field name="name">Rapprochements bancaires - Utilisateur</field>
+            <field name="model_id" ref="model_treasury_bank_closing"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('bank_id.user_ids', 'in', [user.id]),
+                ('bank_id.responsible_id', '=', user.id),
+                ('bank_id.create_uid', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_treasury_bank_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règles pour les rapprochements - Manager -->
+        <record id="treasury_bank_closing_manager_rule" model="ir.rule">
+            <field name="name">Rapprochements bancaires - Manager</field>
+            <field name="model_id" ref="model_treasury_bank_closing"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_treasury_bank_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
