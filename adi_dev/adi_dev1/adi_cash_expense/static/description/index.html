@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Gestion des Dépenses de Caisse</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #714B67;
+            border-bottom: 3px solid #714B67;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #875A7B;
+            margin-top: 30px;
+        }
+        .feature {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #875A7B;
+        }
+        .screenshot {
+            text-align: center;
+            margin: 20px 0;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        ul li:before {
+            content: "✓ ";
+            color: #875A7B;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gestion des Dépenses de Caisse</h1>
+
+    <p>
+        Module complet de gestion des dépenses de caisse pour Odoo 15,
+        permettant de gérer les remboursements et les avances des employés.
+    </p>
+
+    <h2>Fonctionnalités principales</h2>
+
+    <div class="feature">
+        <h3>📝 Gestion des Remboursements</h3>
+        <ul>
+            <li>L'employé achète avec ses propres fonds</li>
+            <li>Soumission avec justificatifs obligatoires</li>
+            <li>Workflow d'approbation</li>
+            <li>Remboursement par le caissier</li>
+        </ul>
+    </div>
+
+    <div class="feature">
+        <h3>💰 Gestion des Avances</h3>
+        <ul>
+            <li>Avance de caisse à l'employé</li>
+            <li>Suivi du solde restant</li>
+            <li>Règlement avec justificatifs</li>
+            <li>Gestion des retours d'argent ou paiements supplémentaires</li>
+        </ul>
+    </div>
+
+    <div class="feature">
+        <h3>👤 Comptes Personnels</h3>
+        <ul>
+            <li>Suivi du solde par employé</li>
+            <li>Limite d'avance configurable</li>
+            <li>Historique complet des dépenses</li>
+            <li>Vue consolidée des avances en cours</li>
+        </ul>
+    </div>
+
+    <div class="feature">
+        <h3>🔐 Sécurité et Droits d'accès</h3>
+        <ul>
+            <li>Utilisateur : créer et soumettre ses dépenses</li>
+            <li>Responsable : approuver les dépenses</li>
+            <li>Caissier : payer et régler les dépenses</li>
+        </ul>
+    </div>
+
+    <div class="feature">
+        <h3>🔗 Intégrations</h3>
+        <ul>
+            <li>Intégration complète avec adi_treasury</li>
+            <li>Création automatique d'opérations de caisse</li>
+            <li>Lien avec les employés (hr.employee)</li>
+            <li>Lien avec les départements (hr.department)</li>
+            <li>Gestion des pièces justificatives</li>
+        </ul>
+    </div>
+
+    <h2>Installation</h2>
+    <ol>
+        <li>Assurez-vous que le module <code>adi_treasury</code> est installé</li>
+        <li>Installez le module <code>adi_cash_expense</code></li>
+        <li>Configurez les droits d'accès pour vos utilisateurs</li>
+        <li>Configurez les limites d'avance pour vos employés (optionnel)</li>
+    </ol>
+
+    <h2>Workflow</h2>
+
+    <h3>Pour un remboursement :</h3>
+    <ol>
+        <li>L'employé crée une dépense de type "Remboursement"</li>
+        <li>Il ajoute les lignes de dépenses avec les montants</li>
+        <li>Il joint les justificatifs (factures, reçus)</li>
+        <li>Il soumet la dépense</li>
+        <li>Un responsable approuve la dépense</li>
+        <li>Le caissier effectue le paiement</li>
+    </ol>
+
+    <h3>Pour une avance :</h3>
+    <ol>
+        <li>L'employé crée une dépense de type "Avance"</li>
+        <li>Il indique le montant souhaité</li>
+        <li>Un responsable approuve l'avance</li>
+        <li>Le caissier donne le montant à l'employé</li>
+        <li>Plus tard, l'employé règle l'avance avec les justificatifs</li>
+        <li>Le système calcule automatiquement le solde à rendre ou le supplément à payer</li>
+    </ol>
+
+    <h2>Support</h2>
+    <p>
+        Pour toute question ou assistance, contactez <a href="mailto:info@adicops.com">info@adicops.com</a>
+    </p>
+
+    <p style="text-align: center; margin-top: 40px; color: #875A7B;">
+        <strong>ADICOPS - Solutions ERP</strong><br>
+        <a href="https://adicops-dz.com">https://adicops-dz.com</a>
+    </p>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action de rapport -->
+    <record id="action_report_cash_expense" model="ir.actions.report">
+        <field name="name">Bon de dépense</field>
+        <field name="model">cash.expense</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_cash_expense.report_cash_expense_document</field>
+        <field name="report_file">adi_cash_expense.report_cash_expense_document</field>
+        <field name="binding_model_id" ref="model_cash_expense"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Bon de dépense - %s' % (object.name)</field>
+    </record>
+
+    <!-- Template de rapport -->
+    <template id="report_cash_expense_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+
+                        <!-- En-tête -->
+                        <div class="row">
+                            <div class="col-6">
+                                <h2>
+                                    <span t-if="doc.expense_type == 'reimbursement'">Bon de Remboursement</span>
+                                    <span t-if="doc.expense_type == 'advance'">Bon d'Avance</span>
+                                </h2>
+                            </div>
+                            <div class="col-6 text-right">
+                                <h3><span t-field="doc.name"/></h3>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <strong>Bénéficiaire :</strong><br/>
+                                <span t-field="doc.employee_id"/><br/>
+                                <span t-if="doc.department_id">
+                                    Département : <span t-field="doc.department_id"/><br/>
+                                </span>
+                            </div>
+                            <div class="col-6">
+                                <strong>Informations :</strong><br/>
+                                Date : <span t-field="doc.date"/><br/>
+                                Caisse : <span t-field="doc.cash_id"/><br/>
+                                État : <span t-field="doc.state"/><br/>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <strong>Description :</strong><br/>
+                                <span t-field="doc.description"/>
+                            </div>
+                        </div>
+
+                        <!-- Lignes de dépense -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h4>Détail des dépenses</h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Article</th>
+                                            <th class="text-right">Quantité</th>
+                                            <th class="text-right">Prix unitaire</th>
+                                            <th class="text-right">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="doc.line_ids" t-as="line">
+                                            <td><span t-field="line.name"/></td>
+                                            <td><span t-field="line.product_id"/></td>
+                                            <td class="text-right"><span t-field="line.quantity"/></td>
+                                            <td class="text-right">
+                                                <span t-field="line.unit_price"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="line.total_amount"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4" class="text-right"><strong>Total :</strong></td>
+                                            <td class="text-right">
+                                                <strong>
+                                                    <span t-field="doc.amount"
+                                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Informations d'avance -->
+                        <div class="row mt-4" t-if="doc.expense_type == 'advance' and doc.state in ['paid', 'settled']">
+                            <div class="col-12">
+                                <h4>Suivi de l'avance</h4>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>Montant de l'avance :</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="doc.amount"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="doc.state == 'settled'">
+                                        <td><strong>Montant dépensé :</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="doc.amount_spent"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="doc.state == 'settled'">
+                                        <td><strong>Solde restant :</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="doc.amount_remaining"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-4 text-center">
+                                <strong>Bénéficiaire</strong><br/>
+                                <span t-field="doc.employee_id"/><br/>
+                                <br/><br/>
+                                _____________________<br/>
+                                Signature
+                            </div>
+                            <div class="col-4 text-center" t-if="doc.approved_by">
+                                <strong>Approuvé par</strong><br/>
+                                <span t-field="doc.approved_by"/><br/>
+                                Le <span t-field="doc.approved_date"/><br/>
+                                <br/>
+                                _____________________<br/>
+                                Signature
+                            </div>
+                            <div class="col-4 text-center" t-if="doc.paid_by">
+                                <strong>Payé par</strong><br/>
+                                <span t-field="doc.paid_by"/><br/>
+                                Le <span t-field="doc.paid_date"/><br/>
+                                <br/>
+                                _____________________<br/>
+                                Signature
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="row mt-4" t-if="doc.notes">
+                            <div class="col-12">
+                                <strong>Notes :</strong><br/>
+                                <span t-field="doc.notes"/>
+                            </div>
+                        </div>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

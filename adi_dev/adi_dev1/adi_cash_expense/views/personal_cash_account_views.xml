@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire -->
+    <record id="view_personal_cash_account_form" model="ir.ui.view">
+        <field name="name">personal.cash.account.form</field>
+        <field name="model">personal.cash.account</field>
+        <field name="arch" type="xml">
+            <form string="Compte Personnel">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_expenses" type="object"
+                                class="oe_stat_button" icon="fa-list">
+                            <field name="expense_count" widget="statbutton" string="Dépenses"/>
+                        </button>
+                        <button name="action_view_advances" type="object"
+                                class="oe_stat_button" icon="fa-money">
+                            <field name="active_advance_count" widget="statbutton" string="Avances en cours"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="employee_id" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="current_balance" widget="monetary"
+                                   decoration-danger="current_balance &gt; advance_limit and advance_limit &gt; 0"/>
+                            <field name="advance_limit" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="total_expenses" widget="monetary"/>
+                            <field name="total_advances" widget="monetary"/>
+                            <field name="total_reimbursements" widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <field name="notes" placeholder="Notes..."/>
+                    </group>
+
+                    <notebook>
+                        <page string="Dépenses" name="expenses">
+                            <field name="expense_ids" readonly="1">
+                                <tree decoration-info="state=='draft'"
+                                      decoration-success="state=='settled'">
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="expense_type"/>
+                                    <field name="amount"/>
+                                    <field name="amount_remaining"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Avances en cours" name="advances">
+                            <field name="advance_ids" readonly="1"
+                                   domain="[('state', '=', 'paid')]">
+                                <tree decoration-warning="amount_remaining &gt; 0">
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="amount"/>
+                                    <field name="amount_spent"/>
+                                    <field name="amount_remaining"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste -->
+    <record id="view_personal_cash_account_tree" model="ir.ui.view">
+        <field name="name">personal.cash.account.tree</field>
+        <field name="model">personal.cash.account</field>
+        <field name="arch" type="xml">
+            <tree string="Comptes Personnels" decoration-warning="current_balance &gt; advance_limit and advance_limit &gt; 0">
+                <field name="employee_id"/>
+                <field name="current_balance" sum="Total Solde"/>
+                <field name="advance_limit"/>
+                <field name="total_expenses" sum="Total Dépenses"/>
+                <field name="expense_count"/>
+                <field name="active_advance_count"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Kanban -->
+    <record id="view_personal_cash_account_kanban" model="ir.ui.view">
+        <field name="name">personal.cash.account.kanban</field>
+        <field name="model">personal.cash.account</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="employee_id"/>
+                <field name="current_balance"/>
+                <field name="advance_limit"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="employee_id"/>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <span>Solde actuel:</span>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <strong>
+                                            <field name="current_balance" widget="monetary"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="row" t-if="record.advance_limit.raw_value &gt; 0">
+                                    <div class="col-6">
+                                        <span>Limite:</span>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <field name="advance_limit" widget="monetary"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <span class="badge badge-pill">
+                                        <field name="active_advance_count"/> Avances
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="view_personal_cash_account_search" model="ir.ui.view">
+        <field name="name">personal.cash.account.search</field>
+        <field name="model">personal.cash.account</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher Comptes">
+                <field name="employee_id"/>
+
+                <filter string="Avec avances en cours" name="with_advances"
+                        domain="[('active_advance_count', '&gt;', 0)]"/>
+                <filter string="Limite dépassée" name="over_limit"
+                        domain="[('current_balance', '&gt;', 'advance_limit'), ('advance_limit', '&gt;', 0)]"/>
+
+                <group expand="0" string="Grouper par">
+                    <filter string="Employé" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_personal_cash_account" model="ir.actions.act_window">
+        <field name="name">Comptes Personnels</field>
+        <field name="res_model">personal.cash.account</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="search_view_id" ref="view_personal_cash_account_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun compte personnel
+            </p>
+            <p>
+                Les comptes personnels sont créés automatiquement lorsqu'une dépense est enregistrée pour un employé.
+            </p>
+        </field>
+    </record>
+</odoo>

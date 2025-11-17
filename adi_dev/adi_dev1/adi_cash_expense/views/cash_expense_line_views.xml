@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action pour afficher les pièces jointes d'une ligne -->
+    <record id="action_cash_expense_line_attachments" model="ir.actions.act_window">
+        <field name="name">Pièces jointes</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('res_model', '=', 'cash.expense.line'), ('res_id', '=', active_id)]</field>
+        <field name="context">{'default_res_model': 'cash.expense.line', 'default_res_id': active_id}</field>
+    </record>
+</odoo>
