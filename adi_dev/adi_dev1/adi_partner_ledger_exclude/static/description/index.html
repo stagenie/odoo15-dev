@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Exclusion de Factures du Partner Ledger</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            border-left: 4px solid #764ba2;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .feature h3 {
+            margin-top: 0;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        ul li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 3px;
+            font-size: 0.85em;
+            margin: 5px 5px 5px 0;
+        }
+        .author {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #666;
+        }
+        .screenshot {
+            border: 2px solid #eee;
+            border-radius: 5px;
+            margin: 20px 0;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Exclusion de Factures du Partner Ledger</h1>
+
+        <p class="badges">
+            <span class="badge">Odoo 15</span>
+            <span class="badge">Accounting</span>
+            <span class="badge">Reports</span>
+            <span class="badge">ADICOPS</span>
+        </p>
+
+        <p style="font-size: 1.1em; color: #666;">
+            Module permettant d'exclure des factures spécifiques du calcul des soldes
+            clients/fournisseurs dans le rapport Partner Ledger.
+        </p>
+
+        <h2>🎯 Fonctionnalités Principales</h2>
+
+        <div class="feature">
+            <h3>Exclusion Sélective</h3>
+            <ul>
+                <li>Marquez facilement les factures à exclure du Partner Ledger</li>
+                <li>Champ booléen simple et intuitif sur toutes les factures</li>
+                <li>Traçabilité complète des modifications</li>
+            </ul>
+        </div>
+
+        <div class="feature">
+            <h3>Calcul Automatique</h3>
+            <ul>
+                <li>Exclusion automatique des factures marquées dans les rapports</li>
+                <li>Calculs de soldes précis et cohérents</li>
+                <li>Compatible avec tous les types de factures (clients et fournisseurs)</li>
+            </ul>
+        </div>
+
+        <div class="feature">
+            <h3>Interface Intuitive</h3>
+            <ul>
+                <li>Champ visible dans les formulaires de factures</li>
+                <li>Colonne optionnelle dans les vues liste</li>
+                <li>Intégration transparente avec l'interface Odoo</li>
+            </ul>
+        </div>
+
+        <h2>💼 Cas d'Usage</h2>
+
+        <div class="feature">
+            <h3>Factures Litigieuses</h3>
+            <p>Excluez temporairement les factures en litige du calcul des soldes courants.</p>
+        </div>
+
+        <div class="feature">
+            <h3>Transactions Exceptionnelles</h3>
+            <p>Gérez les factures d'ajustement ou exceptionnelles sans affecter les soldes standards.</p>
+        </div>
+
+        <div class="feature">
+            <h3>Factures en Validation</h3>
+            <p>Maintenez les factures en attente de validation finale hors des rapports de solde.</p>
+        </div>
+
+        <h2>🔧 Installation</h2>
+
+        <h3>Prérequis</h3>
+        <ul>
+            <li>Odoo 15.0</li>
+            <li>Module <code>account</code> (installé par défaut)</li>
+            <li>Module <code>accounting_pdf_reports</code> (Odoo Mates)</li>
+        </ul>
+
+        <h3>Étapes d'Installation</h3>
+        <ol style="list-style-type: decimal; padding-left: 20px;">
+            <li style="margin-bottom: 10px;">Mettre à jour la liste des applications</li>
+            <li style="margin-bottom: 10px;">Rechercher "Exclusion de Factures du Partner Ledger"</li>
+            <li style="margin-bottom: 10px;">Cliquer sur "Installer"</li>
+        </ol>
+
+        <h2>📖 Utilisation</h2>
+
+        <ol style="list-style-type: decimal; padding-left: 20px;">
+            <li style="margin-bottom: 10px;"><strong>Ouvrir une facture</strong> : Client ou fournisseur</li>
+            <li style="margin-bottom: 10px;"><strong>Cocher la case</strong> : "Exclure du Partner Ledger"</li>
+            <li style="margin-bottom: 10px;"><strong>Enregistrer</strong> : Les modifications sont automatiquement prises en compte</li>
+            <li style="margin-bottom: 10px;"><strong>Générer le rapport</strong> : Partner Ledger dans Comptabilité → Rapports</li>
+        </ol>
+
+        <h2>✨ Compatibilité</h2>
+
+        <ul>
+            <li>Odoo Version : <strong>15.0</strong></li>
+            <li>Compatible avec <code>accounting_pdf_reports</code></li>
+            <li>Compatible avec <code>tis_partner_ledger_filter_balance</code></li>
+        </ul>
+
+        <h2>📝 Licence</h2>
+        <p>LGPL-3</p>
+
+        <div class="author">
+            <h3>ADICOPS</h3>
+            <p>
+                <strong>Website:</strong> <a href="https://adicops-dz.com">adicops-dz.com</a><br>
+                <strong>Email:</strong> info@adicops.com
+            </p>
+        </div>
+    </div>
+</body>
+</html>
