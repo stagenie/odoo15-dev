@@ -45,34 +45,34 @@
                             string="Comptabiliser"
                             type="object"
                             class="oe_highlight"
-                            invisible="state != 'draft'"/>
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_cancel"
                             string="Annuler"
                             type="object"
-                            invisible="state != 'draft' or closing_id"
+                            attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('closing_id', '!=', False)]}"
                             confirm="Êtes-vous sûr de vouloir annuler cette opération ?"/>
                     <button name="action_draft"
                             string="Remettre en brouillon"
                             type="object"
-                            invisible="state != 'cancel'"/>
+                            attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
                     <button name="action_mark_collected"
                             string="Marquer comme prélevé"
                             type="object"
                             class="btn-secondary"
-                            invisible="state != 'posted' or is_collected or closing_id"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'posted'), ('is_collected', '!=', False), ('closing_id', '!=', False)]}"
                             icon="fa-check-circle"/>
                     <button name="action_unmark_collected"
                             string="Retirer le marquage"
                             type="object"
                             class="btn-secondary"
-                            invisible="not is_collected or (closing_id and closing_id.state == 'validated')"
+                            attrs="{'invisible': [('is_collected', '=', False)]}"
                             icon="fa-times-circle"
                             confirm="Êtes-vous sûr de vouloir retirer le marquage de prélèvement ?"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
                 </header>
                 <sheet>
-                    <widget name="web_ribbon" title="Annulé" bg_color="bg-danger" invisible="state != 'cancel'"/>
-                    <widget name="web_ribbon" title="Clôturé" bg_color="bg-info" invisible="not closing_id"/>
+                    <widget name="web_ribbon" title="Annulé" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
+                    <widget name="web_ribbon" title="Clôturé" bg_color="bg-info" attrs="{'invisible': [('closing_id', '=', False)]}"/>
 
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_attachments"
@@ -93,34 +93,34 @@
                         <group>
                             <field name="cash_id"
                                    options="{'no_create': True}"
-                                   readonly="state != 'draft' or payment_id"/>
+                                   attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('payment_id', '!=', False)]}"/>
                             <field name="operation_type"
                                    widget="radio"
                                    options="{'horizontal': true}"
-                                   readonly="state != 'draft' or payment_id"/>
+                                   attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('payment_id', '!=', False)]}"/>
                             <field name="category_id"
                                    options="{'no_create': True}"
-                                   readonly="state != 'draft' or payment_id"/>
-                            <field name="date" readonly="state != 'draft'"/>
+                                   attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('payment_id', '!=', False)]}"/>
+                            <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
                             <field name="partner_id"
                                    options="{'no_create': False}"
-                                   readonly="state != 'draft'"/>
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="observations"
                                    placeholder="Observations..."
-                                   readonly="state != 'draft'"/>
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
                             <field name="amount"
                                    widget="monetary"
                                    options="{'currency_field': 'currency_id'}"
-                                   readonly="state != 'draft' or payment_id"
+                                   attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('payment_id', '!=', False)]}"
                                    class="oe_inline"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="reference"
                                    placeholder="N° facture, bon..."
-                                   readonly="state != 'draft'"/>
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="closing_id" invisible="1"/>
                         </group>
                     </group>
@@ -129,16 +129,16 @@
                         <field name="description"
 
                                placeholder="Description de l'opération..."
-                               readonly="state != 'draft'"/>
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                     </group>
 
-                    <group string="Informations" col="4" invisible="not payment_id and not user_id">
-                        <field name="payment_id" readonly="1" invisible="not payment_id"/>
-                        <field name="transfer_id" readonly="1" invisible="not transfer_id"/>
+                    <group string="Informations" col="4" attrs="{'invisible': [('payment_id', '=', False), ('user_id', '=', False)]}">
+                        <field name="payment_id" readonly="1" attrs="{'invisible': [('payment_id', '=', False)]}"/>
+                        <field name="transfer_id" readonly="1" attrs="{'invisible': [('transfer_id', '=', False)]}"/>
                         <field name="user_id" readonly="1" widget="many2one_avatar_user"/>
                         <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                     </group>
-                    <group string="Prélèvement" invisible="not is_collected">
+                    <group string="Prélèvement" attrs="{'invisible': [('is_collected', '=', False)]}">
                         <field name="is_collected" readonly="1"/>
                         <field name="collected_date" readonly="1"/>
                         <field name="collected_by" readonly="1" widget="many2one_avatar_user"/>

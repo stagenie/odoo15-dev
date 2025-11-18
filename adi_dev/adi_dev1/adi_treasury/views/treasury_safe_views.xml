@@ -30,12 +30,12 @@
                             type="object"
                             string="Déverrouiller"
                             class="oe_highlight"
-                            invisible="state != 'locked'"
+                            attrs="{'invisible': [('state', '!=', 'locked')]}"
                             groups="adi_treasury.group_treasury_manager"/>
                     <button name="action_lock"
                             type="object"
                             string="Verrouiller"
-                            invisible="state != 'active'"
+                            attrs="{'invisible': [('state', '!=', 'active')]}"
                             confirm="Êtes-vous sûr de vouloir verrouiller ce coffre ?"
                             groups="adi_treasury.group_treasury_manager"/>
                     <field name="state" widget="statusbar" statusbar_visible="active,locked"/>
@@ -44,10 +44,10 @@
                     <!-- Champ is_initialized nécessaire pour les conditions -->
                     <field name="is_initialized" invisible="1"/>
 
-                    <widget name="web_ribbon" title="Verrouillé" bg_color="bg-danger" invisible="state != 'locked'"/>
+                    <widget name="web_ribbon" title="Verrouillé" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'locked')]}"/>
 
                     <!-- Alerte si non initialisé -->
-                    <div class="alert alert-warning text-center" role="alert" invisible="is_initialized">
+                    <div class="alert alert-warning text-center" role="alert" attrs="{'invisible': [('is_initialized', '=', True)]}">
                         <strong>Ce coffre n'a pas encore été initialisé.</strong>
                         <br/>Cliquez sur "Nouvelle Opération" pour définir le solde initial.
                     </div>
@@ -72,27 +72,27 @@
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>
-                            <field name="name" placeholder="Nom du coffre" readonly="state == 'locked'"/>
+                            <field name="name" placeholder="Nom du coffre" attrs="{'readonly': [('state', '=', 'locked')]}"/>
                         </h1>
                         <group>
-                            <field name="code" readonly="state == 'locked'"/>
+                            <field name="code" attrs="{'readonly': [('state', '=', 'locked')]}"/>
                         </group>
                     </div>
                     <group>
                         <group string="Informations générales">
-                            <field name="currency_id" options="{'no_create': True}" readonly="state == 'locked'"/>
-                            <field name="location" readonly="state == 'locked'"/>
+                            <field name="currency_id" options="{'no_create': True}" attrs="{'readonly': [('state', '=', 'locked')]}"/>
+                            <field name="location" attrs="{'readonly': [('state', '=', 'locked')]}"/>
                             <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                         </group>
                         <group string="Soldes et limites">
                             <field name="current_balance" class="text-bold"/>
-                            <field name="max_capacity" readonly="state == 'locked'"/>
+                            <field name="max_capacity" attrs="{'readonly': [('state', '=', 'locked')]}"/>
                             <field name="last_operation_date" readonly="1"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Responsables" name="users">
-                            <field name="responsible_ids" widget="many2many_tags" options="{'no_create': True}" readonly="state == 'locked'">
+                            <field name="responsible_ids" widget="many2many_tags" options="{'no_create': True}" attrs="{'readonly': [('state', '=', 'locked')]}">
                                 <tree>
                                     <field name="name"/>
                                     <field name="login"/>
@@ -138,7 +138,7 @@
                             </field>
                         </page>
                         <page string="Notes" name="notes">
-                            <field name="notes" placeholder="Ajoutez des notes internes..." readonly="state == 'locked'"/>
+                            <field name="notes" placeholder="Ajoutez des notes internes..." attrs="{'readonly': [('state', '=', 'locked')]}"/>
                         </page>
                     </notebook>
                 </sheet>

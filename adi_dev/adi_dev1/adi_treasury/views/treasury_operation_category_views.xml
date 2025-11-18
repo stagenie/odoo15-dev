@@ -24,7 +24,7 @@
         <field name="arch" type="xml">
             <form string="Catégorie d'opération">
                 <sheet>
-                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger" invisible="active"/>
+                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
                         <group>
                             <field name="name"/>

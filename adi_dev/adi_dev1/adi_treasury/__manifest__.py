@@ -10,10 +10,10 @@
 
         Fonctionnalités :
         - Gestion des caisses
-        - Transferts entre caisses  
-        - Opérations de caisse  
-        - Intégration avec les paiements  
-        - Clôtures journalières  
+        - Transferts entre caisses (à venir)
+        - Opérations de caisse (à venir)
+        - Intégration avec les paiements (à venir)
+        - Clôtures journalières (à venir)
     """,
     'author': 'ADICOPS',
     'website': 'https://adicops-dz.com',

@@ -25,7 +25,8 @@ class TreasuryCashClosing(models.Model):
         'treasury.cash',
         string='Caisse',
         required=True,
-        readonly="state != 'draft'",
+        states={'draft': [('readonly', False)]},
+        readonly=True,
         tracking=True
     )
 
@@ -34,7 +35,8 @@ class TreasuryCashClosing(models.Model):
         string='Date de clôture',
         required=True,
         default=fields.Date.today,
-        readonly="state != 'draft'",
+        states={'draft': [('readonly', False)]},
+        readonly=True,
         tracking=True
     )
 
@@ -78,7 +80,8 @@ class TreasuryCashClosing(models.Model):
     balance_end_real = fields.Monetary(
         string='Solde réel (compté)',
         currency_field='currency_id',
-        readonly="state != 'draft'",
+        states={'draft': [('readonly', False)]},
+        readonly=True,
         tracking=True,
         help="Montant réellement compté dans la caisse"
     )
@@ -600,10 +603,10 @@ class TreasuryCashClosing(models.Model):
                 'closing_id': closing.id,
             })
 
-            # ✅ CORRECTION ODOO 15 : Tri déterministe des opérations par date ET ID
+            # ✅ CORRECTION : Tri déterministe des opérations par date ET ID
             operations = closing.operation_ids.filtered(
                 lambda o: o.state == 'posted'
-            ).sorted(key=lambda op: (op.date, op.id))  # 🔧 Tri par date puis par ID pour être déterministe
+            ).sorted(lambda op: (op.date, op.id))  # 🔧 Tri par date puis par ID pour être déterministe
 
             for seq, op in enumerate(operations, 1):
                 if op.operation_type == 'in':

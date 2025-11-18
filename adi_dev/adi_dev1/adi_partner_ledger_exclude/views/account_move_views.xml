@@ -7,14 +7,11 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
-                <!-- Add the field in the header, near the state -->
-                <xpath expr="//header" position="after">
-                    <group>
-                        <group>
-                            <field name="exclude_from_partner_ledger"
-                                   attrs="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])]}"/>
-                        </group>
-                    </group>
+                <!-- Add the field after payment_reference -->
+                <xpath expr="//field[@name='payment_reference']" position="after">
+                    <field name="exclude_from_partner_ledger"
+                           string="Ne pas inclure dans le calcul du Solde "
+                           attrs="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])]}"/>
                 </xpath>
             </field>
         </record>
@@ -27,19 +24,6 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='state']" position="after">
                     <field name="exclude_from_partner_ledger" optional="hide"/>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- Add the field to the vendor bill form view -->
-        <record id="view_move_form_inherit_exclude_partner_ledger_supplier" model="ir.ui.view">
-            <field name="name">account.move.supplier.form.inherit.exclude.partner.ledger</field>
-            <field name="model">account.move</field>
-            <field name="inherit_id" ref="account.view_in_invoice_bill_form"/>
-            <field name="arch" type="xml">
-                <!-- Add the field in a visible place for vendor bills -->
-                <xpath expr="//field[@name='ref']" position="after">
-                    <field name="exclude_from_partner_ledger"/>
                 </xpath>
             </field>
         </record>

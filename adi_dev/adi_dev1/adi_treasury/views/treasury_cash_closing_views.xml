@@ -39,7 +39,7 @@
                     <button name="action_back_to_draft"
                             string="Remettre en brouillon"
                             type="object"
-                            invisible="state == 'draft'"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"
                             confirm="Êtes-vous sûr de vouloir remettre cette clôture en brouillon ? Le solde réel sera re-synchronisé automatiquement."
                             groups="adi_treasury.group_treasury_manager"/>
 
@@ -47,27 +47,27 @@
                             string="Recharger les opérations"
                             type="object"
                             class="btn-secondary"
-                            invisible="state != 'draft'"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"
                             help="Recharger toutes les opérations de la journée"/>
 
                     <button name="action_create_manual_operation"
                             string="Ajouter une opération"
                             type="object"
                             class="btn-secondary"
-                            invisible="state != 'draft'"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"
                             icon="fa-plus"/>
 
                     <button name="action_confirm"
                             string="Confirmer"
                             type="object"
                             class="oe_highlight"
-                            invisible="state != 'draft'"/>
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
 
                     <button name="action_validate"
                             string="Valider la clôture"
                             type="object"
                             class="oe_highlight"
-                            invisible="state != 'confirmed'"
+                            attrs="{'invisible': [('state', '!=', 'confirmed')]}"
                             confirm="Cette action est irréversible. Un ajustement sera créé si nécessaire. Continuer ?"/>
 
                     <!-- Bouton imprimer -->
@@ -75,14 +75,14 @@
                             string="Imprimer"
                             type="object"
                             class="btn-secondary"
-                            invisible="state == 'draft'"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"
                             icon="fa-print"/>
 
                     <!-- Bouton annuler -->
                     <button name="action_cancel"
                             string="Annuler"
                             type="object"
-                            invisible="state in ('draft', 'cancel')"
+                            attrs="{'invisible': [('state', 'in', ['draft', 'cancel'])]}"
                             confirm="Êtes-vous sûr de vouloir annuler cette clôture ? Cette action est irréversible."
                             groups="adi_treasury.group_treasury_manager"/>
 
@@ -95,7 +95,7 @@
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="manual_operation_count"/>
-                                    <span invisible="draft_manual_operation_count == 0">
+                                    <span attrs="{'invisible': [('draft_manual_operation_count', '=', 0)]}">
                                         (
                                         <field name="draft_manual_operation_count" class="text-danger"/>
                                         en brouillon)
@@ -119,7 +119,7 @@
                 <sheet>
 
                     <!-- Ribbon pour l'état annulé -->
-                    <widget name="web_ribbon" title="Annulé" bg_color="bg-danger" invisible="state != 'cancel'"/>
+                    <widget name="web_ribbon" title="Annulé" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
 
                     <div class="oe_title">
                         <h1>
@@ -131,9 +131,9 @@
                         <group>
                             <field name="cash_id"
                                    options="{'no_create': True}"
-                                   readonly="state != 'draft'"/>
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="closing_date"
-                                   readonly="state != 'draft'"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"
                                    widget="date"/>
                             <field name="closing_number" readonly="1"/>
                         </group>
@@ -142,13 +142,13 @@
                             <field name="validated_by"
                                    readonly="1"
                                    widget="many2one_avatar_user"
-                                   invisible="not validated_by"/>
+                                   attrs="{'invisible': [('validated_by', '=', False)]}"/>
                             <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                         </group>
                     </group>
 
                     <!-- Information sur la période calculée -->
-                    <group string="Période de clôture" col="4" invisible="not period_start">
+                    <group string="Période de clôture" col="4" attrs="{'invisible': [('period_start', '=', False)]}">
                         <field name="period_start" readonly="1" widget="datetime"/>
                         <field name="period_end" readonly="1" widget="datetime"/>
                     </group>
@@ -173,14 +173,13 @@
 
                             <!-- Champ solde réel avec indication -->
                             <field name="balance_end_real"
-                                   readonly="state != 'draft'"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"
                                    class="font-weight-bold"
-                                   required="state == 'confirmed'"
                                    placeholder="Automatiquement synchronisé avec le solde théorique"
                                    help="IMPORTANT : Ce montant est automatiquement égal au solde théorique. Modifiez-le seulement si le montant physiquement compté est différent."/>
 
                             <!-- Badge indiquant si modifié manuellement -->
-                            <div invisible="not balance_end_real_manual or state == 'draft'">
+                            <div attrs="{'invisible': ['|', ('balance_end_real_manual', '=', False), ('state', '=', 'draft')]}">
                                 <span class="badge badge-warning">
                                     <i class="fa fa-edit"/> Modifié manuellement
                                 </span>
@@ -199,8 +198,7 @@
                                 <tree create="false" delete="false" editable="false"
                                       decoration-info="operation_type == 'initial'"
                                       decoration-success="operation_type == 'in'"
-                                      decoration-danger="operation_type == 'out'"
-                                      decoration-muted="operation_id and operation_id.state == 'cancel'">
+                                      decoration-danger="operation_type == 'out'">
                                     <field name="sequence" widget="handle"/>
                                     <field name="date" widget="datetime"/>
 
@@ -258,7 +256,7 @@
                         <page string="Notes" name="notes">
                             <field name="notes"
                                    placeholder="Notes sur la clôture..."
-                                   readonly="state == 'validated'"/>
+                                   attrs="{'readonly': [('state', '=', 'validated')]}"/>
                         </page>
 
                     </notebook>

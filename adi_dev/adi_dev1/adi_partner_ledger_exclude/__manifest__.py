@@ -1,33 +1,45 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Exclusion de Factures du Partner Ledger',
-    'version': '15.0.1.0.0',
+    'name': 'Exclusion de Factures des Rapports Comptables',
+    'version': '15.0.2.0.0',
     'category': 'Accounting/Reports',
-    'summary': 'Permet d\'exclure des factures spécifiques du calcul du solde dans le Partner Ledger',
+    'summary': 'Exclure des factures du calcul des soldes dans tous les rapports comptables',
     'description': """
-        Module d'Exclusion de Factures du Partner Ledger
-        ==================================================
+        Module d'Exclusion de Factures des Rapports Comptables
+        =======================================================
 
-        Ce module étend le rapport Partner Ledger pour permettre l'exclusion
-        de certaines factures spécifiques du calcul des soldes clients/fournisseurs.
+        Ce module permet d'exclure des factures spécifiques du calcul des soldes
+        dans tous les rapports et vues comptables d'Odoo.
 
         Fonctionnalités :
         -----------------
         * Ajout d'un champ booléen sur les factures pour les marquer comme exclues
-        * Exclusion automatique de ces factures dans le calcul du Partner Ledger
+        * Exclusion automatique dans le Partner Ledger (Livre des tiers)
+        * Exclusion automatique dans le General Ledger (Grand livre)
+        * Exclusion dans les vues comptables natives d'Odoo
+        * Filtres pour masquer/afficher les écritures exclues
+        * Menu dédié pour visualiser les factures exclues
         * Compatible avec le module accounting_pdf_reports (Odoo Mates)
-        * Interface simple pour gérer les exclusions
+
+        Rapports et vues affectés :
+        ---------------------------
+        * Partner Ledger (Livre des tiers) - PDF et vue liste
+        * General Ledger (Grand livre) - PDF et vue liste
+        * Vue des écritures comptables
+        * Tous les calculs de soldes dans les vues comptables
 
         Utilisation :
         -------------
         1. Ouvrir une facture client ou fournisseur
-        2. Cocher la case "Exclure du Partner Ledger" si nécessaire
-        3. Les rapports Partner Ledger n'incluront pas cette facture dans les soldes
+        2. Cocher "Ne pas inclure dans le calcul du Solde"
+        3. Les rapports et vues n'incluront plus cette facture dans les soldes
+        4. Utiliser les filtres dans les vues pour masquer/afficher les exclusions
+        5. Menu "Factures exclues" pour voir toutes les factures marquées
 
         Note :
         ------
-        Ce module étend le rapport Partner Ledger du module accounting_pdf_reports.
-        Il est compatible avec le module tis_partner_ledger_filter_balance.
+        Ce module étend les rapports du module accounting_pdf_reports
+        et les vues comptables natives d'Odoo 15.
     """,
     'author': 'ADICOPS',
     'website': 'https://adicops-dz.com',
@@ -40,6 +52,7 @@
     ],
     'data': [
         'views/account_move_views.xml',
+        'views/account_views.xml',
     ],
     'demo': [],
     'installable': True,

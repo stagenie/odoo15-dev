@@ -48,30 +48,30 @@
                             type="object"
                             string="Ouvrir"
                             class="oe_highlight"
-                            invisible="state == 'open'"/>
+                            attrs="{'invisible': [('state', '=', 'open')]}"/>
                     <button name="action_close_temporary"
                             type="object"
                             string="Fermer temporairement"
-                            invisible="state != 'open'"/>
+                            attrs="{'invisible': [('state', '!=', 'open')]}"/>
                     <button name="action_lock"
                             type="object"
                             string="Verrouiller"
                             confirm="Êtes-vous sûr de vouloir verrouiller cette caisse ?"
-                            invisible="state == 'locked'"
+                            attrs="{'invisible': [('state', '=', 'locked')]}"
                             groups="base.group_system"/>
                     <field name="state" widget="statusbar" statusbar_visible="open,closed,locked"/>
                 </header>
                 <sheet>
                     <field name="last_closing_id" invisible="1"/>
-                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger" invisible="active == True"/>
-                    <widget name="web_ribbon" title="Verrouillé" bg_color="bg-warning" invisible="state != 'locked'"/>
+                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <widget name="web_ribbon" title="Verrouillé" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'locked')]}"/>
                     <div class="oe_button_box" name="button_box">
                         <!-- Bouton pour accéder au journal -->
                         <button name="action_view_journal"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-book"
-                                invisible="not journal_id">
+                                attrs="{'invisible': [('journal_id', '=', False)]}">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Journal</span>
                             </div>
@@ -83,7 +83,7 @@
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-balance-scale"
-                                invisible="current_balance != 0 or state != 'open'"
+                                attrs="{'invisible': ['|', ('current_balance', '!=', 0), ('state', '!=', 'open')]}"
                                 help="Initialiser le solde de départ de la caisse">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Initialiser</span>
@@ -103,7 +103,7 @@
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-plus"
-                                invisible="state != 'open'">
+                                attrs="{'invisible': [('state', '!=', 'open')]}">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Nouvelle</span>
                                 <span class="o_stat_text">Opération</span>
@@ -116,7 +116,7 @@
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-check-square-o"
-                                invisible="state != 'open'">
+                                attrs="{'invisible': [('state', '!=', 'open')]}">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Nouvelle</span>
                                 <span class="o_stat_text">Clôture</span>
@@ -136,39 +136,39 @@
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>
-                            <field name="name" placeholder="Nom de la caisse" readonly="state == 'locked'"/>
+                            <field name="name" placeholder="Nom de la caisse" attrs="{'readonly': [('state', '=', 'locked')]}"/>
                         </h1>
                         <group>
-                            <field name="code" readonly="state == 'locked'"/>
+                            <field name="code" attrs="{'readonly': [('state', '=', 'locked')]}"/>
                         </group>
                     </div>
                     <group>
                         <group string="Informations générales">
-                            <field name="currency_id" options="{'no_create': True}" readonly="state == 'locked'"/>
-                            <field name="responsible_id" widget="many2one_avatar_user" readonly="state == 'locked'"/>
-                            <field name="location" readonly="state == 'locked'"/>
+                            <field name="currency_id" options="{'no_create': True}" attrs="{'readonly': [('state', '=', 'locked')]}"/>
+                            <field name="responsible_id" widget="many2one_avatar_user" attrs="{'readonly': [('state', '=', 'locked')]}"/>
+                            <field name="location" attrs="{'readonly': [('state', '=', 'locked')]}"/>
                             <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                             <field name="journal_id"
                                    options="{'no_create': False, 'no_open': True}"
-                                   readonly="state == 'locked'"
+                                   attrs="{'readonly': [('state', '=', 'locked')]}"
                                    required="1"
                                    context="{'default_type': 'cash', 'default_name': name}"/>
                         </group>
                         <group string="Soldes">
                             <field name="current_balance" class="text-bold"/>
-                            <field name="last_closing_balance" invisible="not last_closing_date"/>
-                            <field name="max_amount" readonly="state == 'locked'"/>
+                            <field name="last_closing_balance" attrs="{'invisible': [('last_closing_date', '=', False)]}"/>
+                            <field name="max_amount" attrs="{'readonly': [('state', '=', 'locked')]}"/>
                         </group>
                     </group>
                     <group>
                         <group string="Configuration de clôture">
-                            <field name="require_closing" readonly="state == 'locked'"/>
-                            <field name="auto_close_days" readonly="state == 'locked'" invisible="not require_closing"/>
-                            <field name="last_closing_date" invisible="not last_closing_date"/>
-                            <field name="days_since_closing" invisible="not require_closing"/>
+                            <field name="require_closing" attrs="{'readonly': [('state', '=', 'locked')]}"/>
+                            <field name="auto_close_days" attrs="{'readonly': [('state', '=', 'locked')], 'invisible': [('require_closing', '=', False)]}"/>
+                            <field name="last_closing_date" attrs="{'invisible': [('last_closing_date', '=', False)]}"/>
+                            <field name="days_since_closing" attrs="{'invisible': [('require_closing', '=', False)]}"/>
                         </group>
                         <group string="Dates">
-                            <field name="opening_date" readonly="state == 'locked'"/>
+                            <field name="opening_date" attrs="{'readonly': [('state', '=', 'locked')]}"/>
                             <field name="create_date" string="Date de création" readonly="1"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -176,7 +176,7 @@
                     <notebook>
                         <page string="Utilisateurs autorisés" name="users">
                             <field name="user_ids" widget="many2many_tags" options="{'no_create': True}"
-                                   readonly="state == 'locked'">
+                                   attrs="{'readonly': [('state', '=', 'locked')]}">
                                 <tree>
                                     <field name="name"/>
                                     <field name="login"/>
@@ -211,7 +211,7 @@
                         </page>
                         <page string="Notes" name="notes">
                             <field name="notes" placeholder="Ajoutez des notes internes..."
-                                   readonly="state == 'locked'"/>
+                                   attrs="{'readonly': [('state', '=', 'locked')]}"/>
                         </page>
                     </notebook>
                 </sheet>

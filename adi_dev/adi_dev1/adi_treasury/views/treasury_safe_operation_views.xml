@@ -38,17 +38,17 @@
                             string="Confirmer"
                             type="object"
                             class="oe_highlight"
-                            invisible="state != 'draft'"/>
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_done"
                             string="Effectuer l'opération"
                             type="object"
                             class="oe_highlight"
-                            invisible="state != 'confirmed'"
+                            attrs="{'invisible': [('state', '!=', 'confirmed')]}"
                             confirm="Êtes-vous sûr de vouloir effectuer cette opération ?"/>
                     <button name="action_cancel"
                             string="Annuler"
                             type="object"
-                            invisible="state not in ('draft','confirmed')"/>
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'confirmed'])]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
                 </header>
                 <sheet>
@@ -59,7 +59,7 @@
                     </div>
 
                     <!-- Alerte pour solde initial -->
-                    <div class="alert alert-info text-center" role="alert" invisible="operation_type != 'initial'">
+                    <div class="alert alert-info text-center" role="alert" attrs="{'invisible': [('operation_type', '!=', 'initial')]}">
                         <strong>Opération d'initialisation du coffre</strong>
                         <br/>Cette opération définira le solde initial du coffre.
                     </div>
@@ -68,38 +68,37 @@
                         <group>
                             <field name="safe_id"
                                    options="{'no_create': True}"
-                                   readonly="state != 'draft'"/>
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="operation_type"
-                                   readonly="state != 'draft'"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"
                                    widget="selection"/>
-                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
 
                         <group>
                             <field name="amount"
                                    widget="monetary"
                                    options="{'currency_field': 'currency_id'}"
-                                   readonly="state != 'draft'"/>
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="bank_reference"
                                    placeholder="Ex: Chèque n°, Virement..."
-                                   readonly="state != 'draft'"
-                                   invisible="operation_type not in ['bank_in', 'bank_out']"/>
+                                   attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('operation_type', 'not in', ['bank_in', 'bank_out'])]}"/>
                         </group>
                     </group>
 
                     <group string="Soldes" col="4">
                         <field name="balance_before" readonly="1"/>
-                        <span invisible="state != 'done'" class="mx-2">→</span>
+                        <span attrs="{'invisible': [('state', '!=', 'done')]}" class="mx-2">→</span>
                         <field name="balance_after"
                                readonly="1"
-                               invisible="state != 'done'"/>
+                               attrs="{'invisible': [('state', '!=', 'done')]}"/>
                     </group>
 
                     <group string="Description">
                         <field name="description"
                                placeholder="Description de l'opération..."
-                               readonly="state != 'draft'"/>
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                     </group>
 
                     <group string="Informations" col="4">
@@ -107,7 +106,7 @@
                         <field name="validated_by"
                                readonly="1"
                                widget="many2one_avatar_user"
-                               invisible="not validated_by"/>
+                               attrs="{'invisible': [('validated_by', '=', False)]}"/>
                         <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                     </group>
                 </sheet>

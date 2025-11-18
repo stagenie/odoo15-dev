@@ -7,7 +7,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     exclude_from_partner_ledger = fields.Boolean(
-        string='Exclure du Partner Ledger',
+        string='Ne pas inclure dans Solde',
         default=False,
         help="Si coché, cette facture sera exclue du calcul des soldes "
              "dans le rapport Partner Ledger (Grand livre des partenaires).",

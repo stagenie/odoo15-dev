@@ -44,21 +44,21 @@
                         string="Confirmer"
                         type="object"
                         class="oe_highlight"
-                        invisible="state != 'draft'"/>
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                 <button name="action_done"
                         string="Effectuer le transfert"
                         type="object"
                         class="oe_highlight"
-                        invisible="state != 'confirm'"
+                        attrs="{'invisible': [('state', '!=', 'confirm')]}"
                         confirm="Êtes-vous sûr de vouloir effectuer ce transfert ?"/>
                 <button name="action_cancel"
                         string="Annuler"
                         type="object"
-                        invisible="state not in ('draft','confirm')"/>
+                        attrs="{'invisible': [('state', 'not in', ['draft', 'confirm'])]}"/>
                 <button name="action_draft"
                         string="Remettre en brouillon"
                         type="object"
-                        invisible="state != 'cancel'"/>
+                        attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
                 <button name="%(action_report_treasury_transfer)d"
                         string="Imprimer"
                         type="action"
@@ -82,25 +82,23 @@
                         <!-- Caisse source -->
                         <field name="cash_from_id"
                                options="{'no_create': True}"
-                               readonly="state != 'draft'"
-                               invisible="transfer_type not in ['cash_to_cash', 'cash_to_safe']"
-                               required="transfer_type in ['cash_to_cash', 'cash_to_safe'] and state == 'draft'"/>
+                               attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'cash_to_safe'])]}"
+                               />
 
                         <!-- Coffre source -->
                         <field name="safe_from_id"
                                options="{'no_create': True}"
-                               readonly="state != 'draft'"
-                               invisible="transfer_type not in ['safe_to_cash', 'safe_to_safe']"
-                               required="transfer_type in ['safe_to_cash', 'safe_to_safe'] and state == 'draft'"/>
+                               attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['safe_to_cash', 'safe_to_safe'])]}"
+                               />
 
                         <label for="balance_before_from" string="Solde"/>
                         <div class="o_row">
                             <field name="balance_before_from" readonly="1" nolabel="1"/>
-                            <span invisible="state != 'done'" class="mx-2">→</span>
+                            <span attrs="{'invisible': [('state', '!=', 'done')]}" class="mx-2">→</span>
                             <field name="balance_after_from"
                                    readonly="1"
                                    nolabel="1"
-                                   invisible="state != 'done'"
+                                   attrs="{'invisible': [('state', '!=', 'done')]}"
                                    class="text-danger"/>
                         </div>
                     </group>
@@ -109,25 +107,23 @@
                         <!-- Caisse destination -->
                         <field name="cash_to_id"
                                options="{'no_create': True}"
-                               readonly="state != 'draft'"
-                               invisible="transfer_type not in ['cash_to_cash', 'safe_to_cash']"
-                               required="transfer_type in ['cash_to_cash', 'safe_to_cash'] and state == 'draft'"/>
+                               attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'safe_to_cash'])]}"
+                               />
 
                         <!-- Coffre destination -->
                         <field name="safe_to_id"
                                options="{'no_create': True}"
-                               readonly="state != 'draft'"
-                               invisible="transfer_type not in ['cash_to_safe', 'safe_to_safe']"
-                               required="transfer_type in ['cash_to_safe', 'safe_to_safe'] and state == 'draft'"/>
+                               attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['cash_to_safe', 'safe_to_safe'])]}"
+                               />
 
                         <label for="balance_before_to" string="Solde"/>
                         <div class="o_row">
                             <field name="balance_before_to" readonly="1" nolabel="1"/>
-                            <span invisible="state != 'done'" class="mx-2">→</span>
+                            <span attrs="{'invisible': [('state', '!=', 'done')]}" class="mx-2">→</span>
                             <field name="balance_after_to"
                                    readonly="1"
                                    nolabel="1"
-                                   invisible="state != 'done'"
+                                   attrs="{'invisible': [('state', '!=', 'done')]}"
                                    class="text-success"/>
                         </div>
                     </group>
@@ -139,16 +135,16 @@
                                widget="monetary"
                                options="{'currency_field': 'currency_id'}"
                                class="oe_inline"
-                               readonly="state != 'draft'"/>
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         <field name="currency_id" invisible="1"/>
-                        <field name="date" readonly="state != 'draft'"/>
+                        <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                     </group>
                     <group>
                         <field name="user_id" readonly="1" widget="many2one_avatar_user"/>
                         <field name="validated_by"
                                readonly="1"
                                widget="many2one_avatar_user"
-                               invisible="not validated_by"/>
+                               attrs="{'invisible': [('validated_by', '=', False)]}"/>
                         <field name="company_id" groups="base.group_multi_company"/>
                     </group>
                 </group>
@@ -156,9 +152,9 @@
                 <group string="Description">
                     <field name="description"
                            placeholder="Ajoutez une description du transfert..."
-                           readonly="state != 'draft'"/>
+                           attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                 </group>
-                <group string="Opérations de caisse liées" col="4" invisible="not cash_operation_out_id and not cash_operation_in_id">
+                <group string="Opérations de caisse liées" col="4" attrs="{'invisible': [('cash_operation_out_id', '=', False), ('cash_operation_in_id', '=', False)]}">
                         <field name="cash_operation_out_id" readonly="1"/>
                         <field name="cash_operation_in_id" readonly="1"/>
                 </group>
