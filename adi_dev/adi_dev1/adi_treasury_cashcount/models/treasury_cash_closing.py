@@ -39,7 +39,7 @@ class TreasuryCashClosing(models.Model):
     def _onchange_counted_total(self):
         """Mettre à jour le solde réel quand le total compté change"""
         for closing in self:
-            if closing.use_cash_count and closing.counted_total > 0:
+            if closing.use_cash_count and closing.counted_total and closing.counted_total > 0:
                 closing.balance_end_real = closing.counted_total
                 # Marquer comme modifié manuellement pour éviter la synchro auto
                 closing.balance_end_real_manual = True

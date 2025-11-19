@@ -24,22 +24,24 @@
                 <field name="bank_reference" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}"/>
             </xpath>
 
-            <!-- Ajouter les opérations bancaires dans le notebook -->
-            <xpath expr="//page[@string='Opérations']" position="after">
-                <page string="Opérations Bancaires" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}">
-                    <group>
-                        <group string="Sortie bancaire">
-                            <field name="bank_operation_out_id" readonly="1"/>
-                            <field name="bank_from_balance_before" widget="monetary" attrs="{'invisible': [('bank_operation_out_id', '=', False)]}"/>
-                            <field name="bank_from_balance_after" widget="monetary" attrs="{'invisible': [('bank_operation_out_id', '=', False)]}"/>
+            <!-- Ajouter le notebook avec les opérations bancaires avant le chatter -->
+            <xpath expr="//chatter" position="before">
+                <notebook>
+                    <page string="Opérations Bancaires" name="banking_operations" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}">
+                        <group>
+                            <group string="Sortie bancaire">
+                                <field name="bank_operation_out_id" readonly="1"/>
+                                <field name="bank_from_balance_before" widget="monetary" attrs="{'invisible': [('bank_operation_out_id', '=', False)]}"/>
+                                <field name="bank_from_balance_after" widget="monetary" attrs="{'invisible': [('bank_operation_out_id', '=', False)]}"/>
+                            </group>
+                            <group string="Entrée bancaire">
+                                <field name="bank_operation_in_id" readonly="1"/>
+                                <field name="bank_to_balance_before" widget="monetary" attrs="{'invisible': [('bank_operation_in_id', '=', False)]}"/>
+                                <field name="bank_to_balance_after" widget="monetary" attrs="{'invisible': [('bank_operation_in_id', '=', False)]}"/>
+                            </group>
                         </group>
-                        <group string="Entrée bancaire">
-                            <field name="bank_operation_in_id" readonly="1"/>
-                            <field name="bank_to_balance_before" widget="monetary" attrs="{'invisible': [('bank_operation_in_id', '=', False)]}"/>
-                            <field name="bank_to_balance_after" widget="monetary" attrs="{'invisible': [('bank_operation_in_id', '=', False)]}"/>
-                        </group>
-                    </group>
-                </page>
+                    </page>
+                </notebook>
             </xpath>
 
         </field>

@@ -89,6 +89,7 @@ class PersonalCashAccount(models.Model):
     active_advance_count = fields.Integer(
         string='Avances en cours',
         compute='_compute_statistics',
+        store=True,
         help="Nombre d'avances payées mais non encore réglées"
     )
 

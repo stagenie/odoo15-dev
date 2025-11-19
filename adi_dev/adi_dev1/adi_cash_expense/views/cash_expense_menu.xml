@@ -4,7 +4,7 @@
     <menuitem id="menu_cash_expense_root"
               name="Dépenses Caisse"
               sequence="25"
-              web_icon="adi_cash_expense,static/description/icon.png"/>
+              web_icon="adi_cash_expense,static/description/caisse-en.png"/>
 
     <!-- Sous-menus -->
     <menuitem id="menu_cash_expense_operations"

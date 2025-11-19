@@ -162,8 +162,8 @@
 
                 <filter string="Avec avances en cours" name="with_advances"
                         domain="[('active_advance_count', '&gt;', 0)]"/>
-                <filter string="Limite dépassée" name="over_limit"
-                        domain="[('current_balance', '&gt;', 'advance_limit'), ('advance_limit', '&gt;', 0)]"/>
+                <filter string="Avec solde" name="with_balance"
+                        domain="[('current_balance', '&gt;', 0)]"/>
 
                 <group expand="0" string="Grouper par">
                     <filter string="Employé" name="group_employee" context="{'group_by': 'employee_id'}"/>

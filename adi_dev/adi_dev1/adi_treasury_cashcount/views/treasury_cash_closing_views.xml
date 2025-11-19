@@ -44,11 +44,12 @@
                         </group>
                     </group>
 
-                    <field name="count_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                    <field name="count_line_ids" nolabel="1" attrs="{'readonly': [('state', '!=', 'draft')]}">
                         <tree editable="bottom" create="true" delete="true">
                             <field name="denomination_id"
                                    options="{'no_create': True}"
-                                   domain="[('currency_id', '=', parent.currency_id)]"/>
+                                   domain="[('currency_id', '=', parent.currency_id)]"
+                                   required="1"/>
                             <field name="denomination_type" string="Type"/>
                             <field name="denomination_value" string="Valeur unitaire" widget="monetary"/>
                             <field name="quantity" string="Nombre" sum="Total"/>

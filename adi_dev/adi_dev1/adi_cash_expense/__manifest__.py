@@ -4,35 +4,16 @@
     'version': '15.0.1.0.0',
     'category': 'Accounting/Treasury',
     'summary': 'Gestion des dépenses de caisse avec remboursements et avances',
-    'description': """
-        Module de Gestion des Dépenses de Caisse
-        =========================================
+    'description': """Module de Gestion des Dépenses de Caisse
 
-        Ce module étend adi_treasury pour gérer les dépenses de caisse :
+Ce module étend adi_treasury pour gérer les dépenses de caisse :
 
-        Fonctionnalités :
-        -----------------
-        * Gestion des remboursements :
-          - Employé achète avec ses propres fonds
-          - Fournir les justificatifs
-          - Validation et remboursement par le caissier
-
-        * Gestion des avances de caisse :
-          - Donner un montant à l'employé à l'avance
-          - Suivi du solde du compte personnel
-          - Réglement du solde restant
-
-        * Comptes personnels :
-          - Suivi du solde de chaque employé
-          - Limite d'avance autorisée
-          - Historique des dépenses
-
-        * Intégrations :
-          - Lien avec le module de trésorerie (adi_treasury)
-          - Lien avec les employés (hr.employee)
-          - Lien avec les départements (hr.department)
-          - Gestion des pièces justificatives
-    """,
+Fonctionnalités :
+- Gestion des remboursements (employé achète, justificatifs, validation)
+- Gestion des avances de caisse (montant à l'employé, suivi solde, règlement)
+- Comptes personnels (suivi solde, limite d'avance, historique)
+- Intégrations complètes (trésorerie, RH, pièces justificatives)
+""",
     'author': 'ADICOPS',
     'website': 'https://adicops-dz.com',
     'email': 'info@adicops.com',

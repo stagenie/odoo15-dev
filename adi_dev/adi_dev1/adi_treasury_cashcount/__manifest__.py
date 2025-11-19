@@ -4,24 +4,22 @@
     'version': '15.0.1.0.0',
     'category': 'Accounting/Treasury',
     'summary': 'Comptage détaillé des billets et pièces lors de la clôture de caisse',
-    'description': """
-        Module de Comptage des Billets et Pièces
-        =========================================
+    'description': """Module de Comptage des Billets et Pièces
 
-        Extension du module adi_treasury pour permettre :
-        - Comptage détaillé des billets et pièces par dénomination
-        - Calcul automatique du solde réel à partir du comptage
-        - Gestion des dénominations (2000 DA, 1000 DA, 500 DA, etc.)
-        - Interface intuitive de saisie du comptage
+Extension du module adi_treasury pour permettre :
+- Comptage détaillé des billets et pièces par dénomination
+- Calcul automatique du solde réel à partir du comptage
+- Gestion des dénominations (2000 DA, 1000 DA, 500 DA, etc.)
+- Interface intuitive de saisie du comptage
 
-        Lors de la clôture de caisse, l'utilisateur peut saisir :
-        - Nombre de billets de 2000 DA
-        - Nombre de billets de 1000 DA
-        - Nombre de billets de 500 DA
-        - Nombre de pièces de 200 DA, 100 DA, 50 DA, etc.
+Lors de la clôture de caisse, l'utilisateur peut saisir :
+- Nombre de billets de 2000 DA
+- Nombre de billets de 1000 DA
+- Nombre de billets de 500 DA
+- Nombre de pièces de 200 DA, 100 DA, 50 DA, etc.
 
-        Le montant total est calculé automatiquement et mis à jour dans le solde réel.
-    """,
+Le montant total est calculé automatiquement et mis à jour dans le solde réel.
+""",
     'author': 'ADICOPS',
     'website': 'https://adicops-dz.com',
     'email': 'info@adicops.com',
@@ -36,4 +34,5 @@
     'installable': True,
     'application': False,
     'auto_install': False,
+    'post_init_hook': 'post_init_hook',
 }

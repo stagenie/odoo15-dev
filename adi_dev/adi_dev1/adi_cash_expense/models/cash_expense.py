@@ -140,14 +140,6 @@ class CashExpense(models.Model):
         states={'paid': [('readonly', True)], 'settled': [('readonly', True)], 'cancel': [('readonly', True)]}
     )
 
-    operation_ids = fields.One2many(
-        'treasury.cash.operation',
-        'res_id',
-        domain=lambda self: [('res_model', '=', self._name)],
-        string='Opérations de caisse',
-        readonly=True
-    )
-
     # Compte personnel
     personal_account_id = fields.Many2one(
         'personal.cash.account',

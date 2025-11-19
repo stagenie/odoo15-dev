@@ -17,7 +17,7 @@
             <field name="name">Remboursement employé</field>
             <field name="code">REMB</field>
             <field name="operation_type">out</field>
-            <field name="description">Remboursement de frais à un employé</field>
+            <field name="sequence">20</field>
         </record>
 
         <!-- Catégorie pour les avances -->
@@ -25,7 +25,7 @@
             <field name="name">Avance employé</field>
             <field name="code">AVANC</field>
             <field name="operation_type">out</field>
-            <field name="description">Avance de caisse à un employé</field>
+            <field name="sequence">30</field>
         </record>
 
         <!-- Catégorie pour les retours d'avance -->
@@ -33,7 +33,7 @@
             <field name="name">Retour d'avance</field>
             <field name="code">RETAV</field>
             <field name="operation_type">in</field>
-            <field name="description">Retour d'argent d'une avance non utilisée</field>
+            <field name="sequence">40</field>
         </record>
 
         <!-- Catégorie pour les paiements supplémentaires -->
@@ -41,7 +41,7 @@
             <field name="name">Paiement supplémentaire</field>
             <field name="code">SUPPL</field>
             <field name="operation_type">out</field>
-            <field name="description">Paiement supplémentaire pour une avance dépassée</field>
+            <field name="sequence">50</field>
         </record>
     </data>
 </odoo>

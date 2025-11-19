@@ -82,9 +82,6 @@
                                     <field name="unit_price"/>
                                     <field name="total_amount" sum="Total"/>
                                     <field name="currency_id" invisible="1"/>
-                                    <button name="%(action_cash_expense_line_attachments)d" type="action"
-                                            icon="fa-paperclip" string="Pièces jointes"
-                                            context="{'default_line_id': active_id}"/>
                                 </tree>
                             </field>
                         </page>
