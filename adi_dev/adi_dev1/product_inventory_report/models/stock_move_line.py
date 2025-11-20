@@ -10,7 +10,7 @@ class StockMoveLine(models.Model):
         'res.partner',
         string='Partenaire',
         compute='_compute_partner_id',
-        store=False,
+        store=True,
         help='Client ou Fournisseur associé au mouvement de stock'
     )
 
