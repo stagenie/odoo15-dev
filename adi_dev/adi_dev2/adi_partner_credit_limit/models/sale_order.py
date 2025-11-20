@@ -12,13 +12,6 @@ class SaleOrder(models.Model):
         help='Solde actuel du client (factures ouvertes - paiements - avoirs)'
     )
 
-    available_credit = fields.Float(
-        string='Crédit disponible',
-        compute='_compute_available_credit',
-        readonly=True,
-        help='Crédit disponible = Limite de crédit - Solde actuel'
-    )
-
     partner_credit_limit = fields.Float(
         string='Limite de crédit',
         related='partner_id.credit_limit',
@@ -34,15 +27,6 @@ class SaleOrder(models.Model):
                 order.customer_balance = self._get_customer_balance(order.partner_id)
             else:
                 order.customer_balance = 0.0
-
-    @api.depends('partner_id', 'customer_balance')
-    def _compute_available_credit(self):
-        """Calcule le crédit disponible."""
-        for order in self:
-            if order.partner_id and order.partner_id.credit_limit_active:
-                order.available_credit = order.partner_id.credit_limit - order.customer_balance
-            else:
-                order.available_credit = 0.0
 
     def _get_customer_balance(self, partner):
         """
