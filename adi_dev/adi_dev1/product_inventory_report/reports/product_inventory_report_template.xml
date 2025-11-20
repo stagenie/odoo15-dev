@@ -16,11 +16,21 @@
         <template id="report_product_inventory_document">
             <t t-call="web.html_container">
                 <t t-call="web.external_layout">
+                    <style>
+                        .report-title {
+                            margin-top: 20px;
+                            margin-bottom: 25px;
+                            padding: 15px 0;
+                            page-break-after: avoid;
+                            font-size: 16pt;
+                            font-weight: bold;
+                        }
+                    </style>
                     <div class="page">
-                        <h2 class="text-center">Rapport Inventaire Produits par Emplacement</h2>
-                        <br/>
+                        <h2 class="report-title text-center">Rapport Inventaire Produits par Emplacement</h2>
 
-                        <t t-set="locations" t-value="docs.report_locations.split('|') if docs.report_locations else []"/>
+                        <div class="report-table-container">
+                            <t t-set="locations" t-value="docs.report_locations.split('|') if docs.report_locations else []"/>
                         <t t-set="show_category" t-value="docs.report_show_category"/>
                         <t t-set="report_lines" t-value="env['product.inventory.report.line'].search([])"/>
 
@@ -83,6 +93,7 @@
                                 </t>
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </t>
             </t>
