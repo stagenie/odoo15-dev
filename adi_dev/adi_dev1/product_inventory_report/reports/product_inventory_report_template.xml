@@ -18,21 +18,30 @@
                 <t t-call="web.external_layout">
                     <style>
                         .report-title {
-                            margin-top: 20px;
-                            margin-bottom: 25px;
-                            padding: 15px 0;
-                            page-break-after: avoid;
-                            font-size: 16pt;
+                            margin-top: 5px;
+                            margin-bottom: 10px;
+                            padding: 5px 0;
+                            font-size: 13pt;
                             font-weight: bold;
+                            min-height: 20px;
+                        }
+                        .table {
+                            page-break-inside: auto;
+                            width: 100%;
+                        }
+                        .table thead {
+                            display: table-header-group;
+                        }
+                        .table tr {
+                            page-break-inside: auto;
                         }
                     </style>
+                    <t t-set="locations" t-value="docs.report_locations.split('|') if docs.report_locations else []"/>
+                    <t t-set="show_category" t-value="docs.report_show_category"/>
+                    <t t-set="report_lines" t-value="env['product.inventory.report.line'].search([])"/>
+
                     <div class="page">
                         <h2 class="report-title text-center">Rapport Inventaire Produits par Emplacement</h2>
-
-                        <div class="report-table-container">
-                            <t t-set="locations" t-value="docs.report_locations.split('|') if docs.report_locations else []"/>
-                        <t t-set="show_category" t-value="docs.report_show_category"/>
-                        <t t-set="report_lines" t-value="env['product.inventory.report.line'].search([])"/>
 
                         <table class="table table-sm table-bordered">
                             <thead>
@@ -93,7 +102,6 @@
                                 </t>
                             </tbody>
                         </table>
-                        </div>
                     </div>
                 </t>
             </t>
