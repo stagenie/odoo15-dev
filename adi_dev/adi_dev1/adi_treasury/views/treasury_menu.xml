@@ -55,46 +55,68 @@
             parent="menu_treasury_root"
             sequence="10"/>
 
+    <!-- Sous-groupe: Gestion des Caisses et Coffres -->
+    <menuitem
+            id="menu_treasury_accounts_group"
+            name="Caisses et Coffres"
+            parent="menu_treasury_main"
+            sequence="10"/>
+
     <!-- Menu Caisses -->
     <menuitem
             id="menu_treasury_cash"
             name="Caisses"
-            parent="menu_treasury_main"
+            parent="menu_treasury_accounts_group"
             action="adi_treasury.action_treasury_cash"
             sequence="10"/>
-    <menuitem
-            id="menu_treasury_transfer"
-            name="Transferts"
-            parent="menu_treasury_main"
-            action="action_treasury_transfer"
-            sequence="20"/>
-    <!-- Ajouter après le menu Caisses -->
+
+    <!-- Menu Coffres-forts -->
     <menuitem
             id="menu_treasury_safe"
             name="Coffres-forts"
-            parent="menu_treasury_main"
+            parent="menu_treasury_accounts_group"
             action="action_treasury_safe"
             sequence="15"/>
 
-
-    <!-- Sous-menu Configuration (pour plus tard) -->
+    <!-- Sous-groupe: Opérations et Mouvements -->
     <menuitem
-            id="menu_treasury_configuration"
-            name="Configuration"
-            parent="menu_treasury_root"
-            sequence="100"
-            groups="base.group_system"
-    />
+            id="menu_treasury_operations_group"
+            name="Opérations et Mouvements"
+            parent="menu_treasury_main"
+            sequence="20"/>
+
+    <!-- Menu Transferts -->
+    <menuitem
+            id="menu_treasury_transfer"
+            name="Transferts"
+            parent="menu_treasury_operations_group"
+            action="action_treasury_transfer"
+            sequence="10"/>
+
+    <!-- Menu Opérations de caisse -->
+    <menuitem
+            id="menu_treasury_cash_operation"
+            name="Opérations de caisse"
+            parent="menu_treasury_operations_group"
+            action="action_treasury_cash_operation"
+            sequence="20"/>
+
+    <!-- Menu Clôtures -->
+    <menuitem
+            id="menu_treasury_cash_closing"
+            name="Clôtures de caisse"
+            parent="menu_treasury_operations_group"
+            action="action_treasury_cash_closing"
+            sequence="30"/>
 
     <!-- Menu Opérations de coffre -->
     <menuitem
             id="menu_treasury_safe_operation"
             name="Opérations coffre"
-            parent="menu_treasury_main"
+            parent="menu_treasury_operations_group"
             action="action_treasury_safe_operation"
             sequence="25"
             groups="adi_treasury.group_treasury_manager"/>
-
 
     <!-- Menu Configuration -->
     <menuitem
@@ -110,24 +132,6 @@
             parent="menu_treasury_config"
             action="action_treasury_operation_category"
             sequence="10"/>
-
-    <!-- Menu Opérations de caisse -->
-
-
-    <menuitem
-            id="menu_treasury_cash_operation"
-            name="Opérations de caisse"
-            parent="menu_treasury_main"
-            action="action_treasury_cash_operation"
-            sequence="30"/>
-
-    <!-- Menu Clôtures -->
-    <menuitem
-            id="menu_treasury_cash_closing"
-            name="Clôtures de caisse"
-            parent="menu_treasury_main"
-            action="action_treasury_cash_closing"
-            sequence="35"/>
 
     <!-- Menu Transferts -->
 
