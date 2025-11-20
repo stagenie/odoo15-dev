@@ -3,7 +3,7 @@
     <!-- Menu Dépense Caisse lié à l'app Trésorerie -->
     <menuitem id="menu_cash_expense_parent"
               name="Dépense Caisse"
-              parent="adi_treasury.menu_treasury_main"
+              parent="adi_treasury.menu_treasury_root"
               sequence="40"/>
 
     <!-- Sous-menus d'Opérations -->
