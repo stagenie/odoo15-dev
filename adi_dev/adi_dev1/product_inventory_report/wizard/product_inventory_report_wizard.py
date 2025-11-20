@@ -7,6 +7,13 @@ class ProductInventoryReportWizard(models.TransientModel):
     _name = 'product.inventory.report.wizard'
     _description = 'Assistant Rapport Inventaire Produits'
 
+    company_id = fields.Many2one(
+        'res.company',
+        string='Compagnie',
+        default=lambda self: self.env.company.id,
+        required=True
+    )
+
     category_ids = fields.Many2many(
         'product.category',
         string='Catégories',
