@@ -1,8 +1,48 @@
-from odoo import models, api, _
+from odoo import models, api, fields, _
 from odoo.exceptions import UserError
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
+
+    # Champs calculés pour afficher le solde et la limite de crédit du client
+    customer_balance = fields.Float(
+        string='Solde client',
+        compute='_compute_customer_balance',
+        readonly=True,
+        help='Solde actuel du client (factures ouvertes - paiements - avoirs)'
+    )
+
+    available_credit = fields.Float(
+        string='Crédit disponible',
+        compute='_compute_available_credit',
+        readonly=True,
+        help='Crédit disponible = Limite de crédit - Solde actuel'
+    )
+
+    partner_credit_limit = fields.Float(
+        string='Limite de crédit',
+        related='partner_id.credit_limit',
+        readonly=True,
+        help='Limite de crédit du partenaire'
+    )
+
+    @api.depends('partner_id')
+    def _compute_customer_balance(self):
+        """Calcule le solde client en utilisant la méthode existante."""
+        for order in self:
+            if order.partner_id:
+                order.customer_balance = self._get_customer_balance(order.partner_id)
+            else:
+                order.customer_balance = 0.0
+
+    @api.depends('partner_id', 'customer_balance')
+    def _compute_available_credit(self):
+        """Calcule le crédit disponible."""
+        for order in self:
+            if order.partner_id and order.partner_id.credit_limit_active:
+                order.available_credit = order.partner_id.credit_limit - order.customer_balance
+            else:
+                order.available_credit = 0.0
 
     def _get_customer_balance(self, partner):
         """
