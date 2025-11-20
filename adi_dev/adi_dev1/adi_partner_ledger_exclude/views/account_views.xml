@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Extension de l'action Livre des tiers (Partner Ledger) -->
-        <record id="account.action_account_moves_ledger" model="ir.actions.act_window">
-            <field name="context">{'exclude_flagged_moves': True}</field>
-        </record>
-
-        <!-- Extension de l'action Grand livre (General Ledger) -->
-        <record id="account.action_move_line_select" model="ir.actions.act_window">
-            <field name="context">{'exclude_flagged_moves': True}</field>
-        </record>
 
         <!-- Extension de la vue liste des écritures comptables pour afficher le champ d'exclusion -->
         <record id="view_move_line_tree_inherit_exclude" model="ir.ui.view">
