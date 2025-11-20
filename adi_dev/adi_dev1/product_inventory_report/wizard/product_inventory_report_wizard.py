@@ -43,6 +43,17 @@ class ProductInventoryReportWizard(models.TransientModel):
         ('pdf', 'Imprimer PDF'),
     ], string='Type de rapport', default='screen', required=True)
 
+    # Champs pour stocker les informations du rapport (utilisés dans le template PDF)
+    report_locations = fields.Char(
+        string='Locations',
+        default='',
+        help='Emplacements séparés par |'
+    )
+    report_show_category = fields.Boolean(
+        string='Show Category',
+        default=True
+    )
+
     def action_generate_report(self):
         """Générer le rapport selon les filtres sélectionnés"""
         self.ensure_one()
@@ -90,15 +101,14 @@ class ProductInventoryReportWizard(models.TransientModel):
             for line_data in report_lines:
                 self.env['product.inventory.report.line'].create(line_data)
 
-            # Passer les données via le contexte plutôt que l'URL (évite erreur 414)
-            return self.env.ref('product_inventory_report.action_report_product_inventory').report_action(
-                self,
-                data={
-                    'locations': locations.mapped('complete_name'),
-                    'show_category': self.show_category,
-                },
-                config=False
-            )
+            # Stocker les locations dans le wizard pour les récupérer dans le template
+            self.write({
+                'report_locations': '|'.join(locations.mapped('complete_name')),
+                'report_show_category': self.show_category,
+            })
+
+            # Générer le rapport sans passer de data (évite erreur 414 et KeyError)
+            return self.env.ref('product_inventory_report.action_report_product_inventory').report_action(self)
 
     def _create_dynamic_view(self, locations):
         """Créer une vue dynamique avec les noms d'emplacements"""

@@ -20,8 +20,8 @@
                         <h2 class="text-center">Rapport Inventaire Produits par Emplacement</h2>
                         <br/>
 
-                        <t t-set="locations" t-value="data.get('locations', [])"/>
-                        <t t-set="show_category" t-value="data.get('show_category', True)"/>
+                        <t t-set="locations" t-value="docs.report_locations.split('|') if docs.report_locations else []"/>
+                        <t t-set="show_category" t-value="docs.report_show_category"/>
                         <t t-set="report_lines" t-value="env['product.inventory.report.line'].search([])"/>
 
                         <table class="table table-sm table-bordered">
