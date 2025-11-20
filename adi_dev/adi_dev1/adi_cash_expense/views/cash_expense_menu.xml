@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Menu principal -->
-    <menuitem id="menu_cash_expense_root"
-              name="Dépenses Caisse"
-              sequence="25"
-              web_icon="adi_cash_expense,static/description/caisse-en.png"/>
+    <!-- Menu Dépense Caisse lié à l'app Trésorerie -->
+    <menuitem id="menu_cash_expense_parent"
+              name="Dépense Caisse"
+              parent="adi_treasury.menu_treasury_main"
+              sequence="40"/>
 
-    <!-- Sous-menus -->
+    <!-- Sous-menus d'Opérations -->
     <menuitem id="menu_cash_expense_operations"
               name="Opérations"
-              parent="menu_cash_expense_root"
+              parent="menu_cash_expense_parent"
               sequence="10"/>
 
     <menuitem id="menu_cash_expense_all"
@@ -30,9 +30,10 @@
               action="action_cash_expense_advance"
               sequence="30"/>
 
+    <!-- Sous-menu Comptes -->
     <menuitem id="menu_cash_expense_accounts"
               name="Comptes"
-              parent="menu_cash_expense_root"
+              parent="menu_cash_expense_parent"
               sequence="20"/>
 
     <menuitem id="menu_personal_cash_account"
@@ -44,7 +45,7 @@
     <!-- Configuration (si besoin) -->
     <menuitem id="menu_cash_expense_config"
               name="Configuration"
-              parent="menu_cash_expense_root"
+              parent="menu_cash_expense_parent"
               sequence="100"
               groups="base.group_system"/>
 </odoo>
