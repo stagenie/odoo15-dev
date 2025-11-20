@@ -7,10 +7,9 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     # Champ related pour afficher l'exclusion de la facture associée dans les vues
-    exclude_from_partner_ledger = fields.Related(
-        'move_id.exclude_from_partner_ledger',
+    exclude_from_partner_ledger = fields.Boolean(
+        related='move_id.exclude_from_partner_ledger',
         string='Exclus du solde',
-        type='boolean',
         readonly=True,
         store=False
     )
