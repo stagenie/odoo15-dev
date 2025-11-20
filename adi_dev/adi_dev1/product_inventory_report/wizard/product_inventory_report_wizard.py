@@ -84,13 +84,21 @@ class ProductInventoryReportWizard(models.TransientModel):
                 }
             }
         else:
-            # Retourner l'action pour imprimer le PDF
-            data = {
-                'report_lines': report_lines,
-                'locations': locations.mapped('complete_name'),
-                'show_category': self.show_category,
-            }
-            return self.env.ref('product_inventory_report.action_report_product_inventory').report_action(self, data=data)
+            # Créer les lignes de rapport dans la base (comme pour screen)
+            self.env['product.inventory.report.line'].search([]).unlink()
+
+            for line_data in report_lines:
+                self.env['product.inventory.report.line'].create(line_data)
+
+            # Passer les données via le contexte plutôt que l'URL (évite erreur 414)
+            return self.env.ref('product_inventory_report.action_report_product_inventory').report_action(
+                self,
+                data={
+                    'locations': locations.mapped('complete_name'),
+                    'show_category': self.show_category,
+                },
+                config=False
+            )
 
     def _create_dynamic_view(self, locations):
         """Créer une vue dynamique avec les noms d'emplacements"""

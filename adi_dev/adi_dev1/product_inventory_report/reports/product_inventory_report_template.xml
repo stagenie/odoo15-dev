@@ -20,35 +20,64 @@
                         <h2 class="text-center">Rapport Inventaire Produits par Emplacement</h2>
                         <br/>
 
+                        <t t-set="locations" t-value="data.get('locations', [])"/>
+                        <t t-set="show_category" t-value="data.get('show_category', True)"/>
+                        <t t-set="report_lines" t-value="env['product.inventory.report.line'].search([])"/>
+
                         <table class="table table-sm table-bordered">
                             <thead>
                                 <tr class="text-center" style="background-color: #f0f0f0;">
                                     <th>Référence</th>
                                     <th>Désignation</th>
-                                    <th t-if="data.get('show_category')">Catégorie</th>
-                                    <t t-foreach="data.get('locations', [])" t-as="location">
+                                    <th t-if="show_category">Catégorie</th>
+                                    <t t-foreach="locations" t-as="location">
                                         <th><t t-esc="location"/></th>
                                     </t>
                                     <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <t t-foreach="data.get('report_lines', [])" t-as="line">
+                                <t t-foreach="report_lines" t-as="line">
                                     <tr>
-                                        <td><t t-esc="line.get('default_code', '')"/></td>
-                                        <td><t t-esc="line.get('name', '')"/></td>
-                                        <td t-if="data.get('show_category')">
-                                            <t t-if="line.get('categ_id')">
-                                                <t t-esc="env['product.category'].browse(line.get('categ_id')).name"/>
+                                        <td><t t-esc="line.default_code or ''"/></td>
+                                        <td><t t-esc="line.name or ''"/></td>
+                                        <td t-if="show_category">
+                                            <t t-if="line.categ_id">
+                                                <t t-esc="line.categ_id.name"/>
                                             </t>
                                         </td>
-                                        <t t-foreach="range(1, len(data.get('locations', [])) + 1)" t-as="i">
-                                            <td class="text-right">
-                                                <t t-esc="'{:,.2f}'.format(line.get('location_%s_qty' % i, 0.0))"/>
-                                            </td>
+                                        <t t-if="len(locations) >= 1">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_1_qty or 0.0)"/></td>
+                                        </t>
+                                        <t t-if="len(locations) >= 2">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_2_qty or 0.0)"/></td>
+                                        </t>
+                                        <t t-if="len(locations) >= 3">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_3_qty or 0.0)"/></td>
+                                        </t>
+                                        <t t-if="len(locations) >= 4">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_4_qty or 0.0)"/></td>
+                                        </t>
+                                        <t t-if="len(locations) >= 5">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_5_qty or 0.0)"/></td>
+                                        </t>
+                                        <t t-if="len(locations) >= 6">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_6_qty or 0.0)"/></td>
+                                        </t>
+                                        <t t-if="len(locations) >= 7">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_7_qty or 0.0)"/></td>
+                                        </t>
+                                        <t t-if="len(locations) >= 8">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_8_qty or 0.0)"/></td>
+                                        </t>
+                                        <t t-if="len(locations) >= 9">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_9_qty or 0.0)"/></td>
+                                        </t>
+                                        <t t-if="len(locations) >= 10">
+                                            <td class="text-right"><t t-esc="'{:,.2f}'.format(line.location_10_qty or 0.0)"/></td>
                                         </t>
                                         <td class="text-right">
-                                            <strong><t t-esc="'{:,.2f}'.format(line.get('total_qty', 0.0))"/></strong>
+                                            <strong><t t-esc="'{:,.2f}'.format(line.total_qty or 0.0)"/></strong>
                                         </td>
                                     </tr>
                                 </t>
