@@ -7,12 +7,8 @@
         <field name="arch" type="xml">
             <!-- Ajouter les champs de solde et limite après le champ partenaire -->
             <xpath expr="//field[@name='partner_id']" position="after">
-                <!-- Afficher les informations de crédit du client en dessous du partenaire -->
-                <group string="Informations de crédit client" attrs="{'invisible': [('partner_id', '=', False)]}">
-                    <field name="customer_balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                    <field name="partner_credit_limit" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                    <field name="available_credit" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                </group>
+                <field name="customer_balance" attrs="{'invisible': [('partner_id', '=', False)]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="partner_credit_limit" attrs="{'invisible': [('partner_id', '=', False)]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
             </xpath>
         </field>
     </record>
