@@ -28,25 +28,47 @@ class CashExpenseSettlementWizard(models.TransientModel):
         currency_field='currency_id'
     )
 
+    # Lignes de dépenses détaillées (optionnelles)
+    line_ids = fields.One2many(
+        'cash.expense.settlement.line',
+        'wizard_id',
+        string='Détail des dépenses',
+        help="Détaillez les dépenses effectuées (optionnel). Si renseigné, le montant sera calculé automatiquement."
+    )
+
+    # Mode de saisie
+    use_lines = fields.Boolean(
+        string='Détailler les dépenses',
+        default=False,
+        help="Cochez pour saisir le détail des dépenses ligne par ligne"
+    )
+
+    amount_from_lines = fields.Monetary(
+        string='Total des lignes',
+        compute='_compute_amount_from_lines',
+        currency_field='currency_id',
+        help="Somme calculée depuis les lignes de dépense"
+    )
+
     amount_spent = fields.Monetary(
         string='Montant dépensé',
-        required=True,
         currency_field='currency_id',
+        compute='_compute_amount_spent',
+        store=True,
+        readonly=False,
         help="Montant réellement dépensé par l'employé"
     )
 
     amount_to_return = fields.Monetary(
         string='Montant à rendre',
-        compute='_compute_amount_to_return',
-        store=True,
+        compute='_compute_amounts',
         currency_field='currency_id',
         help="Montant que l'employé doit rendre à la caisse"
     )
 
     amount_to_pay = fields.Monetary(
         string='Montant à payer',
-        compute='_compute_amount_to_pay',
-        store=True,
+        compute='_compute_amounts',
         currency_field='currency_id',
         help="Montant supplémentaire à payer à l'employé si les dépenses dépassent l'avance"
     )
@@ -68,49 +90,50 @@ class CashExpenseSettlementWizard(models.TransientModel):
         string='Notes'
     )
 
-    # Justificatifs du règlement
+    # Justificatifs du règlement (globaux)
     attachment_ids = fields.Many2many(
         'ir.attachment',
         'settlement_wizard_attachment_rel',
         'wizard_id',
         'attachment_id',
-        string='Justificatifs de dépenses',
-        help="Factures et reçus des dépenses réellement effectuées"
+        string='Justificatifs généraux',
+        help="Justificatifs globaux (ou utilisez les justificatifs par ligne)"
     )
 
     settlement_type = fields.Selection([
         ('return', 'Retour d\'argent'),
         ('exact', 'Montant exact'),
         ('additional', 'Paiement supplémentaire')
-    ], string='Type de règlement', compute='_compute_settlement_type', store=True)
+    ], string='Type de règlement', compute='_compute_amounts')
+
+    @api.depends('line_ids.amount')
+    def _compute_amount_from_lines(self):
+        """Calculer le total depuis les lignes"""
+        for wizard in self:
+            wizard.amount_from_lines = sum(wizard.line_ids.mapped('amount'))
+
+    @api.depends('use_lines', 'amount_from_lines', 'line_ids.amount')
+    def _compute_amount_spent(self):
+        """Calculer le montant dépensé selon le mode"""
+        for wizard in self:
+            if wizard.use_lines and wizard.line_ids:
+                wizard.amount_spent = wizard.amount_from_lines
 
     @api.depends('amount_advanced', 'amount_spent')
-    def _compute_amount_to_return(self):
-        """Calculer le montant à rendre"""
+    def _compute_amounts(self):
+        """Calculer les montants à rendre/payer et le type de règlement"""
         for wizard in self:
             if wizard.amount_spent < wizard.amount_advanced:
                 wizard.amount_to_return = wizard.amount_advanced - wizard.amount_spent
-            else:
-                wizard.amount_to_return = 0.0
-
-    @api.depends('amount_advanced', 'amount_spent')
-    def _compute_amount_to_pay(self):
-        """Calculer le montant supplémentaire à payer"""
-        for wizard in self:
-            if wizard.amount_spent > wizard.amount_advanced:
-                wizard.amount_to_pay = wizard.amount_spent - wizard.amount_advanced
-            else:
                 wizard.amount_to_pay = 0.0
-
-    @api.depends('amount_to_return', 'amount_to_pay')
-    def _compute_settlement_type(self):
-        """Déterminer le type de règlement"""
-        for wizard in self:
-            if wizard.amount_to_return > 0:
                 wizard.settlement_type = 'return'
-            elif wizard.amount_to_pay > 0:
+            elif wizard.amount_spent > wizard.amount_advanced:
+                wizard.amount_to_return = 0.0
+                wizard.amount_to_pay = wizard.amount_spent - wizard.amount_advanced
                 wizard.settlement_type = 'additional'
             else:
+                wizard.amount_to_return = 0.0
+                wizard.amount_to_pay = 0.0
                 wizard.settlement_type = 'exact'
 
     @api.constrains('amount_spent')
@@ -120,14 +143,54 @@ class CashExpenseSettlementWizard(models.TransientModel):
             if wizard.amount_spent < 0:
                 raise ValidationError(_("Le montant dépensé ne peut pas être négatif !"))
 
+    @api.constrains('use_lines', 'line_ids', 'amount_spent')
+    def _check_lines_consistency(self):
+        """Vérifier la cohérence entre les lignes et le montant"""
+        for wizard in self:
+            if wizard.use_lines and wizard.line_ids:
+                total_lines = sum(wizard.line_ids.mapped('amount'))
+                if abs(wizard.amount_spent - total_lines) > 0.01:
+                    raise ValidationError(_(
+                        "Le montant dépensé (%(spent)s) doit correspondre à la somme des lignes (%(total)s) !",
+                        spent=wizard.amount_spent,
+                        total=total_lines
+                    ))
+
     def action_settle(self):
         """Régler l'avance"""
         self.ensure_one()
 
-        if not self.attachment_ids:
+        # Vérifier les justificatifs (globaux ou par ligne)
+        has_global_attachments = bool(self.attachment_ids)
+        has_line_attachments = any(line.attachment_ids for line in self.line_ids)
+
+        if not has_global_attachments and not has_line_attachments:
             raise ValidationError(_(
-                "Veuillez joindre au moins un justificatif de dépense !"
+                "Veuillez joindre au moins un justificatif de dépense "
+                "(soit dans les justificatifs généraux, soit sur les lignes de dépense) !"
             ))
+
+        # Vérifier le montant dépensé
+        if self.amount_spent <= 0:
+            raise ValidationError(_("Veuillez saisir le montant dépensé !"))
+
+        # Si des lignes sont utilisées, les créer sur l'avance originale
+        if self.use_lines and self.line_ids:
+            for line in self.line_ids:
+                # Créer la ligne de dépense sur l'avance
+                expense_line = self.env['cash.expense.line'].create({
+                    'expense_id': self.expense_id.id,
+                    'name': line.name,
+                    'description': line.description,
+                    'quantity': 1,
+                    'unit_price': line.amount,
+                })
+                # Attacher les justificatifs de la ligne
+                for attachment in line.attachment_ids:
+                    attachment.write({
+                        'res_model': 'cash.expense.line',
+                        'res_id': expense_line.id
+                    })
 
         # Mettre à jour l'avance
         self.expense_id.write({
@@ -137,7 +200,7 @@ class CashExpenseSettlementWizard(models.TransientModel):
             'settled_date': fields.Datetime.now()
         })
 
-        # Attacher les justificatifs à l'avance
+        # Attacher les justificatifs globaux à l'avance
         for attachment in self.attachment_ids:
             attachment.write({
                 'res_model': 'cash.expense',
@@ -232,3 +295,53 @@ class CashExpenseSettlementWizard(models.TransientModel):
                 }
             }
         }
+
+
+class CashExpenseSettlementLine(models.TransientModel):
+    _name = 'cash.expense.settlement.line'
+    _description = 'Ligne de Règlement d\'Avance'
+
+    wizard_id = fields.Many2one(
+        'cash.expense.settlement.wizard',
+        string='Wizard',
+        required=True,
+        ondelete='cascade'
+    )
+
+    name = fields.Char(
+        string='Désignation',
+        required=True,
+        help="Description de la dépense"
+    )
+
+    description = fields.Text(
+        string='Détails',
+        help="Détails supplémentaires sur la dépense"
+    )
+
+    amount = fields.Monetary(
+        string='Montant',
+        required=True,
+        currency_field='currency_id'
+    )
+
+    currency_id = fields.Many2one(
+        'res.currency',
+        related='wizard_id.currency_id',
+        readonly=True
+    )
+
+    attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'settlement_line_attachment_rel',
+        'line_id',
+        'attachment_id',
+        string='Justificatif',
+        help="Facture ou reçu pour cette dépense"
+    )
+
+    date = fields.Date(
+        string='Date',
+        default=fields.Date.today,
+        help="Date de la dépense"
+    )

@@ -14,6 +14,9 @@
                             states="draft" class="oe_highlight"/>
                     <button name="action_validate" string="Valider" type="object"
                             states="confirmed" class="oe_highlight"/>
+                    <button name="action_validate_force" string="Valider avec écarts" type="object"
+                            states="confirmed" class="btn-secondary"
+                            confirm="Êtes-vous sûr de vouloir valider ce rapprochement avec des opérations non rapprochées ? Cela peut créer des décalages."/>
                     <button name="action_back_to_draft" string="Retour brouillon" type="object"
                             states="confirmed,validated"/>
                     <button name="action_cancel" string="Annuler" type="object"
@@ -72,8 +75,9 @@
                             </field>
                         </page>
                         <page string="Opérations">
-                            <field name="operation_ids">
+                            <field name="operation_ids" context="{'default_bank_id': bank_id}">
                                 <tree decoration-success="is_reconciled==True">
+                                    <field name="state" invisible="1"/>
                                     <field name="date"/>
                                     <field name="name"/>
                                     <field name="category_id"/>
@@ -86,8 +90,9 @@
                             </field>
                         </page>
                         <page string="Non rapprochées" attrs="{'invisible': [('unreconciled_count', '=', 0)]}">
-                            <field name="unreconciled_operation_ids">
+                            <field name="unreconciled_operation_ids" context="{'default_bank_id': bank_id}">
                                 <tree decoration-warning="1">
+                                    <field name="state" invisible="1"/>
                                     <field name="date"/>
                                     <field name="name"/>
                                     <field name="category_id"/>

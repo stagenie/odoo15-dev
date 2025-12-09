@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+     <!-- Menu racine - banueq -->
+   <menuitem id="menu_treasury_bank_root_caisses"
+              name="Caisses"
+              parent="adi_treasury.menu_treasury_root"
+              action="adi_treasury.action_treasury_cash"
+              sequence="-20"/>
+
+    <menuitem id="menu_treasury_bank_root_uok"
+              name="Banques"
+              parent="adi_treasury.menu_treasury_root"
+              action="action_treasury_bank"
+              sequence="-10"/>
 
     <!-- Menu racine - Extension du menu Trésorerie -->
     <menuitem id="menu_treasury_bank_root"

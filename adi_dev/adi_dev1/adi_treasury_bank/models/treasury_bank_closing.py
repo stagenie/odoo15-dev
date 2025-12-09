@@ -77,9 +77,8 @@ class TreasuryBankClosing(models.Model):
         required=True,
         currency_field='currency_id',
         readonly=True,
-        states={'draft': [('readonly', False)]},
         tracking=True,
-        help="Solde au début de la période"
+        help="Solde au début de la période (calculé automatiquement depuis la dernière clôture ou le solde d'ouverture)"
     )
     balance_end_theoretical = fields.Monetary(
         string='Solde final théorique',
@@ -299,8 +298,8 @@ class TreasuryBankClosing(models.Model):
                     closing_date = fields.Date.from_string(closing_date)
                 vals['period_start'] = closing_date.replace(day=1)
 
-        # Calculer balance_start si non fourni
-        if 'balance_start' not in vals and 'bank_id' in vals:
+        # Calculer balance_start automatiquement
+        if 'bank_id' in vals:
             bank = self.env['treasury.bank'].browse(vals['bank_id'])
             last_closing = self.search([
                 ('bank_id', '=', bank.id),
@@ -308,10 +307,11 @@ class TreasuryBankClosing(models.Model):
             ], order='closing_date desc, id desc', limit=1)
 
             if last_closing:
+                # Utiliser le solde de fin de la dernière clôture validée
                 vals['balance_start'] = last_closing.balance_end_bank
             else:
-                # Première clôture : solde initial = 0 par défaut
-                vals['balance_start'] = 0.0
+                # Première clôture : utiliser le solde d'ouverture du compte bancaire
+                vals['balance_start'] = bank.opening_balance or 0.0
 
         # Vérifier qu'il n'y a pas déjà une clôture en cours
         if 'bank_id' in vals:
@@ -345,6 +345,9 @@ class TreasuryBankClosing(models.Model):
             if closing.state != 'draft':
                 raise UserError(_("Impossible de charger les opérations : le rapprochement n'est pas en brouillon."))
 
+            # D'abord, synchroniser les paiements Odoo qui n'ont pas encore d'opération bancaire
+            imported_count = closing._sync_payments_to_operations()
+
             # Rechercher les opérations de la période
             operations = self.env['treasury.bank.operation'].search([
                 ('bank_id', '=', closing.bank_id.id),
@@ -362,13 +365,72 @@ class TreasuryBankClosing(models.Model):
             # Recalculer les lignes de détail
             closing._compute_closing_lines()
 
-            closing.message_post(
-                body=_("%(count)d opération(s) chargée(s) pour la période du %(start)s au %(end)s") % {
-                    'count': len(operations),
-                    'start': closing.period_start,
-                    'end': closing.closing_date,
+            msg = _("%(count)d opération(s) chargée(s) pour la période du %(start)s au %(end)s") % {
+                'count': len(operations),
+                'start': closing.period_start,
+                'end': closing.closing_date,
+            }
+            if imported_count > 0:
+                msg += _("\n%(imported)d paiement(s) Odoo importé(s) automatiquement.") % {
+                    'imported': imported_count
                 }
-            )
+            closing.message_post(body=msg)
+
+    def _sync_payments_to_operations(self):
+        """
+        Synchronise les paiements Odoo avec les opérations bancaires.
+        Crée les opérations manquantes pour les paiements validés dans la période.
+        Retourne le nombre de paiements importés.
+        """
+        self.ensure_one()
+        imported_count = 0
+
+        # Chercher les paiements validés dans le journal associé à ce compte bancaire
+        # qui n'ont pas encore d'opération bancaire
+        payments = self.env['account.payment'].search([
+            ('journal_id', '=', self.bank_id.journal_id.id),
+            ('state', '=', 'posted'),
+            ('date', '>=', self.period_start),
+            ('date', '<=', self.closing_date),
+            ('treasury_bank_operation_id', '=', False),
+        ])
+
+        for payment in payments:
+            # Déterminer le type d'opération
+            if payment.payment_type == 'inbound':
+                operation_type = 'in'
+            else:
+                operation_type = 'out'
+
+            # Déterminer la catégorie
+            category = payment._get_bank_category(payment, operation_type)
+
+            # Déterminer la méthode de paiement
+            payment_method = payment._get_bank_payment_method(payment)
+
+            # Créer l'opération bancaire
+            operation = self.env['treasury.bank.operation'].create({
+                'name': self.env['ir.sequence'].next_by_code('treasury.bank.operation'),
+                'bank_id': self.bank_id.id,
+                'operation_type': operation_type,
+                'category_id': category.id if category else False,
+                'amount': payment.amount,
+                'date': payment.date,
+                'value_date': payment.date,
+                'description': payment.ref or payment.communication or _('Paiement %s') % payment.name,
+                'partner_id': payment.partner_id.id if payment.partner_id else False,
+                'payment_id': payment.id,
+                'payment_method': payment_method,
+                'bank_reference': payment.name,
+                'is_manual': False,
+                'state': 'posted',
+            })
+
+            # Lien bidirectionnel
+            payment.treasury_bank_operation_id = operation.id
+            imported_count += 1
+
+        return imported_count
 
     def _compute_closing_lines(self):
         """Calcule les lignes de détail avec solde cumulé"""
@@ -453,6 +515,81 @@ class TreasuryBankClosing(models.Model):
             if closing.state != 'confirmed':
                 raise UserError(_("Seuls les rapprochements confirmés peuvent être validés."))
 
+            # Vérifier s'il y a de nouveaux paiements non importés
+            new_payments = closing._check_new_payments()
+            if new_payments:
+                raise UserError(_(
+                    "Attention ! %(count)d nouveau(x) paiement(s) ont été enregistré(s) "
+                    "dans la période mais ne sont pas inclus dans ce rapprochement.\n\n"
+                    "Veuillez cliquer sur 'Charger opérations' pour les importer, "
+                    "puis re-confirmer le rapprochement.\n\n"
+                    "Paiements concernés :\n%(payments)s"
+                ) % {
+                    'count': len(new_payments),
+                    'payments': '\n'.join(['- %s : %s %s' % (p.name, p.amount, p.currency_id.symbol) for p in new_payments[:10]]),
+                })
+
+            # Vérifier les opérations non rapprochées
+            unreconciled_ops = closing.operation_ids.filtered(lambda o: not o.is_reconciled)
+            if unreconciled_ops:
+                raise UserError(_(
+                    "Attention ! %(count)d opération(s) n'ont pas été rapprochée(s) "
+                    "avec le relevé bancaire.\n\n"
+                    "Cela peut créer des décalages dans votre suivi de trésorerie.\n\n"
+                    "Opérations non rapprochées :\n%(operations)s\n\n"
+                    "Veuillez soit :\n"
+                    "- Cocher les opérations qui apparaissent sur votre relevé bancaire\n"
+                    "- Ou utiliser le bouton 'Valider avec écarts' si vous souhaitez forcer la validation"
+                ) % {
+                    'count': len(unreconciled_ops),
+                    'operations': '\n'.join(['- %s : %s %s (%s)' % (
+                        op.name, op.amount, op.currency_id.symbol,
+                        dict(op._fields['operation_type'].selection)[op.operation_type]
+                    ) for op in unreconciled_ops[:10]]),
+                })
+
+            closing._do_validate()
+
+    def action_validate_force(self):
+        """Valide le rapprochement même avec des opérations non rapprochées"""
+        for closing in self:
+            if closing.state != 'confirmed':
+                raise UserError(_("Seuls les rapprochements confirmés peuvent être validés."))
+
+            # Vérifier s'il y a de nouveaux paiements non importés
+            new_payments = closing._check_new_payments()
+            if new_payments:
+                raise UserError(_(
+                    "Impossible de forcer la validation : %(count)d nouveau(x) paiement(s) "
+                    "n'ont pas été importés.\n\n"
+                    "Veuillez cliquer sur 'Charger opérations' puis re-confirmer."
+                ) % {'count': len(new_payments)})
+
+            # Avertissement dans le log
+            unreconciled_ops = closing.operation_ids.filtered(lambda o: not o.is_reconciled)
+            if unreconciled_ops:
+                closing.message_post(
+                    body=_("⚠️ Validation forcée avec %(count)d opération(s) non rapprochée(s)") % {
+                        'count': len(unreconciled_ops)
+                    }
+                )
+
+            closing._do_validate()
+
+    def _check_new_payments(self):
+        """Vérifie s'il y a de nouveaux paiements non importés dans la période"""
+        self.ensure_one()
+        return self.env['account.payment'].search([
+            ('journal_id', '=', self.bank_id.journal_id.id),
+            ('state', '=', 'posted'),
+            ('date', '>=', self.period_start),
+            ('date', '<=', self.closing_date),
+            ('treasury_bank_operation_id', '=', False),
+        ])
+
+    def _do_validate(self):
+        """Effectue la validation du rapprochement"""
+        for closing in self:
             # Créer une opération d'ajustement si écart
             if closing.difference != 0:
                 # Trouver la catégorie d'ajustement

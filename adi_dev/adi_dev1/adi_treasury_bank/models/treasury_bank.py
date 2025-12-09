@@ -128,6 +128,20 @@ class TreasuryBank(models.Model):
         tracking=True
     )
 
+    # Solde d'ouverture
+    opening_balance = fields.Monetary(
+        string='Solde d\'ouverture',
+        currency_field='currency_id',
+        tracking=True,
+        help="Solde initial du compte lors de sa création dans le système"
+    )
+    opening_date = fields.Date(
+        string='Date d\'ouverture',
+        default=fields.Date.context_today,
+        tracking=True,
+        help="Date à laquelle le solde d'ouverture a été enregistré"
+    )
+
     # Configuration
     overdraft_limit = fields.Monetary(
         string='Découvert autorisé',

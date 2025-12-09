@@ -216,7 +216,16 @@ class CashExpense(models.Model):
     def _compute_amount(self):
         """Calculer le montant total depuis les lignes"""
         for expense in self:
-            expense.amount = sum(expense.line_ids.mapped('total_amount'))
+            # Si des lignes existent, calculer le montant
+            if expense.line_ids:
+                expense.amount = sum(expense.line_ids.mapped('total_amount'))
+            # Pour les avances sans lignes, garder le montant saisi manuellement
+            elif expense.expense_type == 'advance' and expense.amount:
+                pass  # Garder le montant actuel
+            else:
+                # Ne pas écraser un montant déjà saisi pour les avances
+                if not (expense.expense_type == 'advance' and expense.amount > 0):
+                    expense.amount = 0.0
 
     @api.depends('amount', 'amount_spent', 'expense_type')
     def _compute_remaining(self):
@@ -283,8 +292,13 @@ class CashExpense(models.Model):
             if expense.state != 'draft':
                 raise UserError(_("Seules les dépenses en brouillon peuvent être soumises."))
 
-            if not expense.line_ids:
-                raise UserError(_("Veuillez ajouter au moins une ligne de dépense."))
+            # Les lignes de dépense sont obligatoires uniquement pour les remboursements
+            if expense.expense_type == 'reimbursement' and not expense.line_ids:
+                raise UserError(_("Veuillez ajouter au moins une ligne de dépense pour le remboursement."))
+
+            # Pour les avances, le montant doit être défini
+            if expense.expense_type == 'advance' and expense.amount <= 0:
+                raise UserError(_("Veuillez définir le montant de l'avance."))
 
             expense.state = 'submitted'
             expense.message_post(body=_("Dépense soumise pour approbation"))

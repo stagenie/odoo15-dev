@@ -208,8 +208,14 @@ class TreasuryCash(models.Model):
     )
     days_since_closing = fields.Integer(
         string='Jours depuis clôture',
+        compute='_compute_days_since_closing',
+        store=True
+    )
+    is_closing_late = fields.Boolean(
+        string='Clôture en retard',
+        compute='_compute_is_closing_late',
         store=True,
-        compute='_compute_days_since_closing'
+        help="Indique si la caisse n'a pas été clôturée dans les délais"
     )
 
     # Champs relationnels pour les transferts
@@ -265,15 +271,44 @@ class TreasuryCash(models.Model):
         today = fields.Date.today()
         for cash in self:
             if cash.last_closing_date:
-                delta = datetime.now() - cash.last_closing_date
+                # last_closing_date est un Datetime, on extrait juste la date
+                closing_date = cash.last_closing_date.date() if isinstance(cash.last_closing_date, datetime) else cash.last_closing_date
+                delta = today - closing_date
+                cash.days_since_closing = delta.days
+            elif cash.opening_date:
+                # Si jamais clôturée, compter depuis la date d'ouverture
+                delta = today - cash.opening_date
                 cash.days_since_closing = delta.days
             else:
-                # Si jamais clôturée, compter depuis la date d'ouverture
-                if cash.opening_date:
-                    delta = today - cash.opening_date
-                    cash.days_since_closing = delta.days
-                else:
-                    cash.days_since_closing = 0
+                cash.days_since_closing = 0
+
+    @api.depends('days_since_closing', 'auto_close_days', 'require_closing')
+    def _compute_is_closing_late(self):
+        """Détermine si la clôture est en retard"""
+        for cash in self:
+            if cash.require_closing and cash.auto_close_days > 0:
+                cash.is_closing_late = cash.days_since_closing > cash.auto_close_days
+            else:
+                cash.is_closing_late = False
+
+    @api.model
+    def _cron_update_days_since_closing(self):
+        """Cron job pour mettre à jour days_since_closing quotidiennement"""
+        cashes = self.search([('state', '!=', 'closed')])
+        today = fields.Date.today()
+        for cash in cashes:
+            if cash.last_closing_date:
+                # last_closing_date est un Datetime, on extrait juste la date
+                closing_date = cash.last_closing_date.date() if isinstance(cash.last_closing_date, datetime) else cash.last_closing_date
+                delta = today - closing_date
+                days = delta.days
+            elif cash.opening_date:
+                delta = today - cash.opening_date
+                days = delta.days
+            else:
+                days = 0
+            # Écriture directe pour éviter le recalcul en boucle
+            cash.write({'days_since_closing': days})
 
     # 🔧 **CORRECTION MAJEURE : Calcul du solde actuel avec tri correct**
     @api.depends('operation_ids.state', 'operation_ids.operation_type', 'operation_ids.amount',

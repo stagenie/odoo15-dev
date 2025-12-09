@@ -330,7 +330,7 @@
                 <filter string="Verrouillées" name="locked" domain="[('state', '=', 'locked')]"/>
                 <separator/>
                 <filter string="Clôture en retard" name="closing_late"
-                        domain="[('days_since_closing', '>', 'auto_close_days'), ('auto_close_days', '>', 0), ('require_closing', '=', True)]"/>
+                        domain="[('is_closing_late', '=', True)]"/>
                 <separator/>
                 <filter string="Archivées" name="archived" domain="[('active', '=', False)]"/>
                 <group expand="0" string="Grouper par">

@@ -74,58 +74,64 @@
                 </div>
 
                 <group>
-                    <field name="transfer_type" widget="radio" options="{'horizontal': true}"/>
+                    <group string="Type de transfert" col="1">
+                        <field name="transfer_type" widget="radio"
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"
+                               nolabel="1"/>
+                    </group>
                 </group>
 
                 <group>
-                    <group string="Source">
+                    <group string="Source" name="group_source">
                         <!-- Caisse source -->
                         <field name="cash_from_id"
                                options="{'no_create': True}"
                                attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'cash_to_safe'])]}"
                                />
+                        <!-- Solde caisse source -->
+                        <field name="balance_before_from"
+                               string="Solde actuel"
+                               readonly="1"
+                               widget="monetary"
+                               attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'cash_to_safe'])]}"/>
 
                         <!-- Coffre source -->
                         <field name="safe_from_id"
                                options="{'no_create': True}"
                                attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['safe_to_cash', 'safe_to_safe'])]}"
                                />
-
-                        <label for="balance_before_from" string="Solde"/>
-                        <div class="o_row">
-                            <field name="balance_before_from" readonly="1" nolabel="1"/>
-                            <span attrs="{'invisible': [('state', '!=', 'done')]}" class="mx-2">→</span>
-                            <field name="balance_after_from"
-                                   readonly="1"
-                                   nolabel="1"
-                                   attrs="{'invisible': [('state', '!=', 'done')]}"
-                                   class="text-danger"/>
-                        </div>
+                        <!-- Solde coffre source -->
+                        <field name="balance_before_from"
+                               string="Solde actuel"
+                               readonly="1"
+                               widget="monetary"
+                               attrs="{'invisible': [('transfer_type', 'not in', ['safe_to_cash', 'safe_to_safe'])]}"/>
                     </group>
 
-                    <group string="Destination">
+                    <group string="Destination" name="group_destination">
                         <!-- Caisse destination -->
                         <field name="cash_to_id"
                                options="{'no_create': True}"
                                attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'safe_to_cash'])]}"
                                />
+                        <!-- Solde caisse destination -->
+                        <field name="balance_before_to"
+                               string="Solde actuel"
+                               readonly="1"
+                               widget="monetary"
+                               attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'safe_to_cash'])]}"/>
 
                         <!-- Coffre destination -->
                         <field name="safe_to_id"
                                options="{'no_create': True}"
                                attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['cash_to_safe', 'safe_to_safe'])]}"
                                />
-
-                        <label for="balance_before_to" string="Solde"/>
-                        <div class="o_row">
-                            <field name="balance_before_to" readonly="1" nolabel="1"/>
-                            <span attrs="{'invisible': [('state', '!=', 'done')]}" class="mx-2">→</span>
-                            <field name="balance_after_to"
-                                   readonly="1"
-                                   nolabel="1"
-                                   attrs="{'invisible': [('state', '!=', 'done')]}"
-                                   class="text-success"/>
-                        </div>
+                        <!-- Solde coffre destination -->
+                        <field name="balance_before_to"
+                               string="Solde actuel"
+                               readonly="1"
+                               widget="monetary"
+                               attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_safe', 'safe_to_safe'])]}"/>
                     </group>
                 </group>
 

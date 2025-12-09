@@ -8,42 +8,81 @@
         <field name="inherit_id" ref="adi_treasury.view_treasury_transfer_form"/>
         <field name="arch" type="xml">
 
-            <!-- Ajouter les champs bancaires dans le groupe source -->
-            <xpath expr="//field[@name='safe_from_id']" position="after">
-                <field name="bank_from_id" attrs="{'invisible': [('transfer_type', 'not in', ['bank_to_cash', 'bank_to_safe', 'bank_to_bank'])], 'required': [('transfer_type', 'in', ['bank_to_cash', 'bank_to_safe', 'bank_to_bank'])]}"/>
+            <!-- Ajouter les champs bancaires à la fin du groupe source -->
+            <xpath expr="//group[@name='group_source']" position="inside">
+                <!-- Banque source -->
+                <field name="bank_from_id"
+                       options="{'no_create': True}"
+                       attrs="{'invisible': [('transfer_type', 'not in', ['bank_to_cash', 'bank_to_safe', 'bank_to_bank'])],
+                               'required': [('transfer_type', 'in', ['bank_to_cash', 'bank_to_safe', 'bank_to_bank'])],
+                               'readonly': [('state', '!=', 'draft')]}"/>
+                <!-- Solde banque source -->
+                <field name="bank_from_balance_current"
+                       string="Solde actuel"
+                       readonly="1"
+                       widget="monetary"
+                       attrs="{'invisible': [('transfer_type', 'not in', ['bank_to_cash', 'bank_to_safe', 'bank_to_bank'])]}"/>
             </xpath>
 
-            <!-- Ajouter les champs bancaires dans le groupe destination -->
-            <xpath expr="//field[@name='safe_to_id']" position="after">
-                <field name="bank_to_id" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'safe_to_bank', 'bank_to_bank'])], 'required': [('transfer_type', 'in', ['cash_to_bank', 'safe_to_bank', 'bank_to_bank'])]}"/>
+            <!-- Ajouter les champs bancaires à la fin du groupe destination -->
+            <xpath expr="//group[@name='group_destination']" position="inside">
+                <!-- Banque destination -->
+                <field name="bank_to_id"
+                       options="{'no_create': True}"
+                       attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'safe_to_bank', 'bank_to_bank'])],
+                               'required': [('transfer_type', 'in', ['cash_to_bank', 'safe_to_bank', 'bank_to_bank'])],
+                               'readonly': [('state', '!=', 'draft')]}"/>
+                <!-- Solde banque destination -->
+                <field name="bank_to_balance_current"
+                       string="Solde actuel"
+                       readonly="1"
+                       widget="monetary"
+                       attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'safe_to_bank', 'bank_to_bank'])]}"/>
             </xpath>
 
             <!-- Ajouter les champs de méthode et référence bancaire -->
             <xpath expr="//field[@name='amount']" position="after">
-                <field name="payment_method" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}"/>
-                <field name="bank_reference" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}"/>
+                <field name="payment_method"
+                       attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])],
+                               'readonly': [('state', '!=', 'draft')]}"/>
+                <field name="bank_reference"
+                       attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])],
+                               'readonly': [('state', '!=', 'draft')]}"/>
             </xpath>
 
             <!-- Ajouter le notebook avec les opérations bancaires avant le chatter -->
             <xpath expr="//chatter" position="before">
-                <notebook>
-                    <page string="Opérations Bancaires" name="banking_operations" attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}">
+                <notebook attrs="{'invisible': [('transfer_type', 'not in', ['cash_to_bank', 'bank_to_cash', 'safe_to_bank', 'bank_to_safe', 'bank_to_bank'])]}">
+                    <page string="Opérations Bancaires" name="banking_operations">
                         <group>
-                            <group string="Sortie bancaire">
+                            <group string="Sortie bancaire" attrs="{'invisible': [('bank_operation_out_id', '=', False)]}">
                                 <field name="bank_operation_out_id" readonly="1"/>
-                                <field name="bank_from_balance_before" widget="monetary" attrs="{'invisible': [('bank_operation_out_id', '=', False)]}"/>
-                                <field name="bank_from_balance_after" widget="monetary" attrs="{'invisible': [('bank_operation_out_id', '=', False)]}"/>
+                                <field name="bank_from_balance_before" string="Solde avant" widget="monetary"/>
+                                <field name="bank_from_balance_after" string="Solde après" widget="monetary"/>
                             </group>
-                            <group string="Entrée bancaire">
+                            <group string="Entrée bancaire" attrs="{'invisible': [('bank_operation_in_id', '=', False)]}">
                                 <field name="bank_operation_in_id" readonly="1"/>
-                                <field name="bank_to_balance_before" widget="monetary" attrs="{'invisible': [('bank_operation_in_id', '=', False)]}"/>
-                                <field name="bank_to_balance_after" widget="monetary" attrs="{'invisible': [('bank_operation_in_id', '=', False)]}"/>
+                                <field name="bank_to_balance_before" string="Solde avant" widget="monetary"/>
+                                <field name="bank_to_balance_after" string="Solde après" widget="monetary"/>
                             </group>
                         </group>
                     </page>
                 </notebook>
             </xpath>
 
+        </field>
+    </record>
+
+    <!-- Extension de la vue liste des transferts pour ajouter les colonnes bancaires -->
+    <record id="view_treasury_transfer_tree_bank" model="ir.ui.view">
+        <field name="name">treasury.transfer.tree.bank</field>
+        <field name="model">treasury.transfer</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_transfer_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='safe_to_id']" position="after">
+                <field name="bank_from_id" optional="show"/>
+                <field name="bank_to_id" optional="show"/>
+            </xpath>
         </field>
     </record>
 

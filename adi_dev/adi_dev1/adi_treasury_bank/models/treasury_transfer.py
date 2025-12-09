@@ -51,7 +51,7 @@ class TreasuryTransfer(models.Model):
         ondelete='set null'
     )
 
-    # Soldes bancaires (pour historique)
+    # Soldes bancaires (pour historique - stockés)
     bank_from_balance_before = fields.Monetary(
         string='Solde banque source avant',
         currency_field='currency_id',
@@ -72,6 +72,32 @@ class TreasuryTransfer(models.Model):
         currency_field='currency_id',
         readonly=True
     )
+
+    # Soldes bancaires actuels (calculés en temps réel)
+    bank_from_balance_current = fields.Monetary(
+        string='Solde actuel banque source',
+        compute='_compute_bank_balances',
+        currency_field='currency_id'
+    )
+    bank_to_balance_current = fields.Monetary(
+        string='Solde actuel banque destination',
+        compute='_compute_bank_balances',
+        currency_field='currency_id'
+    )
+
+    @api.depends('bank_from_id', 'bank_to_id')
+    def _compute_bank_balances(self):
+        """Calcule les soldes actuels des banques source et destination"""
+        for transfer in self:
+            if transfer.bank_from_id:
+                transfer.bank_from_balance_current = transfer.bank_from_id.current_balance
+            else:
+                transfer.bank_from_balance_current = 0.0
+
+            if transfer.bank_to_id:
+                transfer.bank_to_balance_current = transfer.bank_to_id.current_balance
+            else:
+                transfer.bank_to_balance_current = 0.0
 
     # Méthode de transfert
     payment_method = fields.Selection([
