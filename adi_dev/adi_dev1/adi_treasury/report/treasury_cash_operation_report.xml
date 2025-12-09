@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Définition du rapport -->
+    <record id="action_report_cash_operations" model="ir.actions.report">
+        <field name="name">Liste des Opérations de Caisse</field>
+        <field name="model">treasury.cash.operation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_treasury.report_cash_operations</field>
+        <field name="report_file">adi_treasury.report_cash_operations</field>
+        <field name="binding_model_id" ref="model_treasury_cash_operation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Template du rapport -->
+    <template id="report_cash_operations">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class="text-center">Liste des Opérations de Caisse</h2>
+                        <p class="text-center text-muted">
+                            Imprimé le <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/>
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Template principal avec toutes les opérations -->
+    <template id="report_cash_operations_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center mb-4">Liste des Opérations de Caisse</h2>
+                    <p class="text-center text-muted mb-4">
+                        <span t-esc="len(docs)"/> opération(s) sélectionnée(s)
+                    </p>
+
+                    <table class="table table-sm table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Référence</th>
+                                <th>Date</th>
+                                <th>Caisse</th>
+                                <th>Type</th>
+                                <th>Catégorie</th>
+                                <th>Description</th>
+                                <th>Partenaire</th>
+                                <th class="text-right">Montant</th>
+                                <th>État</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="total_in" t-value="0"/>
+                            <t t-set="total_out" t-value="0"/>
+                            <t t-foreach="docs" t-as="op">
+                                <tr>
+                                    <td><t t-esc="op.name"/></td>
+                                    <td><t t-esc="op.date" t-options="{'widget': 'date'}"/></td>
+                                    <td><t t-esc="op.cash_id.name"/></td>
+                                    <td>
+                                        <span t-if="op.operation_type == 'in'" class="text-success">Entrée</span>
+                                        <span t-else="" class="text-danger">Sortie</span>
+                                    </td>
+                                    <td><t t-esc="op.category_id.name or '-'"/></td>
+                                    <td><t t-esc="op.description or op.observations or '-'"/></td>
+                                    <td><t t-esc="op.partner_id.name or '-'"/></td>
+                                    <td class="text-right">
+                                        <span t-if="op.operation_type == 'in'" class="text-success">
+                                            +<t t-esc="op.amount" t-options="{'widget': 'monetary', 'display_currency': op.currency_id}"/>
+                                        </span>
+                                        <span t-else="" class="text-danger">
+                                            -<t t-esc="op.amount" t-options="{'widget': 'monetary', 'display_currency': op.currency_id}"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <t t-if="op.state == 'draft'">Brouillon</t>
+                                        <t t-elif="op.state == 'posted'">Comptabilisé</t>
+                                        <t t-elif="op.state == 'cancel'">Annulé</t>
+                                    </td>
+                                </tr>
+                                <t t-if="op.operation_type == 'in'">
+                                    <t t-set="total_in" t-value="total_in + op.amount"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-set="total_out" t-value="total_out + op.amount"/>
+                                </t>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr class="font-weight-bold">
+                                <td colspan="7" class="text-right">Total Entrées:</td>
+                                <td class="text-right text-success">
+                                    +<t t-esc="total_in" t-options="{'widget': 'float', 'precision': 2}"/>
+                                </td>
+                                <td/>
+                            </tr>
+                            <tr class="font-weight-bold">
+                                <td colspan="7" class="text-right">Total Sorties:</td>
+                                <td class="text-right text-danger">
+                                    -<t t-esc="total_out" t-options="{'widget': 'float', 'precision': 2}"/>
+                                </td>
+                                <td/>
+                            </tr>
+                            <tr class="font-weight-bold bg-light">
+                                <td colspan="7" class="text-right">Solde Net:</td>
+                                <td class="text-right">
+                                    <t t-set="net" t-value="total_in - total_out"/>
+                                    <span t-attf-class="#{net >= 0 and 'text-success' or 'text-danger'}">
+                                        <t t-esc="net" t-options="{'widget': 'float', 'precision': 2}"/>
+                                    </span>
+                                </td>
+                                <td/>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

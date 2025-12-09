@@ -14,7 +14,7 @@
                 <field name="cash_id"/>
                 <field name="operation_type"/>
                 <field name="category_id"/>
-                <field name="amount" widget="monetary"/>
+                <field name="amount" widget="monetary" sum="Total"/>
                 <field name="partner_id" optional="show"/>
                 <field name="observations" optional="hide"/>
                 <field name="currency_id" invisible="1"/>

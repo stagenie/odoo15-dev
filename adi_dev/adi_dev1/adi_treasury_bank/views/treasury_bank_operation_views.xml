@@ -80,7 +80,7 @@
                 <field name="partner_id"/>
                 <field name="operation_type"/>
                 <field name="payment_method"/>
-                <field name="amount" widget="monetary"/>
+                <field name="amount" widget="monetary" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="state"/>
                 <field name="is_reconciled" invisible="1"/>

@@ -31,16 +31,15 @@
         'views/treasury_cash_views.xml',
         'reports/treasury_transfer_report_templates.xml',
         'reports/treasury_cash_closing_report.xml',
+        'report/treasury_cash_operation_report.xml',
         'views/treasury_transfer_views.xml',
         'views/treasury_safe_views.xml',
         'views/treasury_safe_operation_views.xml',
-        'views/treasury_operation_category_views.xml',  # Nouveau
-        'views/treasury_cash_operation_views.xml',  # Nouveau
-        'views/treasury_cash_closing_views.xml',  # Nouveau
-        'views/account_payment_views.xml',  # Nouveau
+        'views/treasury_operation_category_views.xml',
+        'views/treasury_cash_operation_views.xml',
+        'views/treasury_cash_closing_views.xml',
+        'views/account_payment_views.xml',
         'views/treasury_menu.xml',
-        # Nouveau
-
     ],
     'installable': True,
     'application': True,

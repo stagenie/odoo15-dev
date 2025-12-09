@@ -57,6 +57,7 @@ Différences avec la caisse :
         # Rapports
         'reports/treasury_bank_closing_report.xml',
         'reports/treasury_bank_statement_report.xml',
+        'report/treasury_bank_operation_report.xml',
     ],
     'demo': [],
     'installable': True,
