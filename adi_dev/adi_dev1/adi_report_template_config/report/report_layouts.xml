@@ -3,11 +3,11 @@
 
     <!--
         Template principal qui remplace le header selon le style configuré
+        Priorité 50 pour s'appliquer APRÈS adi_team_header (priorité 16 par défaut)
         Ce template s'active UNIQUEMENT si use_custom_report_template est True
-        Sinon, le template original de adi_team_header reste actif
     -->
-    <template id="external_layout_custom_styled" inherit_id="adi_team_header.external_layout_custom_header" priority="20">
-        <xpath expr="//div[@name='company_address']/.." position="replace">
+    <template id="external_layout_custom_styled" inherit_id="web.external_layout_standard" priority="50">
+        <xpath expr="//div[@name='company_address']" position="replace">
             <!-- Vérifier si le template personnalisé est activé -->
             <t t-set="use_custom" t-value="company.use_custom_report_template if company else False"/>
 
@@ -19,38 +19,38 @@
                 <!-- Récupérer l'équipe si disponible -->
                 <t t-set="team" t-value="False"/>
                 <t t-if="docs and len(docs) > 0">
-                    <t t-if="docs[0]._name == 'sale.order' and docs[0].team_id">
+                    <t t-if="docs[0]._name == 'sale.order' and hasattr(docs[0], 'team_id') and docs[0].team_id">
                         <t t-set="team" t-value="docs[0].team_id"/>
                     </t>
-                    <t t-elif="docs[0]._name == 'account.move' and docs[0].team_id">
+                    <t t-elif="docs[0]._name == 'account.move' and hasattr(docs[0], 'team_id') and docs[0].team_id">
                         <t t-set="team" t-value="docs[0].team_id"/>
                     </t>
-                    <t t-elif="docs[0]._name == 'stock.picking' and docs[0].sale_id and docs[0].sale_id.team_id">
+                    <t t-elif="docs[0]._name == 'stock.picking' and hasattr(docs[0], 'sale_id') and docs[0].sale_id and docs[0].sale_id.team_id">
                         <t t-set="team" t-value="docs[0].sale_id.team_id"/>
                     </t>
                 </t>
 
                 <!-- Override du style par équipe si défini -->
-                <t t-if="team and team.report_template_style and team.report_template_style != 'default'">
+                <t t-if="team and hasattr(team, 'report_template_style') and team.report_template_style and team.report_template_style != 'default'">
                     <t t-set="template_style" t-value="team.report_template_style"/>
                 </t>
-                <t t-if="team and team.fiscal_info_in_footer and team.fiscal_info_in_footer != 'default'">
+                <t t-if="team and hasattr(team, 'fiscal_info_in_footer') and team.fiscal_info_in_footer and team.fiscal_info_in_footer != 'default'">
                     <t t-set="fiscal_in_footer" t-value="team.fiscal_info_in_footer == 'yes'"/>
                 </t>
 
                 <!-- Appeler le template selon le style -->
-                <t t-if="template_style == 'light'">
-                    <t t-call="adi_report_template_config.header_style_light"/>
-                </t>
-                <t t-elif="template_style == 'box'">
+                <t t-if="template_style == 'box'">
                     <t t-call="adi_report_template_config.header_style_box"/>
                 </t>
                 <t t-elif="template_style == 'bold'">
                     <t t-call="adi_report_template_config.header_style_bold"/>
                 </t>
+                <t t-else="">
+                    <t t-call="adi_report_template_config.header_style_light"/>
+                </t>
             </t>
 
-            <!-- Si template personnalisé désactivé, utiliser le comportement original -->
+            <!-- Si template personnalisé désactivé, utiliser le comportement original de adi_team_header -->
             <t t-else="">
                 <t t-call="adi_report_template_config.header_original_fallback"/>
             </t>
@@ -76,7 +76,7 @@
                 <t t-if="info_source and info_source.team_description">
                     <span t-field="info_source.team_description" style="font-style: italic;"/><br/>
                 </t>
-                <t t-elif="company.activity_description">
+                <t t-elif="hasattr(company, 'activity_description') and company.activity_description">
                     <span t-field="company.activity_description" style="font-style: italic;"/><br/>
                 </t>
 
@@ -85,6 +85,7 @@
                     <t t-call="adi_report_template_config.fiscal_info_inline">
                         <t t-set="source" t-value="info_source if info_source else company"/>
                     </t>
+                    <br/>
                 </t>
 
                 <!-- Contact -->
@@ -115,7 +116,7 @@
                     <!-- Adresse -->
                     <tr t-if="(info_source and info_source.team_address) or company.street">
                         <td style="padding: 2px 0;">
-                            <i class="fa fa-map-marker" style="color: #6c757d; width: 15px;"/>
+                            <span style="color: #6c757d; margin-right: 5px;">&#128205;</span>
                             <t t-if="info_source and info_source.team_address">
                                 <span t-field="info_source.team_address"/>
                             </t>
@@ -125,9 +126,9 @@
                         </td>
                     </tr>
                     <!-- Description -->
-                    <tr t-if="(info_source and info_source.team_description) or company.activity_description">
+                    <tr t-if="(info_source and info_source.team_description) or (hasattr(company, 'activity_description') and company.activity_description)">
                         <td style="padding: 2px 0; font-style: italic; color: #6c757d;">
-                            <i class="fa fa-info-circle" style="color: #6c757d; width: 15px;"/>
+                            <span style="margin-right: 5px;">&#9432;</span>
                             <t t-if="info_source and info_source.team_description">
                                 <span t-field="info_source.team_description"/>
                             </t>
@@ -138,7 +139,7 @@
                     </tr>
                     <!-- Infos fiscales (si pas en footer) -->
                     <tr t-if="not fiscal_in_footer">
-                        <td style="padding: 2px 0; border-top: 1px dashed #dee2e6; margin-top: 4px;">
+                        <td style="padding: 4px 0; border-top: 1px dashed #dee2e6;">
                             <t t-call="adi_report_template_config.fiscal_info_inline">
                                 <t t-set="source" t-value="info_source if info_source else company"/>
                             </t>
@@ -147,7 +148,7 @@
                     <!-- Contact -->
                     <tr t-if="(info_source and info_source.email) or company.email">
                         <td style="padding: 2px 0;">
-                            <i class="fa fa-envelope" style="color: #6c757d; width: 15px;"/>
+                            <span style="color: #6c757d; margin-right: 5px;">&#9993;</span>
                             <t t-if="info_source and info_source.email">
                                 <span t-field="info_source.email"/>
                             </t>
@@ -158,7 +159,7 @@
                     </tr>
                     <tr t-if="(info_source and info_source.tel) or company.phone">
                         <td style="padding: 2px 0;">
-                            <i class="fa fa-phone" style="color: #6c757d; width: 15px;"/>
+                            <span style="color: #6c757d; margin-right: 5px;">&#9742;</span>
                             <t t-if="info_source and info_source.tel">
                                 <span t-field="info_source.tel"/>
                             </t>
@@ -191,7 +192,7 @@
                 </p>
 
                 <!-- Description -->
-                <p t-if="(info_source and info_source.team_description) or company.activity_description"
+                <p t-if="(info_source and info_source.team_description) or (hasattr(company, 'activity_description') and company.activity_description)"
                    style="margin: 0 0 4px 0; font-style: italic; color: #495057;">
                     <t t-if="info_source and info_source.team_description">
                         <span t-field="info_source.team_description"/>
@@ -240,26 +241,27 @@
     <template id="fiscal_info_inline">
         <span style="font-size: 8pt; color: #6c757d;">
             <t t-set="sep" t-value="company.fiscal_info_separator or ' - '"/>
-            <t t-set="has_rc" t-value="source.rc if hasattr(source, 'rc') and source.rc else False"/>
-            <t t-set="has_ai" t-value="source.ai if hasattr(source, 'ai') and source.ai else False"/>
-            <t t-set="has_nif" t-value="source.nif if hasattr(source, 'nif') and source.nif else False"/>
-            <t t-set="has_nis" t-value="source.nis if hasattr(source, 'nis') and source.nis else False"/>
+            <t t-set="has_rc" t-value="hasattr(source, 'rc') and source.rc"/>
+            <t t-set="has_ai" t-value="hasattr(source, 'ai') and source.ai"/>
+            <t t-set="has_nif" t-value="hasattr(source, 'nif') and source.nif"/>
+            <t t-set="has_nis" t-value="hasattr(source, 'nis') and source.nis"/>
 
-            <t t-if="has_rc">R.C: <span t-esc="source.rc"/></t>
+            <t t-if="has_rc">R.C: <t t-esc="source.rc"/></t>
             <t t-if="has_rc and (has_ai or has_nif or has_nis)"><t t-esc="sep"/></t>
-            <t t-if="has_ai">A.I: <span t-esc="source.ai"/></t>
+            <t t-if="has_ai">A.I: <t t-esc="source.ai"/></t>
             <t t-if="has_ai and (has_nif or has_nis)"><t t-esc="sep"/></t>
-            <t t-if="has_nif">N.I.F: <span t-esc="source.nif"/></t>
+            <t t-if="has_nif">N.I.F: <t t-esc="source.nif"/></t>
             <t t-if="has_nif and has_nis"><t t-esc="sep"/></t>
-            <t t-if="has_nis">N.I.S: <span t-esc="source.nis"/></t>
+            <t t-if="has_nis">N.I.S: <t t-esc="source.nis"/></t>
         </span>
     </template>
 
     <!-- ============================================ -->
     <!-- Fallback vers le template original          -->
+    <!-- (Reproduit le comportement de adi_team_header) -->
     <!-- ============================================ -->
     <template id="header_original_fallback">
-        <!-- Reproduit le comportement original de adi_team_header -->
+        <!-- Vérification pour les devis/commandes clients -->
         <t t-if="docs and docs[0]._name == 'sale.order'">
             <t t-foreach="docs" t-as="doc">
                 <div t-if="doc.team_id" name="company_address" style="display: inline-block;">
@@ -274,8 +276,17 @@
                         <span t-if="doc.team_id.tel" t-field="doc.team_id.tel"/>
                     </p>
                 </div>
+                <div t-else="" name="company_address" style="display: inline-block;">
+                    <p>
+                        <span t-if="company.street" t-field="company.street"/><br/>
+                        <span t-if="company.email" t-field="company.email"/><br/>
+                        <span t-if="company.phone" t-field="company.phone"/>
+                    </p>
+                </div>
             </t>
         </t>
+
+        <!-- Vérification pour les bons de livraison -->
         <t t-elif="docs and docs[0]._name == 'stock.picking'">
             <t t-foreach="docs" t-as="o">
                 <div t-if="o.sale_id and o.sale_id.team_id" name="company_address" style="display: inline-block;">
@@ -292,18 +303,22 @@
                 </div>
                 <div t-else="" name="company_address" style="display: inline-block;">
                     <p>
-                        <span t-if="o.company_id.activity_description" t-field="o.company_id.activity_description"/><br/>
+                        <t t-if="hasattr(o.company_id, 'activity_description') and o.company_id.activity_description">
+                            <span t-field="o.company_id.activity_description"/><br/>
+                        </t>
                         <span t-if="o.company_id.street" t-field="o.company_id.street"/><br/>
-                        <t t-if="o.company_id.rc"><span>RC: </span><span t-field="o.company_id.rc"/> - </t>
-                        <t t-if="o.company_id.ai"><span>AI: </span><span t-field="o.company_id.ai"/> - </t>
-                        <t t-if="o.company_id.nif"><span>NIF: </span><span t-field="o.company_id.nif"/> - </t>
-                        <t t-if="o.company_id.nis"><span>NIS: </span><span t-field="o.company_id.nis"/></t><br/>
+                        <t t-if="hasattr(o.company_id, 'rc') and o.company_id.rc"><span>RC: </span><span t-field="o.company_id.rc"/> - </t>
+                        <t t-if="hasattr(o.company_id, 'ai') and o.company_id.ai"><span>AI: </span><span t-field="o.company_id.ai"/> - </t>
+                        <t t-if="hasattr(o.company_id, 'nif') and o.company_id.nif"><span>NIF: </span><span t-field="o.company_id.nif"/> - </t>
+                        <t t-if="hasattr(o.company_id, 'nis') and o.company_id.nis"><span>NIS: </span><span t-field="o.company_id.nis"/></t><br/>
                         <span t-if="o.company_id.email" t-field="o.company_id.email"/><br/>
                         <span t-if="o.company_id.phone" t-field="o.company_id.phone"/>
                     </p>
                 </div>
             </t>
         </t>
+
+        <!-- Vérification pour les factures -->
         <t t-elif="docs and docs[0]._name == 'account.move'">
             <t t-foreach="docs" t-as="o">
                 <div t-if="o.team_id" name="company_address" style="display: inline-block;">
@@ -318,31 +333,32 @@
                         <span t-if="o.team_id.tel" t-field="o.team_id.tel"/>
                     </p>
                 </div>
-            </t>
-        </t>
-        <t t-else="">
-            <t t-foreach="docs" t-as="doc">
-                <div name="company_address" style="display: inline-block;">
+                <div t-else="" name="company_address" style="display: inline-block;">
                     <p>
-                        <t t-if="doc.company_id">
-                            <span t-if="doc.company_id.activity_description" t-field="doc.company_id.activity_description"/><br/>
-                            <span t-if="doc.company_id.street" t-field="doc.company_id.street"/><br/>
-                            <t t-if="doc.company_id.rc"><span>RC: </span><span t-field="doc.company_id.rc"/> - </t>
-                            <t t-if="doc.company_id.ai"><span>AI: </span><span t-field="doc.company_id.ai"/> - </t>
-                            <t t-if="doc.company_id.nif"><span>NIF: </span><span t-field="doc.company_id.nif"/> - </t>
-                            <t t-if="doc.company_id.nis"><span>NIS: </span><span t-field="doc.company_id.nis"/></t><br/>
-                            <span t-if="doc.company_id.email" t-field="doc.company_id.email"/><br/>
-                            <span t-if="doc.company_id.phone" t-field="doc.company_id.phone"/>
-                        </t>
-                        <t t-else="">
-                            <!-- Fallback si pas de company_id -->
-                            <span t-if="company.street" t-field="company.street"/><br/>
-                            <span t-if="company.email" t-field="company.email"/><br/>
-                            <span t-if="company.phone" t-field="company.phone"/>
-                        </t>
+                        <span t-if="company.street" t-field="company.street"/><br/>
+                        <span t-if="company.email" t-field="company.email"/><br/>
+                        <span t-if="company.phone" t-field="company.phone"/>
                     </p>
                 </div>
             </t>
+        </t>
+
+        <!-- Cas par défaut -->
+        <t t-else="">
+            <div name="company_address" style="display: inline-block;">
+                <p>
+                    <t t-if="hasattr(company, 'activity_description') and company.activity_description">
+                        <span t-field="company.activity_description"/><br/>
+                    </t>
+                    <span t-if="company.street" t-field="company.street"/><br/>
+                    <t t-if="hasattr(company, 'rc') and company.rc"><span>RC: </span><span t-field="company.rc"/> - </t>
+                    <t t-if="hasattr(company, 'ai') and company.ai"><span>AI: </span><span t-field="company.ai"/> - </t>
+                    <t t-if="hasattr(company, 'nif') and company.nif"><span>NIF: </span><span t-field="company.nif"/> - </t>
+                    <t t-if="hasattr(company, 'nis') and company.nis"><span>NIS: </span><span t-field="company.nis"/></t><br/>
+                    <span t-if="company.email" t-field="company.email"/><br/>
+                    <span t-if="company.phone" t-field="company.phone"/>
+                </p>
+            </div>
         </t>
     </template>
 
