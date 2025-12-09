@@ -169,8 +169,7 @@ class CashExpenseSettlementWizard(models.TransientModel):
                 # Créer la ligne de dépense sur l'avance
                 expense_line = self.env['cash.expense.line'].create({
                     'expense_id': self.expense_id.id,
-                    'name': line.name,
-                    'description': line.description,
+                    'name': line.name + (' - ' + line.description if line.description else ''),
                     'quantity': 1,
                     'unit_price': line.amount,
                 })
