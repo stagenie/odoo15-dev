@@ -339,96 +339,67 @@
 
     <!-- ============================================ -->
     <!-- Fallback vers le template original          -->
-    <!-- (Reproduit exactement le comportement de adi_team_header) -->
+    <!-- (Reproduit le comportement de adi_team_header avec fallback société) -->
     <!-- ============================================ -->
     <template id="header_original_fallback">
-        <!-- Vérification pour les devis/commandes clients -->
-        <t t-if="docs and docs[0]._name == 'sale.order'">
-            <t t-foreach="docs" t-as="doc">
-                <div t-if="doc.team_id" name="company_address" style="display: inline-block;">
-                    <p>
-                        <span t-if="doc.team_id.team_address" t-field="doc.team_id.team_address"/><br/>
-                        <span t-if="doc.team_id.team_description" t-field="doc.team_id.team_description"/><br/>
-                        <t t-if="doc.team_id.rc"><span t-field="doc.team_id.rc"/> - </t>
-                        <t t-if="doc.team_id.ai"><span t-field="doc.team_id.ai"/> - </t>
-                        <t t-if="doc.team_id.nif"><span t-field="doc.team_id.nif"/> - </t>
-                        <t t-if="doc.team_id.nis"><span t-field="doc.team_id.nis"/></t><br/>
-                        <span t-if="doc.team_id.email" t-field="doc.team_id.email"/><br/>
-                        <span t-if="doc.team_id.tel" t-field="doc.team_id.tel"/>
-                    </p>
-                </div>
+        <!-- Récupérer l'équipe selon le type de document -->
+        <t t-set="team" t-value="False"/>
+        <t t-if="docs and len(docs) > 0">
+            <t t-if="docs[0]._name == 'sale.order' and docs[0].team_id">
+                <t t-set="team" t-value="docs[0].team_id"/>
+            </t>
+            <t t-elif="docs[0]._name == 'account.move' and hasattr(docs[0], 'team_id') and docs[0].team_id">
+                <t t-set="team" t-value="docs[0].team_id"/>
+            </t>
+            <t t-elif="docs[0]._name == 'stock.picking' and docs[0].sale_id and docs[0].sale_id.team_id">
+                <t t-set="team" t-value="docs[0].sale_id.team_id"/>
             </t>
         </t>
 
-        <!-- Vérification pour les bons de livraison -->
-        <t t-elif="docs and docs[0]._name == 'stock.picking'">
-            <t t-foreach="docs" t-as="o">
-                <div t-if="o.sale_id and o.sale_id.team_id" name="company_address" style="display: inline-block;">
-                    <p>
-                        <span t-if="o.sale_id.team_id.team_address" t-field="o.sale_id.team_id.team_address"/><br/>
-                        <span t-if="o.sale_id.team_id.team_description" t-field="o.sale_id.team_id.team_description"/><br/>
-                        <t t-if="o.sale_id.team_id.rc"><span t-field="o.sale_id.team_id.rc"/> - </t>
-                        <t t-if="o.sale_id.team_id.ai"><span t-field="o.sale_id.team_id.ai"/> - </t>
-                        <t t-if="o.sale_id.team_id.nif"><span t-field="o.sale_id.team_id.nif"/> - </t>
-                        <t t-if="o.sale_id.team_id.nis"><span t-field="o.sale_id.team_id.nis"/></t><br/>
-                        <span t-if="o.sale_id.team_id.email" t-field="o.sale_id.team_id.email"/><br/>
-                        <span t-if="o.sale_id.team_id.tel" t-field="o.sale_id.team_id.tel"/>
-                    </p>
-                </div>
-                <div t-else="" name="company_address" style="display: inline-block;">
-                    <p>
-                        <t t-if="hasattr(o.company_id, 'activity_description') and o.company_id.activity_description">
-                            <span t-field="o.company_id.activity_description"/><br/>
-                        </t>
-                        <span t-if="o.company_id.street" t-field="o.company_id.street"/><br/>
-                        <t t-if="hasattr(o.company_id, 'rc') and o.company_id.rc"><span>RC: </span><span t-field="o.company_id.rc"/> - </t>
-                        <t t-if="hasattr(o.company_id, 'ai') and o.company_id.ai"><span>AI: </span><span t-field="o.company_id.ai"/> - </t>
-                        <t t-if="hasattr(o.company_id, 'nif') and o.company_id.nif"><span>NIF: </span><span t-field="o.company_id.nif"/> - </t>
-                        <t t-if="hasattr(o.company_id, 'nis') and o.company_id.nis"><span>NIS: </span><span t-field="o.company_id.nis"/></t><br/>
-                        <span t-if="o.company_id.email" t-field="o.company_id.email"/><br/>
-                        <span t-if="o.company_id.phone" t-field="o.company_id.phone"/>
-                    </p>
-                </div>
-            </t>
-        </t>
-
-        <!-- Vérification pour les factures -->
-        <t t-elif="docs and docs[0]._name == 'account.move'">
-            <t t-foreach="docs" t-as="o">
-                <div t-if="o.team_id" name="company_address" style="display: inline-block;">
-                    <p>
-                        <span t-if="o.team_id.team_address" t-field="o.team_id.team_address"/><br/>
-                        <span t-if="o.team_id.team_description" t-field="o.team_id.team_description"/><br/>
-                        <t t-if="o.team_id.rc"><span t-field="o.team_id.rc"/> - </t>
-                        <t t-if="o.team_id.ai"><span t-field="o.team_id.ai"/> - </t>
-                        <t t-if="o.team_id.nif"><span t-field="o.team_id.nif"/> - </t>
-                        <t t-if="o.team_id.nis"><span t-field="o.team_id.nis"/></t><br/>
-                        <span t-if="o.team_id.email" t-field="o.team_id.email"/><br/>
-                        <span t-if="o.team_id.tel" t-field="o.team_id.tel"/>
-                    </p>
-                </div>
-            </t>
-        </t>
-
-        <!-- Cas par défaut : autres documents -->
-        <t t-else="">
-            <t t-foreach="docs" t-as="doc">
-                <div name="company_address" style="display: inline-block;">
-                    <p>
-                        <t t-if="hasattr(company, 'activity_description') and company.activity_description">
-                            <span t-field="company.activity_description"/><br/>
-                        </t>
-                        <span t-if="company.street" t-field="company.street"/><br/>
-                        <t t-if="hasattr(company, 'rc') and company.rc"><span>RC: </span><span t-field="company.rc"/> - </t>
-                        <t t-if="hasattr(company, 'ai') and company.ai"><span>AI: </span><span t-field="company.ai"/> - </t>
-                        <t t-if="hasattr(company, 'nif') and company.nif"><span>NIF: </span><span t-field="company.nif"/> - </t>
-                        <t t-if="hasattr(company, 'nis') and company.nis"><span>NIS: </span><span t-field="company.nis"/></t><br/>
-                        <span t-if="company.email" t-field="company.email"/><br/>
-                        <span t-if="company.phone" t-field="company.phone"/>
-                    </p>
-                </div>
-            </t>
-        </t>
+        <div name="company_address" style="display: inline-block;">
+            <p>
+                <!-- Si équipe avec infos, afficher les infos de l'équipe -->
+                <t t-if="team and (team.team_address or team.email or team.tel)">
+                    <t t-if="team.team_address">
+                        <span t-field="team.team_address"/><br/>
+                    </t>
+                    <t t-if="team.team_description">
+                        <span t-field="team.team_description"/><br/>
+                    </t>
+                    <t t-if="team.rc"><span t-field="team.rc"/> - </t>
+                    <t t-if="team.ai"><span t-field="team.ai"/> - </t>
+                    <t t-if="team.nif"><span t-field="team.nif"/> - </t>
+                    <t t-if="team.nis"><span t-field="team.nis"/></t>
+                    <t t-if="team.rc or team.ai or team.nif or team.nis"><br/></t>
+                    <t t-if="team.email">
+                        <span t-field="team.email"/><br/>
+                    </t>
+                    <t t-if="team.tel">
+                        <span t-field="team.tel"/>
+                    </t>
+                </t>
+                <!-- Sinon, afficher les infos de la société -->
+                <t t-else="">
+                    <t t-if="hasattr(company, 'activity_description') and company.activity_description">
+                        <span t-field="company.activity_description"/><br/>
+                    </t>
+                    <t t-if="company.street">
+                        <span t-field="company.street"/><br/>
+                    </t>
+                    <t t-if="hasattr(company, 'rc') and company.rc">RC: <span t-field="company.rc"/> - </t>
+                    <t t-if="hasattr(company, 'ai') and company.ai">AI: <span t-field="company.ai"/> - </t>
+                    <t t-if="hasattr(company, 'nif') and company.nif">NIF: <span t-field="company.nif"/> - </t>
+                    <t t-if="hasattr(company, 'nis') and company.nis">NIS: <span t-field="company.nis"/></t>
+                    <t t-if="(hasattr(company, 'rc') and company.rc) or (hasattr(company, 'ai') and company.ai) or (hasattr(company, 'nif') and company.nif) or (hasattr(company, 'nis') and company.nis)"><br/></t>
+                    <t t-if="company.email">
+                        <span t-field="company.email"/><br/>
+                    </t>
+                    <t t-if="company.phone">
+                        <span t-field="company.phone"/>
+                    </t>
+                </t>
+            </p>
+        </div>
     </template>
 
 </odoo>
