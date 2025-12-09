@@ -2,43 +2,24 @@
 <odoo>
 
     <!--
-        Désactiver le template original de adi_team_header
-        Notre module va le remplacer complètement
+        Hériter directement du template adi_team_header
+        et remplacer TOUT son contenu par notre logique conditionnelle
     -->
-    <record id="adi_team_header.external_layout_custom_header" model="ir.ui.view">
-        <field name="active" eval="False"/>
-    </record>
+    <template id="external_layout_custom_styled"
+              inherit_id="adi_team_header.external_layout_custom_header"
+              priority="99">
 
-    <!--
-        Notre template qui remplace adi_team_header
-        Hérite directement de web.external_layout_standard
-        Avec priority élevée pour s'assurer qu'il est appliqué
-    -->
-    <template id="external_layout_custom_styled" inherit_id="web.external_layout_standard" priority="50">
-        <xpath expr="//div[@name='company_address']" position="replace">
-            <!-- Vérifier si le template personnalisé est activé -->
+        <!-- Remplacer le bloc sale.order -->
+        <xpath expr='//t[@t-if="docs and docs[0]._name == &apos;sale.order&apos;"]' position="replace">
             <t t-set="use_custom" t-value="company.use_custom_report_template if company else False"/>
 
-            <t t-if="use_custom">
-                <!-- Mode personnalisé activé : utiliser nos styles -->
-                <t t-set="template_style" t-value="company.report_template_style or 'light'"/>
-                <t t-set="fiscal_in_footer" t-value="company.fiscal_info_in_footer"/>
-
-                <t t-if="template_style == 'box'">
-                    <t t-call="adi_report_template_config.header_style_box"/>
-                </t>
-                <t t-elif="template_style == 'bold'">
-                    <t t-call="adi_report_template_config.header_style_bold"/>
+            <!-- SALE ORDER -->
+            <t t-if="docs and docs[0]._name == 'sale.order'">
+                <t t-if="use_custom">
+                    <t t-call="adi_report_template_config.header_custom_content"/>
                 </t>
                 <t t-else="">
-                    <t t-call="adi_report_template_config.header_style_light"/>
-                </t>
-            </t>
-            <t t-else="">
-                <!-- Mode personnalisé désactivé : comportement original de adi_team_header -->
-
-                <!-- Devis/Commandes clients (sale.order) -->
-                <t t-if="docs and docs[0]._name == 'sale.order'">
+                    <!-- Comportement original adi_team_header -->
                     <t t-foreach="docs" t-as="doc">
                         <div t-if="doc.team_id" name="company_address" style="display: inline-block;">
                             <p>
@@ -54,9 +35,19 @@
                         </div>
                     </t>
                 </t>
+            </t>
+        </xpath>
 
-                <!-- Bons de livraison (stock.picking) -->
-                <t t-if="docs and docs[0]._name == 'stock.picking'">
+        <!-- Remplacer le bloc stock.picking -->
+        <xpath expr='//t[@t-if="docs and docs[0]._name == &apos;stock.picking&apos;"]' position="replace">
+            <!-- STOCK PICKING -->
+            <t t-if="docs and docs[0]._name == 'stock.picking'">
+                <t t-set="use_custom" t-value="company.use_custom_report_template if company else False"/>
+                <t t-if="use_custom">
+                    <t t-call="adi_report_template_config.header_custom_content"/>
+                </t>
+                <t t-else="">
+                    <!-- Comportement original adi_team_header -->
                     <t t-foreach="docs" t-as="o">
                         <div t-if="o.sale_id and o.sale_id.team_id" name="company_address" style="display: inline-block;">
                             <p>
@@ -84,9 +75,19 @@
                         </div>
                     </t>
                 </t>
+            </t>
+        </xpath>
 
-                <!-- Factures (account.move) -->
-                <t t-if="docs and docs[0]._name == 'account.move'">
+        <!-- Remplacer le bloc account.move -->
+        <xpath expr='//t[@t-if="docs and docs[0]._name == &apos;account.move&apos;"]' position="replace">
+            <!-- ACCOUNT MOVE -->
+            <t t-if="docs and docs[0]._name == 'account.move'">
+                <t t-set="use_custom" t-value="company.use_custom_report_template if company else False"/>
+                <t t-if="use_custom">
+                    <t t-call="adi_report_template_config.header_custom_content"/>
+                </t>
+                <t t-else="">
+                    <!-- Comportement original adi_team_header -->
                     <t t-foreach="docs" t-as="o">
                         <div t-if="o.team_id" name="company_address" style="display: inline-block;">
                             <p>
@@ -102,9 +103,19 @@
                         </div>
                     </t>
                 </t>
+            </t>
+        </xpath>
 
-                <!-- Autres documents (purchase.order, etc.) -->
-                <t t-if="docs and docs[0]._name not in ['sale.order', 'stock.picking', 'account.move']">
+        <!-- Remplacer le bloc par défaut (autres documents) -->
+        <xpath expr="//t[@t-if=&quot;docs and docs[0]._name not in ['sale.order', 'stock.picking', 'account.move']&quot;]" position="replace">
+            <!-- AUTRES DOCUMENTS -->
+            <t t-if="docs and docs[0]._name not in ['sale.order', 'stock.picking', 'account.move']">
+                <t t-set="use_custom" t-value="company.use_custom_report_template if company else False"/>
+                <t t-if="use_custom">
+                    <t t-call="adi_report_template_config.header_custom_content"/>
+                </t>
+                <t t-else="">
+                    <!-- Comportement original adi_team_header -->
                     <t t-foreach="docs" t-as="doc">
                         <div name="company_address" style="display: inline-block;">
                             <p>
@@ -120,16 +131,17 @@
                         </div>
                     </t>
                 </t>
-
             </t>
         </xpath>
+
     </template>
 
     <!-- ============================================ -->
-    <!-- STYLE LIGHT - Épuré et minimaliste          -->
+    <!-- Template de contenu personnalisé            -->
+    <!-- Appelé quand use_custom_report_template=True -->
     <!-- ============================================ -->
-    <template id="header_style_light">
-        <!-- Récupérer l'équipe depuis le premier document -->
+    <template id="header_custom_content">
+        <!-- Récupérer l'équipe depuis le document -->
         <t t-set="team" t-value="False"/>
         <t t-set="doc" t-value="docs[0] if docs else False"/>
         <t t-if="doc">
@@ -144,9 +156,27 @@
             </t>
         </t>
 
+        <t t-set="template_style" t-value="company.report_template_style or 'light'"/>
+        <t t-set="fiscal_in_footer" t-value="company.fiscal_info_in_footer"/>
+
+        <!-- Appeler le style approprié -->
+        <t t-if="template_style == 'box'">
+            <t t-call="adi_report_template_config.header_style_box"/>
+        </t>
+        <t t-elif="template_style == 'bold'">
+            <t t-call="adi_report_template_config.header_style_bold"/>
+        </t>
+        <t t-else="">
+            <t t-call="adi_report_template_config.header_style_light"/>
+        </t>
+    </template>
+
+    <!-- ============================================ -->
+    <!-- STYLE LIGHT                                 -->
+    <!-- ============================================ -->
+    <template id="header_style_light">
         <div name="company_address" style="display: inline-block;">
             <p style="font-size: 9pt; line-height: 1.4; color: #333;">
-                <!-- Adresse -->
                 <t t-if="team and team.team_address">
                     <span t-field="team.team_address"/><br/>
                 </t>
@@ -154,7 +184,6 @@
                     <span t-field="company.street"/><br/>
                 </t>
 
-                <!-- Description -->
                 <t t-if="team and team.team_description">
                     <span t-field="team.team_description" style="font-style: italic;"/><br/>
                 </t>
@@ -162,32 +191,23 @@
                     <span t-field="company.activity_description" style="font-style: italic;"/><br/>
                 </t>
 
-                <!-- Infos fiscales (si pas en footer) -->
                 <t t-if="not fiscal_in_footer">
                     <span style="font-size: 8pt; color: #6c757d;">
                         <t t-if="team">
-                            <t t-if="team.rc">R.C: <t t-esc="team.rc"/></t>
-                            <t t-if="team.rc and (team.ai or team.nif or team.nis)"> - </t>
-                            <t t-if="team.ai">A.I: <t t-esc="team.ai"/></t>
-                            <t t-if="team.ai and (team.nif or team.nis)"> - </t>
-                            <t t-if="team.nif">N.I.F: <t t-esc="team.nif"/></t>
-                            <t t-if="team.nif and team.nis"> - </t>
-                            <t t-if="team.nis">N.I.S: <t t-esc="team.nis"/></t>
+                            <t t-if="team.rc"><t t-esc="team.rc"/> - </t>
+                            <t t-if="team.ai"><t t-esc="team.ai"/> - </t>
+                            <t t-if="team.nif"><t t-esc="team.nif"/> - </t>
+                            <t t-if="team.nis"><t t-esc="team.nis"/></t>
                         </t>
                         <t t-else="">
-                            <t t-if="company.rc">R.C: <t t-esc="company.rc"/></t>
-                            <t t-if="company.rc and (company.ai or company.nif or company.nis)"> - </t>
-                            <t t-if="company.ai">A.I: <t t-esc="company.ai"/></t>
-                            <t t-if="company.ai and (company.nif or company.nis)"> - </t>
-                            <t t-if="company.nif">N.I.F: <t t-esc="company.nif"/></t>
-                            <t t-if="company.nif and company.nis"> - </t>
-                            <t t-if="company.nis">N.I.S: <t t-esc="company.nis"/></t>
+                            <t t-if="company.rc"><t t-esc="company.rc"/> - </t>
+                            <t t-if="company.ai"><t t-esc="company.ai"/> - </t>
+                            <t t-if="company.nif"><t t-esc="company.nif"/> - </t>
+                            <t t-if="company.nis"><t t-esc="company.nis"/></t>
                         </t>
-                    </span>
-                    <br/>
+                    </span><br/>
                 </t>
 
-                <!-- Email -->
                 <t t-if="team and team.email">
                     <span t-field="team.email"/><br/>
                 </t>
@@ -195,7 +215,6 @@
                     <span t-field="company.email"/><br/>
                 </t>
 
-                <!-- Téléphone -->
                 <t t-if="team and team.tel">
                     <span t-field="team.tel"/>
                 </t>
@@ -207,132 +226,76 @@
     </template>
 
     <!-- ============================================ -->
-    <!-- STYLE BOX - Encadré avec bordures           -->
+    <!-- STYLE BOX                                   -->
     <!-- ============================================ -->
     <template id="header_style_box">
-        <!-- Récupérer l'équipe depuis le premier document -->
-        <t t-set="team" t-value="False"/>
-        <t t-set="doc" t-value="docs[0] if docs else False"/>
-        <t t-if="doc">
-            <t t-if="doc._name == 'sale.order' and doc.team_id">
-                <t t-set="team" t-value="doc.team_id"/>
-            </t>
-            <t t-elif="doc._name == 'account.move' and doc.team_id">
-                <t t-set="team" t-value="doc.team_id"/>
-            </t>
-            <t t-elif="doc._name == 'stock.picking' and doc.sale_id and doc.sale_id.team_id">
-                <t t-set="team" t-value="doc.sale_id.team_id"/>
-            </t>
-        </t>
-
         <div name="company_address" style="display: inline-block;">
             <div style="border: 1px solid #dee2e6; border-radius: 4px; padding: 8px; background-color: #f8f9fa;">
-                <table style="font-size: 9pt; width: 100%;">
-                    <!-- Adresse -->
-                    <tr t-if="(team and team.team_address) or company.street">
-                        <td style="padding: 2px 0;">
-                            <t t-if="team and team.team_address">
-                                <span t-field="team.team_address"/>
-                            </t>
-                            <t t-else="">
-                                <span t-field="company.street"/>
-                            </t>
-                        </td>
-                    </tr>
-                    <!-- Description -->
-                    <tr t-if="(team and team.team_description) or company.activity_description">
-                        <td style="padding: 2px 0; font-style: italic; color: #6c757d;">
-                            <t t-if="team and team.team_description">
-                                <span t-field="team.team_description"/>
-                            </t>
-                            <t t-else="">
-                                <span t-field="company.activity_description"/>
-                            </t>
-                        </td>
-                    </tr>
-                    <!-- Infos fiscales (si pas en footer) -->
-                    <tr t-if="not fiscal_in_footer">
-                        <td style="padding: 4px 0; border-top: 1px dashed #dee2e6; font-size: 8pt; color: #6c757d;">
+                <p style="font-size: 9pt; margin: 0;">
+                    <t t-if="team and team.team_address">
+                        <span t-field="team.team_address"/><br/>
+                    </t>
+                    <t t-elif="company.street">
+                        <span t-field="company.street"/><br/>
+                    </t>
+
+                    <t t-if="team and team.team_description">
+                        <span t-field="team.team_description" style="font-style: italic; color: #6c757d;"/><br/>
+                    </t>
+                    <t t-elif="company.activity_description">
+                        <span t-field="company.activity_description" style="font-style: italic; color: #6c757d;"/><br/>
+                    </t>
+
+                    <t t-if="not fiscal_in_footer">
+                        <span style="font-size: 8pt; color: #6c757d; border-top: 1px dashed #dee2e6; display: block; padding-top: 4px; margin-top: 4px;">
                             <t t-if="team">
-                                <t t-if="team.rc">R.C: <t t-esc="team.rc"/></t>
-                                <t t-if="team.rc and (team.ai or team.nif or team.nis)"> - </t>
-                                <t t-if="team.ai">A.I: <t t-esc="team.ai"/></t>
-                                <t t-if="team.ai and (team.nif or team.nis)"> - </t>
-                                <t t-if="team.nif">N.I.F: <t t-esc="team.nif"/></t>
-                                <t t-if="team.nif and team.nis"> - </t>
-                                <t t-if="team.nis">N.I.S: <t t-esc="team.nis"/></t>
+                                <t t-if="team.rc"><t t-esc="team.rc"/> - </t>
+                                <t t-if="team.ai"><t t-esc="team.ai"/> - </t>
+                                <t t-if="team.nif"><t t-esc="team.nif"/> - </t>
+                                <t t-if="team.nis"><t t-esc="team.nis"/></t>
                             </t>
                             <t t-else="">
-                                <t t-if="company.rc">R.C: <t t-esc="company.rc"/></t>
-                                <t t-if="company.rc and (company.ai or company.nif or company.nis)"> - </t>
-                                <t t-if="company.ai">A.I: <t t-esc="company.ai"/></t>
-                                <t t-if="company.ai and (company.nif or company.nis)"> - </t>
-                                <t t-if="company.nif">N.I.F: <t t-esc="company.nif"/></t>
-                                <t t-if="company.nif and company.nis"> - </t>
-                                <t t-if="company.nis">N.I.S: <t t-esc="company.nis"/></t>
+                                <t t-if="company.rc"><t t-esc="company.rc"/> - </t>
+                                <t t-if="company.ai"><t t-esc="company.ai"/> - </t>
+                                <t t-if="company.nif"><t t-esc="company.nif"/> - </t>
+                                <t t-if="company.nis"><t t-esc="company.nis"/></t>
                             </t>
-                        </td>
-                    </tr>
-                    <!-- Email -->
-                    <tr t-if="(team and team.email) or company.email">
-                        <td style="padding: 2px 0;">
-                            <t t-if="team and team.email">
-                                <span t-field="team.email"/>
-                            </t>
-                            <t t-else="">
-                                <span t-field="company.email"/>
-                            </t>
-                        </td>
-                    </tr>
-                    <!-- Téléphone -->
-                    <tr t-if="(team and team.tel) or company.phone">
-                        <td style="padding: 2px 0;">
-                            <t t-if="team and team.tel">
-                                <span t-field="team.tel"/>
-                            </t>
-                            <t t-else="">
-                                <span t-field="company.phone"/>
-                            </t>
-                        </td>
-                    </tr>
-                </table>
+                        </span>
+                    </t>
+
+                    <t t-if="team and team.email">
+                        <span t-field="team.email"/><br/>
+                    </t>
+                    <t t-elif="company.email">
+                        <span t-field="company.email"/><br/>
+                    </t>
+
+                    <t t-if="team and team.tel">
+                        <span t-field="team.tel"/>
+                    </t>
+                    <t t-elif="company.phone">
+                        <span t-field="company.phone"/>
+                    </t>
+                </p>
             </div>
         </div>
     </template>
 
     <!-- ============================================ -->
-    <!-- STYLE BOLD - Mise en forme prononcée        -->
+    <!-- STYLE BOLD                                  -->
     <!-- ============================================ -->
     <template id="header_style_bold">
-        <!-- Récupérer l'équipe depuis le premier document -->
-        <t t-set="team" t-value="False"/>
-        <t t-set="doc" t-value="docs[0] if docs else False"/>
-        <t t-if="doc">
-            <t t-if="doc._name == 'sale.order' and doc.team_id">
-                <t t-set="team" t-value="doc.team_id"/>
-            </t>
-            <t t-elif="doc._name == 'account.move' and doc.team_id">
-                <t t-set="team" t-value="doc.team_id"/>
-            </t>
-            <t t-elif="doc._name == 'stock.picking' and doc.sale_id and doc.sale_id.team_id">
-                <t t-set="team" t-value="doc.sale_id.team_id"/>
-            </t>
-        </t>
-
         <div name="company_address" style="display: inline-block;">
             <div style="font-size: 9pt;">
-                <!-- Adresse en gras -->
-                <p t-if="(team and team.team_address) or company.street"
-                   style="margin: 0 0 4px 0; font-weight: bold; color: #212529;">
+                <p style="margin: 0 0 4px 0; font-weight: bold;">
                     <t t-if="team and team.team_address">
                         <span t-field="team.team_address"/>
                     </t>
-                    <t t-else="">
+                    <t t-elif="company.street">
                         <span t-field="company.street"/>
                     </t>
                 </p>
 
-                <!-- Description -->
                 <p t-if="(team and team.team_description) or company.activity_description"
                    style="margin: 0 0 4px 0; font-style: italic; color: #495057;">
                     <t t-if="team and team.team_description">
@@ -343,48 +306,34 @@
                     </t>
                 </p>
 
-                <!-- Infos fiscales (si pas en footer) -->
                 <p t-if="not fiscal_in_footer" style="margin: 0 0 4px 0; font-size: 8pt; color: #6c757d;">
                     <t t-if="team">
-                        <t t-if="team.rc">R.C: <t t-esc="team.rc"/></t>
-                        <t t-if="team.rc and (team.ai or team.nif or team.nis)"> - </t>
-                        <t t-if="team.ai">A.I: <t t-esc="team.ai"/></t>
-                        <t t-if="team.ai and (team.nif or team.nis)"> - </t>
-                        <t t-if="team.nif">N.I.F: <t t-esc="team.nif"/></t>
-                        <t t-if="team.nif and team.nis"> - </t>
-                        <t t-if="team.nis">N.I.S: <t t-esc="team.nis"/></t>
+                        <t t-if="team.rc"><t t-esc="team.rc"/> - </t>
+                        <t t-if="team.ai"><t t-esc="team.ai"/> - </t>
+                        <t t-if="team.nif"><t t-esc="team.nif"/> - </t>
+                        <t t-if="team.nis"><t t-esc="team.nis"/></t>
                     </t>
                     <t t-else="">
-                        <t t-if="company.rc">R.C: <t t-esc="company.rc"/></t>
-                        <t t-if="company.rc and (company.ai or company.nif or company.nis)"> - </t>
-                        <t t-if="company.ai">A.I: <t t-esc="company.ai"/></t>
-                        <t t-if="company.ai and (company.nif or company.nis)"> - </t>
-                        <t t-if="company.nif">N.I.F: <t t-esc="company.nif"/></t>
-                        <t t-if="company.nif and company.nis"> - </t>
-                        <t t-if="company.nis">N.I.S: <t t-esc="company.nis"/></t>
+                        <t t-if="company.rc"><t t-esc="company.rc"/> - </t>
+                        <t t-if="company.ai"><t t-esc="company.ai"/> - </t>
+                        <t t-if="company.nif"><t t-esc="company.nif"/> - </t>
+                        <t t-if="company.nis"><t t-esc="company.nis"/></t>
                     </t>
                 </p>
 
-                <!-- Contact avec labels en gras -->
                 <p style="margin: 0;">
-                    <t t-if="(team and team.email) or company.email">
-                        <strong>Email:</strong>
-                        <t t-if="team and team.email">
-                            <span t-field="team.email"/>
-                        </t>
-                        <t t-else="">
-                            <span t-field="company.email"/>
-                        </t>
-                        <br/>
+                    <t t-if="team and team.email">
+                        <strong>Email:</strong> <span t-field="team.email"/><br/>
                     </t>
-                    <t t-if="(team and team.tel) or company.phone">
-                        <strong>Tél:</strong>
-                        <t t-if="team and team.tel">
-                            <span t-field="team.tel"/>
-                        </t>
-                        <t t-else="">
-                            <span t-field="company.phone"/>
-                        </t>
+                    <t t-elif="company.email">
+                        <strong>Email:</strong> <span t-field="company.email"/><br/>
+                    </t>
+
+                    <t t-if="team and team.tel">
+                        <strong>Tel:</strong> <span t-field="team.tel"/>
+                    </t>
+                    <t t-elif="company.phone">
+                        <strong>Tel:</strong> <span t-field="company.phone"/>
                     </t>
                 </p>
             </div>
