@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extension des paramètres de vente -->
+    <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.report.template</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='sale_config_invoice_policy']" position="before">
+                <h2>Templates de Rapports</h2>
+                <div class="row mt16 o_settings_container" id="report_template_config">
+
+                    <!-- Activation du template personnalisé -->
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="use_custom_report_template"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="use_custom_report_template"/>
+                            <div class="text-muted">
+                                Activer les templates de rapport personnalisés avec choix de styles
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Style de template -->
+                    <div class="col-12 col-lg-6 o_setting_box"
+                         attrs="{'invisible': [('use_custom_report_template', '=', False)]}">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="report_template_style" string="Style de template"/>
+                            <div class="mt8">
+                                <field name="report_template_style" widget="radio" class="o_light_label"/>
+                            </div>
+                            <div class="text-muted mt8">
+                                <strong>Light</strong> : Style épuré et minimaliste<br/>
+                                <strong>Box</strong> : Informations dans des cadres avec bordures<br/>
+                                <strong>Bold</strong> : Mise en forme prononcée
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Infos fiscales en pied de page -->
+                    <div class="col-12 col-lg-6 o_setting_box"
+                         attrs="{'invisible': [('use_custom_report_template', '=', False)]}">
+                        <div class="o_setting_left_pane">
+                            <field name="fiscal_info_in_footer"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="fiscal_info_in_footer"/>
+                            <div class="text-muted">
+                                Afficher RC, AI, NIF, NIS en bas de page pour alléger l'en-tête
+                            </div>
+                            <div class="mt8" attrs="{'invisible': [('fiscal_info_in_footer', '=', False)]}">
+                                <label for="fiscal_info_separator" string="Séparateur"/>
+                                <field name="fiscal_info_separator" class="o_light_label oe_inline"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

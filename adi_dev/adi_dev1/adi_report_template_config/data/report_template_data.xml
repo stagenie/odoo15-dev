@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!--
+            Données par défaut pour la configuration des templates
+            Ces valeurs peuvent être modifiées par l'utilisateur dans les paramètres
+        -->
+
+        <!-- Note: Les valeurs par défaut sont définies dans les champs du modèle -->
+        <!-- Ce fichier peut être utilisé pour des données initiales si nécessaire -->
+
+    </data>
+</odoo>

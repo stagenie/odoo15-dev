@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extension de la vue équipe commerciale -->
+    <record id="crm_team_view_form_inherit_template" model="ir.ui.view">
+        <field name="name">crm.team.form.inherit.report.template</field>
+        <field name="model">crm.team</field>
+        <field name="inherit_id" ref="sales_team.crm_team_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <separator string="Configuration des Rapports"/>
+                <group>
+                    <group>
+                        <field name="report_template_style" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="fiscal_info_in_footer" widget="radio"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

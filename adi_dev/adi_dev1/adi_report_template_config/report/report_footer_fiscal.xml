@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Extension du footer standard pour ajouter les informations fiscales
+        Ce template s'active UNIQUEMENT si:
+        - use_custom_report_template est True
+        - fiscal_info_in_footer est True
+    -->
+    <template id="external_layout_footer_fiscal" inherit_id="web.external_layout_standard" priority="20">
+        <xpath expr="//div[@t-attf-class='footer o_standard_footer o_company_#{company.id}_layout']" position="inside">
+            <!-- Vérifier si le template personnalisé est activé et les infos fiscales en footer -->
+            <t t-set="use_custom" t-value="company.use_custom_report_template if company else False"/>
+            <t t-set="fiscal_in_footer" t-value="company.fiscal_info_in_footer if company else False"/>
+
+            <!-- Récupérer l'équipe si disponible pour override -->
+            <t t-set="team" t-value="False"/>
+            <t t-if="docs and len(docs) > 0">
+                <t t-if="docs[0]._name == 'sale.order' and docs[0].team_id">
+                    <t t-set="team" t-value="docs[0].team_id"/>
+                </t>
+                <t t-elif="docs[0]._name == 'account.move' and docs[0].team_id">
+                    <t t-set="team" t-value="docs[0].team_id"/>
+                </t>
+                <t t-elif="docs[0]._name == 'stock.picking' and docs[0].sale_id and docs[0].sale_id.team_id">
+                    <t t-set="team" t-value="docs[0].sale_id.team_id"/>
+                </t>
+            </t>
+
+            <!-- Override par équipe si défini -->
+            <t t-if="team and team.fiscal_info_in_footer and team.fiscal_info_in_footer != 'default'">
+                <t t-set="fiscal_in_footer" t-value="team.fiscal_info_in_footer == 'yes'"/>
+            </t>
+
+            <!-- Afficher les infos fiscales en footer si configuré -->
+            <t t-if="use_custom and fiscal_in_footer">
+                <div class="text-center" style="border-top: 1px solid #dee2e6; padding-top: 5px; margin-top: 5px;">
+                    <t t-set="info_source" t-value="team if team else company"/>
+                    <t t-set="sep" t-value="company.fiscal_info_separator or ' - '"/>
+
+                    <!-- Vérifier l'existence des champs fiscaux -->
+                    <t t-set="has_rc" t-value="info_source.rc if hasattr(info_source, 'rc') and info_source.rc else False"/>
+                    <t t-set="has_ai" t-value="info_source.ai if hasattr(info_source, 'ai') and info_source.ai else False"/>
+                    <t t-set="has_nif" t-value="info_source.nif if hasattr(info_source, 'nif') and info_source.nif else False"/>
+                    <t t-set="has_nis" t-value="info_source.nis if hasattr(info_source, 'nis') and info_source.nis else False"/>
+
+                    <!-- Fallback vers company si l'équipe n'a pas les infos -->
+                    <t t-if="not has_rc and not has_ai and not has_nif and not has_nis">
+                        <t t-set="info_source" t-value="company"/>
+                        <t t-set="has_rc" t-value="company.rc if hasattr(company, 'rc') and company.rc else False"/>
+                        <t t-set="has_ai" t-value="company.ai if hasattr(company, 'ai') and company.ai else False"/>
+                        <t t-set="has_nif" t-value="company.nif if hasattr(company, 'nif') and company.nif else False"/>
+                        <t t-set="has_nis" t-value="company.nis if hasattr(company, 'nis') and company.nis else False"/>
+                    </t>
+
+                    <small style="font-size: 8pt; color: #6c757d;">
+                        <t t-if="has_rc">
+                            <strong>R.C:</strong> <span t-esc="info_source.rc"/>
+                        </t>
+                        <t t-if="has_rc and (has_ai or has_nif or has_nis)">
+                            <t t-esc="sep"/>
+                        </t>
+                        <t t-if="has_ai">
+                            <strong>A.I:</strong> <span t-esc="info_source.ai"/>
+                        </t>
+                        <t t-if="has_ai and (has_nif or has_nis)">
+                            <t t-esc="sep"/>
+                        </t>
+                        <t t-if="has_nif">
+                            <strong>N.I.F:</strong> <span t-esc="info_source.nif"/>
+                        </t>
+                        <t t-if="has_nif and has_nis">
+                            <t t-esc="sep"/>
+                        </t>
+                        <t t-if="has_nis">
+                            <strong>N.I.S:</strong> <span t-esc="info_source.nis"/>
+                        </t>
+                    </small>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>
