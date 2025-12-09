@@ -2,11 +2,18 @@
 <odoo>
 
     <!--
-        Template principal qui remplace le header selon le style configuré
-        Priorité 50 pour s'appliquer APRÈS adi_team_header (priorité 16 par défaut)
-        Ce template s'active UNIQUEMENT si use_custom_report_template est True
+        Désactiver le template original de adi_team_header
+        et le remplacer par notre version configurable
     -->
-    <template id="external_layout_custom_styled" inherit_id="web.external_layout_standard" priority="50">
+    <record id="adi_team_header.external_layout_custom_header" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!--
+        Notre template qui remplace adi_team_header
+        Hérite directement de web.external_layout_standard
+    -->
+    <template id="external_layout_custom_styled" inherit_id="web.external_layout_standard">
         <xpath expr="//div[@name='company_address']" position="replace">
             <!-- Vérifier si le template personnalisé est activé -->
             <t t-set="use_custom" t-value="company.use_custom_report_template if company else False"/>
