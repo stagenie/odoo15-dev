@@ -53,9 +53,6 @@ class CashExpenseSettlementWizard(models.TransientModel):
     amount_spent = fields.Monetary(
         string='Montant dépensé',
         currency_field='currency_id',
-        compute='_compute_amount_spent',
-        store=True,
-        readonly=False,
         help="Montant réellement dépensé par l'employé"
     )
 
@@ -112,12 +109,11 @@ class CashExpenseSettlementWizard(models.TransientModel):
         for wizard in self:
             wizard.amount_from_lines = sum(wizard.line_ids.mapped('amount'))
 
-    @api.depends('use_lines', 'amount_from_lines', 'line_ids.amount')
-    def _compute_amount_spent(self):
-        """Calculer le montant dépensé selon le mode"""
-        for wizard in self:
-            if wizard.use_lines and wizard.line_ids:
-                wizard.amount_spent = wizard.amount_from_lines
+    @api.onchange('use_lines', 'line_ids', 'amount_from_lines')
+    def _onchange_lines(self):
+        """Mettre à jour le montant dépensé depuis les lignes"""
+        if self.use_lines:
+            self.amount_spent = self.amount_from_lines
 
     @api.depends('amount_advanced', 'amount_spent')
     def _compute_amounts(self):
@@ -143,22 +139,15 @@ class CashExpenseSettlementWizard(models.TransientModel):
             if wizard.amount_spent < 0:
                 raise ValidationError(_("Le montant dépensé ne peut pas être négatif !"))
 
-    @api.constrains('use_lines', 'line_ids', 'amount_spent')
-    def _check_lines_consistency(self):
-        """Vérifier la cohérence entre les lignes et le montant"""
-        for wizard in self:
-            if wizard.use_lines and wizard.line_ids:
-                total_lines = sum(wizard.line_ids.mapped('amount'))
-                if abs(wizard.amount_spent - total_lines) > 0.01:
-                    raise ValidationError(_(
-                        "Le montant dépensé (%(spent)s) doit correspondre à la somme des lignes (%(total)s) !",
-                        spent=wizard.amount_spent,
-                        total=total_lines
-                    ))
 
     def action_settle(self):
         """Régler l'avance"""
         self.ensure_one()
+
+        # Si mode lignes activé, synchroniser le montant depuis les lignes
+        if self.use_lines and self.line_ids:
+            total_lines = sum(self.line_ids.mapped('amount'))
+            self.amount_spent = total_lines
 
         # Vérifier les justificatifs (globaux ou par ligne)
         has_global_attachments = bool(self.attachment_ids)
