@@ -97,31 +97,32 @@ class StockTransferBackorder(models.Model):
         if self.state != 'in_transit':
             raise UserError(_("Le transfert doit etre en transit pour valider une reception!"))
 
+        # Creer le wizard
+        wizard = self.env['adi.stock.transfer.receive.wizard'].create({
+            'transfer_id': self.id,
+        })
+
         # Creer les lignes du wizard avec les donnees actuelles
-        wizard_lines = []
         for line in self.transfer_line_ids:
             if line.qty_sent > 0:
                 qty_remaining = line.qty_sent - line.qty_received
-                wizard_lines.append((0, 0, {
+                self.env['adi.stock.transfer.receive.wizard.line'].create({
+                    'wizard_id': wizard.id,
                     'transfer_line_id': line.id,
                     'product_id': line.product_id.id,
                     'product_uom_id': line.product_uom_id.id,
                     'qty_sent': line.qty_sent,
                     'qty_already_received': line.qty_received,
-                    'qty_to_receive': qty_remaining,  # Par defaut: tout le reste
-                    'qty_remaining': qty_remaining,
-                }))
+                    'qty_to_receive': qty_remaining,
+                })
 
         return {
             'name': _('Reception du Transfert'),
             'type': 'ir.actions.act_window',
             'res_model': 'adi.stock.transfer.receive.wizard',
             'view_mode': 'form',
+            'res_id': wizard.id,
             'target': 'new',
-            'context': {
-                'default_transfer_id': self.id,
-                'default_line_ids': wizard_lines,
-            }
         }
 
     def action_process_backorder(self):
@@ -130,31 +131,33 @@ class StockTransferBackorder(models.Model):
         if not self.has_backorder:
             raise UserError(_("Ce transfert n'a pas de reliquat a traiter!"))
 
+        # Creer le wizard
+        wizard = self.env['adi.stock.transfer.discrepancy.wizard'].create({
+            'transfer_id': self.id,
+        })
+
         # Creer les lignes du wizard pour traitement des ecarts
-        wizard_lines = []
         for line in self.transfer_line_ids:
             qty_backorder = line.qty_sent - line.qty_received
             if qty_backorder > 0:
-                wizard_lines.append((0, 0, {
+                self.env['adi.stock.transfer.discrepancy.wizard.line'].create({
+                    'wizard_id': wizard.id,
                     'transfer_line_id': line.id,
                     'product_id': line.product_id.id,
                     'product_uom_id': line.product_uom_id.id,
                     'qty_sent': line.qty_sent,
                     'qty_received': line.qty_received,
                     'qty_backorder': qty_backorder,
-                    'action': 'return_sender',  # Action par defaut
-                }))
+                    'action': 'return_sender',
+                })
 
         return {
             'name': _('Traitement des Reliquats'),
             'type': 'ir.actions.act_window',
             'res_model': 'adi.stock.transfer.discrepancy.wizard',
             'view_mode': 'form',
+            'res_id': wizard.id,
             'target': 'new',
-            'context': {
-                'default_transfer_id': self.id,
-                'default_line_ids': wizard_lines,
-            }
         }
 
     def action_receive_partial(self, wizard):
