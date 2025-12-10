@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wizard de Reception Partielle -->
+    <record id="view_stock_transfer_receive_wizard_form" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.receive.wizard.form</field>
+        <field name="model">adi.stock.transfer.receive.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reception du Transfert">
+                <group>
+                    <field name="transfer_id" readonly="1" invisible="1"/>
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">
+                            <i class="fa fa-download"/> Reception des Produits
+                        </h4>
+                        <p>Saisissez les quantites recues pour chaque produit.</p>
+                    </div>
+                </group>
+                <field name="line_ids">
+                    <tree editable="bottom">
+                        <field name="transfer_line_id" invisible="1"/>
+                        <field name="product_id" readonly="1"/>
+                        <field name="product_uom_id" readonly="1" groups="uom.group_uom"/>
+                        <field name="qty_sent" readonly="1" string="Envoye"/>
+                        <field name="qty_already_received" readonly="1" string="Deja Recu"/>
+                        <field name="qty_to_receive" string="A Recevoir"/>
+                        <field name="qty_remaining" readonly="1" string="Reste"
+                               decoration-danger="qty_remaining > 0"/>
+                    </tree>
+                </field>
+                <footer>
+                    <button name="action_confirm" string="Valider la Reception"
+                            type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard de Traitement des Ecarts -->
+    <record id="view_stock_transfer_discrepancy_wizard_form" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.discrepancy.wizard.form</field>
+        <field name="model">adi.stock.transfer.discrepancy.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Traitement des Reliquats">
+                <group>
+                    <field name="transfer_id" readonly="1" invisible="1"/>
+                    <div class="alert alert-warning" role="alert">
+                        <h4 class="alert-heading">
+                            <i class="fa fa-exclamation-triangle"/> Traitement des Reliquats
+                        </h4>
+                        <p>Choisissez l'action a effectuer pour chaque produit avec un reliquat.</p>
+                        <hr/>
+                        <p class="mb-0">
+                            <strong>Actions disponibles:</strong><br/>
+                            - <em>Retour Expediteur</em>: Les produits retournent a la source<br/>
+                            - <em>Ajustement Inventaire</em>: Perte enregistree dans l'inventaire<br/>
+                            - <em>Reporter</em>: Creer un nouveau transfert pour le reliquat
+                        </p>
+                    </div>
+                </group>
+                <field name="line_ids">
+                    <tree editable="bottom">
+                        <field name="transfer_line_id" invisible="1"/>
+                        <field name="product_id" readonly="1"/>
+                        <field name="product_uom_id" readonly="1" groups="uom.group_uom"/>
+                        <field name="qty_sent" readonly="1" string="Envoye"/>
+                        <field name="qty_received" readonly="1" string="Recu"/>
+                        <field name="qty_backorder" readonly="1" string="Reliquat"
+                               decoration-danger="qty_backorder > 0"/>
+                        <field name="action" string="Action"/>
+                        <field name="note" optional="hide"/>
+                    </tree>
+                </field>
+                <footer>
+                    <button name="action_confirm" string="Traiter les Reliquats"
+                            type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

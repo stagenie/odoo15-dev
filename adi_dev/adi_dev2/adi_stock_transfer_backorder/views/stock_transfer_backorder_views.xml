@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extension du formulaire de transfert pour ajouter les fonctionnalites de reliquat -->
+    <record id="view_stock_transfer_form_backorder" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.form.backorder</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter le bouton de reception partielle -->
+            <button name="action_done" position="before">
+                <button name="action_receive" string="Reception Partielle" type="object"
+                        states="in_transit" class="btn-primary"/>
+            </button>
+
+            <!-- Ajouter le bouton de traitement des reliquats -->
+            <button name="action_cancel" position="before">
+                <button name="action_process_backorder" string="Traiter Reliquats" type="object"
+                        states="partial" class="btn-warning"/>
+            </button>
+
+            <!-- Modifier le statusbar pour inclure l'etat partial -->
+            <field name="state" widget="statusbar" position="attributes">
+                <attribute name="statusbar_visible">draft,requested,approved,in_transit,partial,done</attribute>
+            </field>
+
+            <!-- Ajouter le bouton stat des reliquats -->
+            <button name="action_view_picking" position="after">
+                <button name="action_view_backorders" type="object" class="oe_stat_button"
+                        icon="fa-copy" attrs="{'invisible': [('backorder_count', '=', 0)]}">
+                    <field name="backorder_count" widget="statinfo" string="Reliquats"/>
+                </button>
+            </button>
+
+            <!-- Ajouter le champ parent_transfer_id invisible -->
+            <field name="transit_location_id" position="after">
+                <field name="parent_transfer_id" invisible="1"/>
+            </field>
+
+            <!-- Ajouter l'alerte pour les quantites en transit -->
+            <group string="Informations Generales" position="before">
+                <div class="alert alert-info" role="alert"
+                     attrs="{'invisible': ['|', ('state', 'not in', ['in_transit', 'partial']), ('qty_in_transit', '=', 0)]}">
+                    <i class="fa fa-truck"/> <strong>En Transit:</strong>
+                    <field name="qty_in_transit" class="oe_inline"/> unites sont actuellement dans l'emplacement transit
+                </div>
+                <div class="alert alert-warning" role="alert"
+                     attrs="{'invisible': [('state', '!=', 'partial')]}">
+                    <i class="fa fa-exclamation-triangle"/> <strong>Reception Partielle:</strong>
+                    Ce transfert a des reliquats (<field name="total_qty_backorder" class="oe_inline"/> unites) a traiter.
+                </div>
+            </group>
+        </field>
+    </record>
+
+    <!-- Extension de la vue tree pour ajouter l'etat partial -->
+    <record id="view_stock_transfer_tree_backorder" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.tree.backorder</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="attributes">
+                <attribute name="decoration-warning">state == 'partial'</attribute>
+            </field>
+        </field>
+    </record>
+
+    <!-- Extension de la vue search pour ajouter le filtre partial -->
+    <record id="view_stock_transfer_search_backorder" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.search.backorder</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_search"/>
+        <field name="arch" type="xml">
+            <filter name="filter_done" position="after">
+                <filter string="Reception Partielle" name="filter_partial"
+                        domain="[('state', '=', 'partial')]"/>
+            </filter>
+        </field>
+    </record>
+</odoo>

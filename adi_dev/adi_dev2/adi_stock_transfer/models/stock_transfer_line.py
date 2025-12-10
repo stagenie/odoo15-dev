@@ -28,21 +28,97 @@ class StockTransferLine(models.Model):
     )
     
     quantity = fields.Float(
-        'Quantité à Transférer',
+        'Quantité Demandée',
         required=True,
         digits='Product Unit of Measure',
         default=1.0
     )
-    
+
+    qty_sent = fields.Float(
+        'Quantité Envoyée',
+        digits='Product Unit of Measure',
+        default=0.0,
+        help="Quantité réellement envoyée par l'entrepôt source"
+    )
+
+    qty_received = fields.Float(
+        'Quantité Reçue',
+        digits='Product Unit of Measure',
+        default=0.0,
+        help="Quantité réellement reçue par l'entrepôt destination"
+    )
+
+    qty_remaining = fields.Float(
+        'Reliquat',
+        compute='_compute_qty_remaining',
+        digits='Product Unit of Measure',
+        store=True,
+        help="Quantité restante à recevoir (Demandée - Reçue)"
+    )
+
     available_quantity = fields.Float(
         'Quantité Disponible',
         compute='_compute_available_quantity',
         digits='Product Unit of Measure',
         store=False
     )
-    
+
+    line_state = fields.Selection([
+        ('pending', 'En attente'),
+        ('sent', 'Envoyé'),
+        ('partial', 'Partiel'),
+        ('done', 'Complet'),
+    ], string='État Ligne', default='pending', compute='_compute_line_state', store=True)
+
     note = fields.Text('Notes')
-    
+
+    # Champ related pour accéder à l'état du transfert parent dans les attrs de la vue
+    parent_state = fields.Selection(
+        related='transfer_id.state',
+        string='État Transfert',
+        store=False,
+        readonly=True
+    )
+
+    # Champs pour contrôler l'édition
+    can_edit_qty_sent = fields.Boolean(
+        compute='_compute_edit_permissions',
+        string='Peut éditer Qté Envoyée'
+    )
+    can_edit_qty_received = fields.Boolean(
+        compute='_compute_edit_permissions',
+        string='Peut éditer Qté Reçue'
+    )
+
+    @api.depends('transfer_id', 'transfer_id.state')
+    def _compute_edit_permissions(self):
+        """Calcul des permissions d'édition selon l'état du transfert"""
+        for line in self:
+            state = line.transfer_id.state if line.transfer_id else False
+            # qty_sent éditable seulement en état 'approved'
+            line.can_edit_qty_sent = bool(state == 'approved')
+            # qty_received éditable seulement en état 'in_transit'
+            line.can_edit_qty_received = bool(state == 'in_transit')
+
+    @api.depends('quantity', 'qty_received')
+    def _compute_qty_remaining(self):
+        """Calcul du reliquat"""
+        for line in self:
+            line.qty_remaining = line.quantity - line.qty_received
+
+    @api.depends('quantity', 'qty_sent', 'qty_received')
+    def _compute_line_state(self):
+        """Calcul de l'état de la ligne"""
+        for line in self:
+            if line.qty_received >= line.quantity:
+                line.line_state = 'done'
+            elif line.qty_received > 0:
+                line.line_state = 'partial'
+            elif line.qty_sent > 0:
+                line.line_state = 'sent'
+            else:
+                line.line_state = 'pending'
+
     @api.depends('product_id', 'transfer_id.source_location_id')
     def _compute_available_quantity(self):
         """Calcul de la quantité disponible dans l'emplacement source"""
@@ -66,10 +142,37 @@ class StockTransferLine(models.Model):
     
     @api.constrains('quantity')
     def _check_quantity(self):
-        """Vérification que la quantité est positive"""
+        """Vérification que la quantité demandée est positive"""
         for line in self:
             if line.quantity <= 0:
-                raise ValidationError(_("La quantité doit être strictement positive!"))
+                raise ValidationError(_(
+                    "La quantité demandée doit être strictement positive pour '%s'!"
+                ) % line.product_id.display_name)
+
+    @api.constrains('qty_sent')
+    def _check_qty_sent(self):
+        """Vérification que la quantité envoyée est valide"""
+        for line in self:
+            if line.qty_sent < 0:
+                raise ValidationError(_(
+                    "La quantité envoyée ne peut pas être négative pour '%s'!"
+                ) % line.product_id.display_name)
+            if line.qty_sent > line.quantity:
+                raise ValidationError(_(
+                    "La quantité envoyée (%.2f) ne peut pas dépasser la quantité demandée (%.2f) pour '%s'!"
+                ) % (line.qty_sent, line.quantity, line.product_id.display_name))
+
+    @api.constrains('qty_received')
+    def _check_qty_received(self):
+        """Vérification que la quantité reçue est valide"""
+        for line in self:
+            if line.qty_received < 0:
+                raise ValidationError(_(
+                    "La quantité reçue ne peut pas être négative pour '%s'!"
+                ) % line.product_id.display_name)
+            # Note: On autorise qty_received > qty_sent pour gérer les cas de surplus
+            # (erreur de comptage initial, bonus fournisseur, etc.)
+            # Le système affichera un avertissement mais acceptera la saisie
     
     def _check_available_quantity(self):
         """Vérification de la disponibilité du stock"""

@@ -7,25 +7,25 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_request" string="Soumettre la Demande" type="object" 
+                    <button name="action_request" string="Soumettre la Demande" type="object"
                             states="draft" class="btn-primary"/>
-                    <button name="action_approve" string="Approuver" type="object" 
-                            states="requested" class="btn-success" 
+                    <button name="action_approve" string="Approuver" type="object"
+                            states="requested" class="btn-success"
                             groups="adi_stock_transfer.group_stock_transfer_validator"/>
-                    <button name="action_start_transit" string="Démarrer le Transit" type="object" 
+                    <button name="action_start_transit" string="Envoyer" type="object"
                             states="approved" class="btn-primary"/>
-                    <button name="action_done" string="Terminer" type="object" 
+                    <button name="action_done" string="Terminer (Réception complète)" type="object"
                             states="in_transit" class="btn-success"/>
-                    <button name="action_cancel" string="Annuler" type="object" 
+                    <button name="action_cancel" string="Annuler" type="object"
                             states="draft,requested,approved" class="btn-danger"/>
-                    <button name="action_draft" string="Remettre en Brouillon" type="object" 
+                    <button name="action_draft" string="Remettre en Brouillon" type="object"
                             states="cancelled" class="btn-warning"/>
-                    <field name="state" widget="statusbar" 
+                    <field name="state" widget="statusbar"
                            statusbar_visible="draft,requested,approved,in_transit,done"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_picking" type="object" class="oe_stat_button" 
+                        <button name="action_view_picking" type="object" class="oe_stat_button"
                                 icon="fa-truck" attrs="{'invisible': [('picking_count', '=', 0)]}">
                             <field name="picking_count" widget="statinfo" string="Transferts"/>
                         </button>
@@ -40,10 +40,11 @@
                     <i class="fa fa-warning"/> Transfert Inter-Sociétés : Deux bons de transfert seront créés (sortie et entrée)
                 </div>
 
-                <!-- Ajouter le champ invisible -->
+                <!-- Champs invisibles -->
                         <field name="is_inter_company" invisible="1"/>
                         <field name="source_picking_id" invisible="1"/>
                         <field name="dest_picking_id" invisible="1"/>
+                        <field name="transit_location_id" invisible="1"/>
 
                     <group>
                         <group string="Informations Générales">
@@ -54,7 +55,11 @@
                         </group>
                         <group string="Statistiques">
                             <field name="total_products"/>
-                            <field name="total_quantity"/>
+                            <field name="total_quantity" string="Qté Demandée"/>
+                            <field name="total_qty_sent" string="Qté Envoyée"
+                                   attrs="{'invisible': [('state', 'in', ['draft', 'requested'])]}"/>
+                            <field name="total_qty_received" string="Qté Reçue"
+                                   attrs="{'invisible': [('state', 'in', ['draft', 'requested', 'approved'])]}"/>
                         </group>
                     </group>
                     <field name="is_single_company_mode" invisible="1"/>
@@ -78,16 +83,40 @@
                     <notebook>
                         <page string="Produits à Transférer">
                             <field name="transfer_line_ids">
-                                <tree editable="bottom" create="true" delete="true">
-                                    <field name="product_id" options="{'no_create': True}"/>
-                                    <field name="product_uom_id" options="{'no_create': True}" 
-                                           groups="uom.group_uom"/>
-                                    <field name="available_quantity" readonly="1" 
+                                <tree editable="bottom"
+                                      decoration-success="line_state == 'done'"
+                                      decoration-warning="line_state == 'partial'"
+                                      decoration-info="line_state == 'sent'">
+                                    <!-- Champ invisible pour le contrôle -->
+                                    <field name="parent_state" invisible="1"/>
+
+                                    <!-- Produit: éditable seulement en brouillon -->
+                                    <field name="product_id" options="{'no_create': True}"
+                                           attrs="{'readonly': [('parent_state', '!=', 'draft')]}"/>
+                                    <field name="product_uom_id" options="{'no_create': True}"
+                                           groups="uom.group_uom"
+                                           attrs="{'readonly': [('parent_state', '!=', 'draft')]}"/>
+                                    <field name="available_quantity" readonly="1" string="Dispo."
                                            decoration-danger="available_quantity == 0"
                                            decoration-warning="available_quantity &lt; quantity"/>
-                                    <field name="quantity" 
-                                           decoration-danger="quantity &gt; available_quantity"/>
-                                    <field name="note"/>
+                                    <!-- Quantité demandée: éditable seulement en brouillon -->
+                                    <field name="quantity" string="Demandé"
+                                           decoration-danger="quantity &gt; available_quantity"
+                                           attrs="{'readonly': [('parent_state', '!=', 'draft')]}"/>
+                                    <!-- Quantité envoyée: éditable seulement en état approuvé -->
+                                    <field name="qty_sent" string="Envoyé" optional="show"
+                                           attrs="{'readonly': [('parent_state', '!=', 'approved')]}"/>
+                                    <!-- Quantité reçue: éditable seulement en transit -->
+                                    <field name="qty_received" string="Reçu" optional="show"
+                                           attrs="{'readonly': [('parent_state', '!=', 'in_transit')]}"/>
+                                    <field name="qty_remaining" string="Reliquat" readonly="1"
+                                           decoration-danger="qty_remaining &gt; 0" optional="show"/>
+                                    <field name="line_state" string="État" widget="badge"
+                                           decoration-success="line_state == 'done'"
+                                           decoration-warning="line_state == 'partial'"
+                                           decoration-info="line_state == 'sent'" optional="show"/>
+                                    <field name="note" optional="hide"
+                                           attrs="{'readonly': [('parent_state', 'not in', ['draft', 'in_transit'])]}"/>
                                 </tree>
                             </field>
                         </page>
@@ -117,21 +146,14 @@
         <field name="name">adi.stock.transfer.tree</field>
         <field name="model">adi.stock.transfer</field>
         <field name="arch" type="xml">
-            <tree decoration-success="state=='done'" 
-                  decoration-warning="state=='requested'"
-                  decoration-danger="state=='cancelled'"
-                  decoration-info="state=='in_transit'">
+            <tree>
                 <field name="name"/>
                 <field name="requester_id"/>
                 <field name="source_warehouse_id"/>
                 <field name="dest_warehouse_id"/>
-                <field name="total_quantity"/>
+                <field name="total_quantity" string="Quantité"/>
                 <field name="request_date"/>
-                <field name="state" widget="badge" 
-                       decoration-success="state == 'done'"
-                       decoration-warning="state == 'requested'"
-                       decoration-danger="state == 'cancelled'"
-                       decoration-info="state == 'in_transit'"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -141,7 +163,7 @@
         <field name="name">adi.stock.transfer.kanban</field>
         <field name="model">adi.stock.transfer</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="state" quick_create="false">
+            <kanban class="o_kanban_mobile">
                 <field name="name"/>
                 <field name="requester_id"/>
                 <field name="source_warehouse_id"/>
@@ -150,29 +172,15 @@
                 <field name="state"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div class="oe_kanban_card oe_kanban_global_click">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                             <div class="oe_kanban_content">
-                                <div class="o_kanban_record_top">
-                                    <div class="o_kanban_record_headings">
-                                        <strong class="o_kanban_record_title">
-                                            <field name="name"/>
-                                        </strong>
-                                    </div>
+                                <strong><field name="name"/></strong>
+                                <div><field name="requester_id"/></div>
+                                <div>
+                                    <field name="source_warehouse_id"/> → <field name="dest_warehouse_id"/>
                                 </div>
-                                <div class="o_kanban_record_body">
-                                    <div>
-                                        <i class="fa fa-user"/> <field name="requester_id"/>
-                                    </div>
-                                    <div>
-                                        <i class="fa fa-warehouse"/> 
-                                        <field name="source_warehouse_id"/> → 
-                                        <field name="dest_warehouse_id"/>
-                                    </div>
-                                    <div>
-                                        <i class="fa fa-cubes"/> 
-                                        <field name="total_quantity"/> unités
-                                    </div>
-                                </div>
+                                <div><field name="total_quantity"/> unités</div>
+                                <div><field name="state" widget="badge"/></div>
                             </div>
                         </div>
                     </t>
@@ -186,40 +194,25 @@
         <field name="name">adi.stock.transfer.search</field>
         <field name="model">adi.stock.transfer</field>
         <field name="arch" type="xml">
-            <search>
+            <search string="Transferts">
                 <field name="name"/>
                 <field name="requester_id"/>
-                <field name="validator_id"/>
                 <field name="source_warehouse_id"/>
                 <field name="dest_warehouse_id"/>
                 <separator/>
-                <filter name="filter_draft" string="Brouillon" 
-                        domain="[('state', '=', 'draft')]"/>
-                <filter name="filter_requested" string="En Attente de Validation" 
-                        domain="[('state', '=', 'requested')]"/>
-                <filter name="filter_approved" string="Approuvé" 
-                        domain="[('state', '=', 'approved')]"/>
-                <filter name="filter_in_transit" string="En Transit" 
-                        domain="[('state', '=', 'in_transit')]"/>
-                <filter name="filter_done" string="Terminé" 
-                        domain="[('state', '=', 'done')]"/>
+                <filter string="Brouillon" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Demandé" name="filter_requested" domain="[('state', '=', 'requested')]"/>
+                <filter string="Approuvé" name="filter_approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="En Transit" name="filter_in_transit" domain="[('state', '=', 'in_transit')]"/>
+                <filter string="Terminé" name="filter_done" domain="[('state', '=', 'done')]"/>
                 <separator/>
-                <filter name="filter_my_requests" string="Mes Demandes" 
-                        domain="[('requester_id', '=', uid)]"/>
-                <filter name="filter_to_validate" string="À Valider" 
-                        domain="[('state', '=', 'requested'), ('validator_id', '=', uid)]"/>
+                <filter string="Mes Demandes" name="filter_my_requests" domain="[('requester_id', '=', uid)]"/>
                 <separator/>
                 <group expand="0" string="Grouper par">
-                    <filter name="group_state" string="État" 
-                            context="{'group_by': 'state'}"/>
-                    <filter name="group_requester" string="Demandeur" 
-                            context="{'group_by': 'requester_id'}"/>
-                    <filter name="group_source_warehouse" string="Entrepôt Source" 
-                            context="{'group_by': 'source_warehouse_id'}"/>
-                    <filter name="group_dest_warehouse" string="Entrepôt Destination" 
-                            context="{'group_by': 'dest_warehouse_id'}"/>
-                    <filter name="group_date" string="Date de Demande" 
-                            context="{'group_by': 'request_date:month'}"/>
+                    <filter string="État" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Demandeur" name="group_requester" context="{'group_by': 'requester_id'}"/>
+                    <filter string="Entrepôt Source" name="group_source" context="{'group_by': 'source_warehouse_id'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'request_date:month'}"/>
                 </group>
             </search>
         </field>
@@ -229,8 +222,8 @@
     <record id="action_stock_transfer" model="ir.actions.act_window">
         <field name="name">Transferts de Stock</field>
         <field name="res_model">adi.stock.transfer</field>
-        <field name="view_mode">tree,kanban,form</field>
-        <field name="context">{'search_default_filter_my_requests': 1}</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Créer un nouveau transfert de stock

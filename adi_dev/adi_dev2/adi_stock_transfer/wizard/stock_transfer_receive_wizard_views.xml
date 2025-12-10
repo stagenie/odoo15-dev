@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue du Wizard de Confirmation (Réception Complète) -->
+    <record id="view_stock_transfer_confirm_done_wizard_form" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.confirm.done.wizard.form</field>
+        <field name="model">adi.stock.transfer.confirm.done.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirmation de Réception">
+                <group>
+                    <field name="transfer_id" readonly="1" invisible="1"/>
+                    <div class="alert alert-warning" role="alert">
+                        <h4 class="alert-heading">
+                            <i class="fa fa-check-circle"/> Confirmation de Réception Complète
+                        </h4>
+                        <p>Êtes-vous sûr de vouloir terminer ce transfert ?</p>
+                        <hr/>
+                        <p class="mb-0">
+                            <strong>Toutes les quantités envoyées seront marquées comme reçues intégralement.</strong>
+                        </p>
+                    </div>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Oui, Confirmer la Réception" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
