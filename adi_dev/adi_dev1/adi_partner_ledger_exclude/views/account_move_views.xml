@@ -28,5 +28,19 @@
             </field>
         </record>
 
+        <!-- Add filter to customer invoices search view -->
+        <record id="view_account_invoice_filter_inherit_exclude" model="ir.ui.view">
+            <field name="name">account.invoice.search.inherit.exclude</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='late']" position="after">
+                    <separator/>
+                    <filter string="Hors solde" name="exclude_from_balance"
+                            domain="[('exclude_from_partner_ledger', '=', True)]"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Kanban améliorée pour les comptes bancaires -->
+    <record id="view_treasury_bank_kanban_dashboard" model="ir.ui.view">
+        <field name="name">treasury.bank.kanban.dashboard</field>
+        <field name="model">treasury.bank</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard o_treasury_dashboard" quick_create="false">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="current_balance"/>
+                <field name="available_balance"/>
+                <field name="currency_id"/>
+                <field name="state"/>
+                <field name="responsible_id"/>
+                <field name="bank_name"/>
+                <field name="account_number"/>
+                <field name="overdraft_limit"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div class="o_kanban_card_content p-0">
+                                <div t-attf-class="card mb-0 shadow-sm #{record.current_balance.raw_value &lt; 0 ? 'border-danger border-2' : (record.current_balance.raw_value &gt; 0 ? 'border-primary border-2' : 'border-secondary')}">
+                                    <div t-attf-class="card-header py-2 #{record.current_balance.raw_value &lt; 0 ? 'bg-danger text-white' : (record.current_balance.raw_value &gt; 0 ? 'bg-primary text-white' : 'bg-secondary text-white')}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">
+                                                <i class="fa fa-university me-1"/>
+                                                <field name="name"/>
+                                            </span>
+                                            <span class="badge bg-light text-dark">
+                                                <field name="code"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center py-3">
+                                        <h3 t-attf-class="mb-1 fw-bold #{record.current_balance.raw_value &lt; 0 ? 'text-danger' : (record.current_balance.raw_value &gt; 0 ? 'text-primary' : 'text-muted')}">
+                                            <field name="current_balance" widget="monetary"/>
+                                        </h3>
+                                        <p class="text-muted small mb-1">
+                                            Disponible: <field name="available_balance" widget="monetary"/>
+                                        </p>
+                                        <p class="text-muted small mb-0">
+                                            <i class="fa fa-building me-1"/>
+                                            <field name="bank_name"/>
+                                        </p>
+                                        <p class="text-muted small mb-0">
+                                            <field name="account_number"/>
+                                        </p>
+                                    </div>
+                                    <div class="card-footer bg-light py-1 text-center">
+                                        <span t-attf-class="badge #{record.state.raw_value == 'active' ? 'bg-success' : (record.state.raw_value == 'suspended' ? 'bg-warning' : 'bg-danger')}">
+                                            <t t-if="record.state.raw_value == 'active'">Actif</t>
+                                            <t t-if="record.state.raw_value == 'suspended'">Suspendu</t>
+                                            <t t-if="record.state.raw_value == 'closed'">Fermé</t>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Liste améliorée pour les comptes bancaires -->
+    <record id="view_treasury_bank_tree_dashboard" model="ir.ui.view">
+        <field name="name">treasury.bank.tree.dashboard</field>
+        <field name="model">treasury.bank</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree string="Comptes Bancaires"
+                  decoration-danger="current_balance &lt; 0"
+                  decoration-info="current_balance &gt; 0"
+                  decoration-muted="state == 'closed'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="bank_name"/>
+                <field name="account_number"/>
+                <field name="current_balance" widget="monetary" sum="Total Solde"/>
+                <field name="available_balance" widget="monetary" sum="Total Disponible"/>
+                <field name="overdraft_limit" widget="monetary" optional="hide"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'suspended'"
+                       decoration-danger="state == 'closed'"/>
+                <field name="responsible_id" widget="many2one_avatar_user" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Pivot pour les comptes bancaires -->
+    <record id="view_treasury_bank_pivot" model="ir.ui.view">
+        <field name="name">treasury.bank.pivot</field>
+        <field name="model">treasury.bank</field>
+        <field name="arch" type="xml">
+            <pivot string="Analyse des Comptes Bancaires">
+                <field name="bank_name" type="row"/>
+                <field name="state" type="col"/>
+                <field name="current_balance" type="measure"/>
+                <field name="available_balance" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Vue Graph pour les comptes bancaires -->
+    <record id="view_treasury_bank_graph" model="ir.ui.view">
+        <field name="name">treasury.bank.graph</field>
+        <field name="model">treasury.bank</field>
+        <field name="arch" type="xml">
+            <graph string="Soldes Bancaires" type="bar">
+                <field name="name"/>
+                <field name="current_balance" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Extension de l'action pour inclure pivot et graph -->
+    <record id="adi_treasury_bank.action_treasury_bank" model="ir.actions.act_window">
+        <field name="view_mode">kanban,tree,form,pivot,graph</field>
+    </record>
+
+</odoo>

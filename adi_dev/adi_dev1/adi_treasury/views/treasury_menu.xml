@@ -55,22 +55,6 @@
             parent="menu_treasury_root"
             sequence="10"/>
 
-    <!-- Menu raccourci direct au menu principal -->
-    <menuitem
-            id="menu_treasury_cash_shortcut"
-            name="Caisses"
-            parent="menu_treasury_root"
-            action="action_treasury_cash"
-            sequence="11"/>
-
-    <!-- Menu raccourci Banques au menu principal -->
-    <menuitem
-            id="menu_treasury_bank_shortcut"
-            name="Banques"
-            parent="menu_treasury_root"
-            action="adi_treasury_bank.action_treasury_bank"
-            sequence="12"/>
-
     <!-- Sous-groupe: Gestion des Caisses et Coffres -->
     <menuitem
             id="menu_treasury_accounts_group"

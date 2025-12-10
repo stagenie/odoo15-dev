@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu principal dans Trésorerie -->
+    <menuitem
+        id="menu_treasury_dashboard"
+        name="Tableau de Bord"
+        parent="adi_treasury.menu_treasury_root"
+        action="action_treasury_dashboard"
+        sequence="1"/>
+
+    <!-- Menu raccourci Caisses - Accès direct -->
+    <menuitem
+        id="menu_treasury_cash_shortcut"
+        name="Caisses"
+        parent="adi_treasury.menu_treasury_root"
+        action="adi_treasury.action_treasury_cash"
+        sequence="2"/>
+
+    <!-- Menu raccourci Banques - Accès direct -->
+    <menuitem
+        id="menu_treasury_bank_shortcut"
+        name="Banques"
+        parent="adi_treasury.menu_treasury_root"
+        action="adi_treasury_bank.action_treasury_bank"
+        sequence="3"/>
+
+</odoo>

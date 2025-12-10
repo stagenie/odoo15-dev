@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Kanban du Dashboard avec groupement par type -->
+    <record id="treasury_dashboard_view_kanban" model="ir.ui.view">
+        <field name="name">treasury.dashboard.kanban</field>
+        <field name="model">treasury.dashboard</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard o_treasury_dashboard" create="false" edit="false"
+                    group_create="false" group_delete="false" group_edit="false" default_order="sequence,type">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="balance"/>
+                <field name="currency_id"/>
+                <field name="type"/>
+                <field name="color"/>
+                <field name="state"/>
+                <field name="icon"/>
+                <field name="res_id"/>
+                <field name="res_model"/>
+                <field name="sequence"/>
+                <progressbar field="state" colors='{"open": "success", "active": "success", "closed": "danger", "suspended": "warning", "locked": "muted"}'/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div class="o_kanban_card_content p-0">
+                                <!-- Carte pour les totaux -->
+                                <t t-if="record.type.raw_value == 'total_cash' or record.type.raw_value == 'total_bank' or record.type.raw_value == 'grand_total'">
+                                    <div t-attf-class="card mb-0 shadow #{record.type.raw_value == 'grand_total' ? 'border-warning border-3' : (record.type.raw_value == 'total_cash' ? 'border-success border-3' : 'border-primary border-3')}">
+                                        <div t-attf-class="card-header py-2 #{record.type.raw_value == 'grand_total' ? 'bg-warning text-dark' : (record.type.raw_value == 'total_cash' ? 'bg-success text-white' : 'bg-primary text-white')}">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="fw-bold">
+                                                    <i t-attf-class="fa #{record.type.raw_value == 'grand_total' ? 'fa-balance-scale' : 'fa-calculator'} me-1"/>
+                                                    <field name="name"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div t-attf-class="card-body text-center py-4 #{record.type.raw_value == 'grand_total' ? 'bg-warning bg-opacity-10' : ''}">
+                                            <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : (record.type.raw_value == 'grand_total' ? 'text-warning' : (record.type.raw_value == 'total_cash' ? 'text-success' : 'text-primary'))}">
+                                                <field name="balance" widget="monetary"/>
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </t>
+                                <!-- Carte pour caisses et banques individuelles -->
+                                <t t-else="">
+                                    <div t-attf-class="card mb-0 shadow-sm #{record.balance.raw_value &lt; 0 ? 'border-danger border-2' : (record.balance.raw_value &gt; 0 ? (record.type.raw_value == 'cash' ? 'border-success border-2' : 'border-primary border-2') : 'border-secondary')}">
+                                        <div t-attf-class="card-header py-2 #{record.balance.raw_value &lt; 0 ? 'bg-danger text-white' : (record.balance.raw_value &gt; 0 ? (record.type.raw_value == 'cash' ? 'bg-success text-white' : 'bg-primary text-white') : 'bg-secondary text-white')}">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="fw-bold">
+                                                    <i t-attf-class="fa #{record.type.raw_value == 'cash' ? 'fa-money' : 'fa-university'} me-1"/>
+                                                    <field name="name"/>
+                                                </span>
+                                                <span class="badge bg-light text-dark">
+                                                    <field name="code"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body text-center py-3">
+                                            <h3 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : (record.balance.raw_value &gt; 0 ? (record.type.raw_value == 'cash' ? 'text-success' : 'text-primary') : 'text-muted')}">
+                                                <field name="balance" widget="monetary"/>
+                                            </h3>
+                                        </div>
+                                        <div class="card-footer bg-light py-1 text-center">
+                                            <span t-attf-class="badge #{record.state.raw_value == 'open' or record.state.raw_value == 'active' ? 'bg-success' : (record.state.raw_value == 'closed' ? 'bg-danger' : 'bg-warning')}">
+                                                <t t-if="record.state.raw_value == 'open'">Ouverte</t>
+                                                <t t-if="record.state.raw_value == 'active'">Actif</t>
+                                                <t t-if="record.state.raw_value == 'closed'">Fermé</t>
+                                                <t t-if="record.state.raw_value == 'suspended'">Suspendu</t>
+                                                <t t-if="record.state.raw_value == 'locked'">Verrouillé</t>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Tree simple pour liste -->
+    <record id="treasury_dashboard_view_tree" model="ir.ui.view">
+        <field name="name">treasury.dashboard.tree</field>
+        <field name="model">treasury.dashboard</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" default_order="sequence,type"
+                  decoration-danger="balance &lt; 0"
+                  decoration-success="balance &gt; 0 and type in ('cash', 'total_cash')"
+                  decoration-info="balance &gt; 0 and type in ('bank', 'total_bank')"
+                  decoration-warning="type == 'grand_total'"
+                  decoration-bf="type in ('total_cash', 'total_bank', 'grand_total')">
+                <field name="sequence" invisible="1"/>
+                <field name="type" string="Type"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="balance"/>
+                <field name="currency_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Pivot pour analyse -->
+    <record id="treasury_dashboard_view_pivot" model="ir.ui.view">
+        <field name="name">treasury.dashboard.pivot</field>
+        <field name="model">treasury.dashboard</field>
+        <field name="arch" type="xml">
+            <pivot string="Synthèse Trésorerie">
+                <field name="type" type="row"/>
+                <field name="balance" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Vue Graph -->
+    <record id="treasury_dashboard_view_graph" model="ir.ui.view">
+        <field name="name">treasury.dashboard.graph</field>
+        <field name="model">treasury.dashboard</field>
+        <field name="arch" type="xml">
+            <graph string="Soldes par Type" type="bar">
+                <field name="name"/>
+                <field name="balance" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Action principale du Dashboard -->
+    <record id="action_treasury_dashboard" model="ir.actions.act_window">
+        <field name="name">Tableau de Bord Trésorerie</field>
+        <field name="res_model">treasury.dashboard</field>
+        <field name="view_mode">kanban,tree,pivot,graph</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune donnée de trésorerie
+            </p>
+            <p>
+                Créez des caisses et des comptes bancaires pour voir le tableau de bord.
+            </p>
+        </field>
+    </record>
+
+    <!-- Vue QWeb pour le Dashboard amélioré -->
+    <record id="treasury_dashboard_main_view" model="ir.ui.view">
+        <field name="name">treasury.dashboard.main</field>
+        <field name="model">treasury.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Tableau de Bord Trésorerie" create="false" edit="false" delete="false">
+                <sheet>
+                    <div class="container-fluid">
+                        <!-- En-tête -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h1 class="display-6">
+                                    <i class="fa fa-dashboard me-2"/>
+                                    Tableau de Bord Trésorerie
+                                </h1>
+                                <p class="text-muted">Vue d'ensemble des soldes</p>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action serveur pour rafraîchir les données -->
+    <record id="action_refresh_dashboard" model="ir.actions.server">
+        <field name="name">Rafraîchir le Dashboard</field>
+        <field name="model_id" ref="model_treasury_dashboard"/>
+        <field name="binding_model_id" ref="model_treasury_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'reload',
+}
+        </field>
+    </record>
+
+</odoo>
