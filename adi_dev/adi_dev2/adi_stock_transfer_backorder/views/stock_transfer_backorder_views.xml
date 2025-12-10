@@ -36,8 +36,8 @@
                 <field name="parent_transfer_id" invisible="1"/>
             </field>
 
-            <!-- Ajouter l'alerte pour les quantites en transit -->
-            <group string="Informations Generales" position="before">
+            <!-- Ajouter l'alerte pour les quantites en transit (avant le champ requester_id) -->
+            <field name="requester_id" position="before">
                 <div class="alert alert-info" role="alert"
                      attrs="{'invisible': ['|', ('state', 'not in', ['in_transit', 'partial']), ('qty_in_transit', '=', 0)]}">
                     <i class="fa fa-truck"/> <strong>En Transit:</strong>
@@ -48,7 +48,7 @@
                     <i class="fa fa-exclamation-triangle"/> <strong>Reception Partielle:</strong>
                     Ce transfert a des reliquats (<field name="total_qty_backorder" class="oe_inline"/> unites) a traiter.
                 </div>
-            </group>
+            </field>
         </field>
     </record>
 
