@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Exclusion de Factures des Rapports Comptables',
-    'version': '15.0.2.0.0',
+    'version': '15.0.2.1.0',
     'category': 'Accounting/Reports',
     'summary': 'Exclure des factures du calcul des soldes dans tous les rapports comptables',
     'description': """
