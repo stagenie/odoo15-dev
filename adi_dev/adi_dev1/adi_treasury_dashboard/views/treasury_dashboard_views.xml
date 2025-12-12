@@ -25,30 +25,30 @@
                         <div t-attf-class="oe_kanban_global_click">
                             <div class="o_kanban_card_content p-0">
                                 <!-- Carte pour les totaux -->
-                                <t t-if="record.type.raw_value == 'total_cash' or record.type.raw_value == 'total_bank' or record.type.raw_value == 'grand_total'">
-                                    <div t-attf-class="card mb-0 shadow #{record.type.raw_value == 'grand_total' ? 'border-warning border-3' : (record.type.raw_value == 'total_cash' ? 'border-success border-3' : 'border-primary border-3')}">
-                                        <div t-attf-class="card-header py-2 #{record.type.raw_value == 'grand_total' ? 'bg-warning text-dark' : (record.type.raw_value == 'total_cash' ? 'bg-success text-white' : 'bg-primary text-white')}">
+                                <t t-if="record.type.raw_value == 'total_cash' or record.type.raw_value == 'total_bank' or record.type.raw_value == 'total_safe' or record.type.raw_value == 'grand_total'">
+                                    <div t-attf-class="card mb-0 shadow #{record.type.raw_value == 'grand_total' ? 'border-warning border-3' : (record.type.raw_value == 'total_cash' ? 'border-success border-3' : (record.type.raw_value == 'total_safe' ? 'border-secondary border-3' : 'border-primary border-3'))}">
+                                        <div t-attf-class="card-header py-2 #{record.type.raw_value == 'grand_total' ? 'bg-warning text-dark' : (record.type.raw_value == 'total_cash' ? 'bg-success text-white' : (record.type.raw_value == 'total_safe' ? 'bg-secondary text-white' : 'bg-primary text-white'))}">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <span class="fw-bold">
-                                                    <i t-attf-class="fa #{record.type.raw_value == 'grand_total' ? 'fa-balance-scale' : 'fa-calculator'} me-1"/>
+                                                    <i t-attf-class="fa #{record.type.raw_value == 'grand_total' ? 'fa-balance-scale' : (record.type.raw_value == 'total_safe' ? 'fa-lock' : 'fa-calculator')} me-1"/>
                                                     <field name="name"/>
                                                 </span>
                                             </div>
                                         </div>
                                         <div t-attf-class="card-body text-center py-4 #{record.type.raw_value == 'grand_total' ? 'bg-warning bg-opacity-10' : ''}">
-                                            <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : (record.type.raw_value == 'grand_total' ? 'text-warning' : (record.type.raw_value == 'total_cash' ? 'text-success' : 'text-primary'))}">
+                                            <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : (record.type.raw_value == 'grand_total' ? 'text-warning' : (record.type.raw_value == 'total_cash' ? 'text-success' : (record.type.raw_value == 'total_safe' ? 'text-secondary' : 'text-primary')))}">
                                                 <field name="balance" widget="monetary"/>
                                             </h2>
                                         </div>
                                     </div>
                                 </t>
-                                <!-- Carte pour caisses et banques individuelles -->
+                                <!-- Carte pour caisses, banques et coffres individuels -->
                                 <t t-else="">
-                                    <div t-attf-class="card mb-0 shadow-sm #{record.balance.raw_value &lt; 0 ? 'border-danger border-2' : (record.balance.raw_value &gt; 0 ? (record.type.raw_value == 'cash' ? 'border-success border-2' : 'border-primary border-2') : 'border-secondary')}">
-                                        <div t-attf-class="card-header py-2 #{record.balance.raw_value &lt; 0 ? 'bg-danger text-white' : (record.balance.raw_value &gt; 0 ? (record.type.raw_value == 'cash' ? 'bg-success text-white' : 'bg-primary text-white') : 'bg-secondary text-white')}">
+                                    <div t-attf-class="card mb-0 shadow-sm #{record.balance.raw_value &lt; 0 ? 'border-danger border-2' : (record.balance.raw_value &gt; 0 ? (record.type.raw_value == 'cash' ? 'border-success border-2' : (record.type.raw_value == 'safe' ? 'border-secondary border-2' : 'border-primary border-2')) : 'border-secondary')}">
+                                        <div t-attf-class="card-header py-2 #{record.balance.raw_value &lt; 0 ? 'bg-danger text-white' : (record.balance.raw_value &gt; 0 ? (record.type.raw_value == 'cash' ? 'bg-success text-white' : (record.type.raw_value == 'safe' ? 'bg-secondary text-white' : 'bg-primary text-white')) : 'bg-secondary text-white')}">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <span class="fw-bold">
-                                                    <i t-attf-class="fa #{record.type.raw_value == 'cash' ? 'fa-money' : 'fa-university'} me-1"/>
+                                                    <i t-attf-class="fa #{record.type.raw_value == 'cash' ? 'fa-money' : (record.type.raw_value == 'safe' ? 'fa-lock' : 'fa-university')} me-1"/>
                                                     <field name="name"/>
                                                 </span>
                                                 <span class="badge bg-light text-dark">
@@ -57,7 +57,7 @@
                                             </div>
                                         </div>
                                         <div class="card-body text-center py-3">
-                                            <h3 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : (record.balance.raw_value &gt; 0 ? (record.type.raw_value == 'cash' ? 'text-success' : 'text-primary') : 'text-muted')}">
+                                            <h3 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : (record.balance.raw_value &gt; 0 ? (record.type.raw_value == 'cash' ? 'text-success' : (record.type.raw_value == 'safe' ? 'text-secondary' : 'text-primary')) : 'text-muted')}">
                                                 <field name="balance" widget="monetary"/>
                                             </h3>
                                         </div>
@@ -89,8 +89,9 @@
                   decoration-danger="balance &lt; 0"
                   decoration-success="balance &gt; 0 and type in ('cash', 'total_cash')"
                   decoration-info="balance &gt; 0 and type in ('bank', 'total_bank')"
+                  decoration-muted="balance &gt; 0 and type in ('safe', 'total_safe')"
                   decoration-warning="type == 'grand_total'"
-                  decoration-bf="type in ('total_cash', 'total_bank', 'grand_total')">
+                  decoration-bf="type in ('total_cash', 'total_bank', 'total_safe', 'grand_total')">
                 <field name="sequence" invisible="1"/>
                 <field name="type" string="Type"/>
                 <field name="code"/>
@@ -137,8 +138,17 @@
                 Aucune donnée de trésorerie
             </p>
             <p>
-                Créez des caisses et des comptes bancaires pour voir le tableau de bord.
+                Créez des caisses, des comptes bancaires ou des coffres pour voir le tableau de bord.
             </p>
+            <div class="alert alert-info mt-3">
+                <h5><i class="fa fa-info-circle"/> Informations sur les soldes</h5>
+                <ul class="mb-0">
+                    <li><strong>Caisses</strong> : Liquidités disponibles dans les caisses physiques</li>
+                    <li><strong>Banques</strong> : Soldes des comptes bancaires</li>
+                    <li><strong>Coffres</strong> : Fonds sécurisés dans les coffres-forts</li>
+                    <li><strong>Total Général</strong> : Caisses + Banques + Coffres = Trésorerie totale disponible</li>
+                </ul>
+            </div>
         </field>
     </record>
 
@@ -157,7 +167,17 @@
                                     <i class="fa fa-dashboard me-2"/>
                                     Tableau de Bord Trésorerie
                                 </h1>
-                                <p class="text-muted">Vue d'ensemble des soldes</p>
+                                <p class="text-muted">Vue d'ensemble des soldes (Caisses + Banques + Coffres)</p>
+                            </div>
+                        </div>
+                        <!-- Indication informative -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="alert alert-light border">
+                                    <i class="fa fa-info-circle text-info me-2"/>
+                                    <strong>Note :</strong> Le Total Général représente la somme de toutes les liquidités disponibles
+                                    (caisses physiques + comptes bancaires + coffres-forts). Les montants en rouge indiquent un solde négatif.
+                                </div>
                             </div>
                         </div>
                     </div>
