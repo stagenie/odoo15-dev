@@ -30,6 +30,8 @@ class TreasuryDashboard(models.Model):
     icon = fields.Char(string='Icône')
     res_id = fields.Integer(string='ID Source')
     res_model = fields.Char(string='Modèle Source')
+    has_pending_closing = fields.Boolean(string='Clôture/Rapprochement en cours')
+    is_balance_final = fields.Boolean(string='Solde finalisé')
 
     def init(self):
         """Créer la vue SQL pour le tableau de bord"""
@@ -53,7 +55,15 @@ class TreasuryDashboard(models.Model):
                     c.state as state,
                     'fa-money' as icon,
                     c.id as res_id,
-                    'treasury.cash' as res_model
+                    'treasury.cash' as res_model,
+                    EXISTS(
+                        SELECT 1 FROM treasury_cash_closing cc
+                        WHERE cc.cash_id = c.id AND cc.state IN ('draft', 'confirmed')
+                    ) as has_pending_closing,
+                    NOT EXISTS(
+                        SELECT 1 FROM treasury_cash_closing cc
+                        WHERE cc.cash_id = c.id AND cc.state IN ('draft', 'confirmed')
+                    ) as is_balance_final
                 FROM treasury_cash c
                 WHERE c.active = true
 
@@ -76,13 +86,21 @@ class TreasuryDashboard(models.Model):
                     b.state as state,
                     'fa-university' as icon,
                     b.id as res_id,
-                    'treasury.bank' as res_model
+                    'treasury.bank' as res_model,
+                    EXISTS(
+                        SELECT 1 FROM treasury_bank_closing bc
+                        WHERE bc.bank_id = b.id AND bc.state IN ('draft', 'confirmed')
+                    ) as has_pending_closing,
+                    NOT EXISTS(
+                        SELECT 1 FROM treasury_bank_closing bc
+                        WHERE bc.bank_id = b.id AND bc.state IN ('draft', 'confirmed')
+                    ) as is_balance_final
                 FROM treasury_bank b
                 WHERE b.active = true
 
                 UNION ALL
 
-                -- Coffres
+                -- Coffres (pas de clôture, solde toujours finalisé)
                 SELECT
                     3000000 + s.id as id,
                     s.name as name,
@@ -99,7 +117,9 @@ class TreasuryDashboard(models.Model):
                     s.state as state,
                     'fa-lock' as icon,
                     s.id as res_id,
-                    'treasury.safe' as res_model
+                    'treasury.safe' as res_model,
+                    false as has_pending_closing,
+                    true as is_balance_final
                 FROM treasury_safe s
                 WHERE s.active = true
 
@@ -122,7 +142,9 @@ class TreasuryDashboard(models.Model):
                     'active' as state,
                     'fa-calculator' as icon,
                     0 as res_id,
-                    '' as res_model
+                    '' as res_model,
+                    false as has_pending_closing,
+                    true as is_balance_final
                 FROM treasury_cash c
                 WHERE c.active = true
 
@@ -145,7 +167,9 @@ class TreasuryDashboard(models.Model):
                     'active' as state,
                     'fa-calculator' as icon,
                     0 as res_id,
-                    '' as res_model
+                    '' as res_model,
+                    false as has_pending_closing,
+                    true as is_balance_final
                 FROM treasury_bank b
                 WHERE b.active = true
 
@@ -168,7 +192,9 @@ class TreasuryDashboard(models.Model):
                     'active' as state,
                     'fa-calculator' as icon,
                     0 as res_id,
-                    '' as res_model
+                    '' as res_model,
+                    false as has_pending_closing,
+                    true as is_balance_final
                 FROM treasury_safe s
                 WHERE s.active = true
 
@@ -194,7 +220,9 @@ class TreasuryDashboard(models.Model):
                     'active' as state,
                     'fa-balance-scale' as icon,
                     0 as res_id,
-                    '' as res_model
+                    '' as res_model,
+                    false as has_pending_closing,
+                    true as is_balance_final
             )
         """)
 

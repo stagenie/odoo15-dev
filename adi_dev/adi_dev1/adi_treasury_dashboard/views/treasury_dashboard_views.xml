@@ -19,6 +19,8 @@
                 <field name="res_id"/>
                 <field name="res_model"/>
                 <field name="sequence"/>
+                <field name="has_pending_closing"/>
+                <field name="is_balance_final"/>
                 <progressbar field="state" colors='{"open": "success", "active": "success", "closed": "danger", "suspended": "warning", "locked": "muted"}'/>
                 <templates>
                     <t t-name="kanban-box">
@@ -62,13 +64,29 @@
                                             </h3>
                                         </div>
                                         <div class="card-footer bg-light py-1 text-center">
-                                            <span t-attf-class="badge #{record.state.raw_value == 'open' or record.state.raw_value == 'active' ? 'bg-success' : (record.state.raw_value == 'closed' ? 'bg-danger' : 'bg-warning')}">
-                                                <t t-if="record.state.raw_value == 'open'">Ouverte</t>
-                                                <t t-if="record.state.raw_value == 'active'">Actif</t>
-                                                <t t-if="record.state.raw_value == 'closed'">Fermé</t>
-                                                <t t-if="record.state.raw_value == 'suspended'">Suspendu</t>
-                                                <t t-if="record.state.raw_value == 'locked'">Verrouillé</t>
-                                            </span>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <!-- État -->
+                                                <span t-attf-class="badge #{record.state.raw_value == 'open' or record.state.raw_value == 'active' ? 'bg-success' : (record.state.raw_value == 'closed' ? 'bg-danger' : 'bg-warning')}">
+                                                    <t t-if="record.state.raw_value == 'open'">Ouverte</t>
+                                                    <t t-if="record.state.raw_value == 'active'">Actif</t>
+                                                    <t t-if="record.state.raw_value == 'closed'">Fermé</t>
+                                                    <t t-if="record.state.raw_value == 'suspended'">Suspendu</t>
+                                                    <t t-if="record.state.raw_value == 'locked'">Verrouillé</t>
+                                                </span>
+                                                <!-- Indicateur de solde finalisé (Caisses et Banques seulement) -->
+                                                <t t-if="record.type.raw_value == 'cash' or record.type.raw_value == 'bank'">
+                                                    <t t-if="record.is_balance_final.raw_value">
+                                                        <span class="badge bg-info" title="Solde finalisé - Pas de clôture en cours">
+                                                            <i class="fa fa-check-circle me-1"/>Finalisé
+                                                        </span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span class="badge bg-warning text-dark" t-att-title="record.type.raw_value == 'cash' ? 'Clôture en cours' : 'Rapprochement en cours'">
+                                                            <i class="fa fa-clock-o me-1"/>En cours
+                                                        </span>
+                                                    </t>
+                                                </t>
+                                            </div>
                                         </div>
                                     </div>
                                 </t>
@@ -99,6 +117,7 @@
                 <field name="balance"/>
                 <field name="currency_id"/>
                 <field name="state"/>
+                <field name="is_balance_final" string="Finalisé" widget="boolean"/>
             </tree>
         </field>
     </record>
@@ -148,6 +167,12 @@
                     <li><strong>Coffres</strong> : Fonds sécurisés dans les coffres-forts</li>
                     <li><strong>Total Général</strong> : Caisses + Banques + Coffres = Trésorerie totale disponible</li>
                 </ul>
+                <hr class="my-2"/>
+                <h6><i class="fa fa-check-circle"/> Indicateurs de statut</h6>
+                <ul class="mb-0">
+                    <li><span class="badge bg-info">Finalisé</span> : Pas de clôture/rapprochement en cours - Solde confirmé</li>
+                    <li><span class="badge bg-warning text-dark">En cours</span> : Clôture ou rapprochement en cours - Solde provisoire</li>
+                </ul>
             </div>
         </field>
     </record>
@@ -177,6 +202,12 @@
                                     <i class="fa fa-info-circle text-info me-2"/>
                                     <strong>Note :</strong> Le Total Général représente la somme de toutes les liquidités disponibles
                                     (caisses physiques + comptes bancaires + coffres-forts). Les montants en rouge indiquent un solde négatif.
+                                    <hr class="my-2"/>
+                                    <strong>Indicateurs de solde :</strong>
+                                    <ul class="mb-0 mt-1">
+                                        <li><span class="badge bg-info">Finalisé</span> : Caisse sans clôture en cours / Banque sans rapprochement en cours - Solde confirmé</li>
+                                        <li><span class="badge bg-warning text-dark">En cours</span> : Clôture ou rapprochement en cours - Solde provisoire pouvant évoluer</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
