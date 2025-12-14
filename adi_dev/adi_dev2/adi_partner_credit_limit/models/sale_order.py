@@ -30,31 +30,41 @@ class SaleOrder(models.Model):
 
     def _get_customer_balance(self, partner):
         """
-        Calcul du solde total actuel d'un client :
-        - Total des factures ouvertes (montant résiduel).
-        - Moins les paiements non affectés (paiements sans factures liées).
-        - Moins les avoirs non utilisés.
+        Calcul du solde total actuel d'un client.
+
+        Utilise la même logique que le rapport Partner Ledger (accounting_pdf_reports) :
+        - SUM(debit - credit) sur les account_move_line
+        - Sur les comptes de type "receivable"
+        - Pour les mouvements postés (state = 'posted')
+        - En excluant les factures marquées avec exclude_from_partner_ledger = True
+
+        Cette approche garantit la cohérence avec le rapport Partner Ledger.
         """
-        # 1. Calculer le total des factures ouvertes
-        total_invoices = sum(partner.invoice_ids.filtered(
-            lambda inv: inv.state in ['posted'] and not inv.payment_state == 'paid'
-        ).mapped('amount_residual'))
+        # Récupérer les comptes de type "receivable" (comptes clients)
+        self.env.cr.execute("""
+            SELECT id FROM account_account
+            WHERE internal_type = 'receivable'
+            AND NOT deprecated
+        """)
+        account_ids = [row[0] for row in self.env.cr.fetchall()]
 
-        # 2. Calculer les paiements non affectés (paiements sans factures liées)
-        payments = self.env['account.payment'].search([
-            ('partner_id', '=', partner.id),
-            ('state', '=', 'posted'),
-        ])
-        total_payments = sum(payment.amount for payment in payments if not payment.reconciled_invoice_ids)
+        if not account_ids:
+            return 0.0
 
-        # 3. Calculer les avoirs non utilisés
-        credits = partner.invoice_ids.filtered(
-            lambda inv: inv.state in ['posted'] and inv.move_type == 'out_refund' and inv.payment_state != 'paid'
-        )
-        total_credits = sum(credits.mapped('amount_residual'))
+        # Calculer le solde : SUM(debit - credit) sur les lignes comptables
+        # Même logique que _sum_partner dans accounting_pdf_reports
+        self.env.cr.execute("""
+            SELECT COALESCE(SUM(aml.debit - aml.credit), 0)
+            FROM account_move_line aml
+            JOIN account_move m ON m.id = aml.move_id
+            WHERE aml.partner_id = %s
+                AND m.state = 'posted'
+                AND aml.account_id IN %s
+                AND (m.exclude_from_partner_ledger IS NULL OR m.exclude_from_partner_ledger = FALSE)
+        """, (partner.id, tuple(account_ids)))
 
-        # Solde total = factures - paiements - avoirs
-        return total_invoices - total_payments - total_credits
+        result = self.env.cr.fetchone()
+        return result[0] if result else 0.0
 
     def check_credit_limit(self):
         """

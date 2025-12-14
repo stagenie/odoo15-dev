@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu raccourci Coffres - Accès direct -->
+    <menuitem
+        id="menu_treasury_safe_shortcut"
+        name="Coffres"
+        parent="adi_treasury.menu_treasury_root"
+        action="adi_treasury.action_treasury_safe"
+        sequence="4"/>
+
+</odoo>

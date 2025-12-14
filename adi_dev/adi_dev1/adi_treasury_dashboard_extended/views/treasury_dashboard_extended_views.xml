@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Kanban étendue avec coffres et indicateurs -->
+    <record id="treasury_dashboard_view_kanban_extended" model="ir.ui.view">
+        <field name="name">treasury.dashboard.kanban.extended</field>
+        <field name="model">treasury.dashboard</field>
+        <field name="inherit_id" ref="adi_treasury_dashboard.treasury_dashboard_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban/templates/t[@t-name='kanban-box']" position="replace">
+                <t t-name="kanban-box">
+                    <div t-attf-class="oe_kanban_global_click">
+                        <div class="o_kanban_card_content p-0">
+
+                            <!-- ========== TOTAL CAISSES ========== -->
+                            <t t-if="record.type.raw_value == 'total_cash'">
+                                <div class="card mb-0 shadow border-success border-3">
+                                    <div class="card-header py-2 bg-success text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">
+                                                <i class="fa fa-calculator me-1"/>
+                                                <field name="name"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center py-4">
+                                        <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-success'}">
+                                            <field name="balance" widget="monetary"/>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- ========== TOTAL BANQUES ========== -->
+                            <t t-if="record.type.raw_value == 'total_bank'">
+                                <div class="card mb-0 shadow border-primary border-3">
+                                    <div class="card-header py-2 bg-primary text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">
+                                                <i class="fa fa-calculator me-1"/>
+                                                <field name="name"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center py-4">
+                                        <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-primary'}">
+                                            <field name="balance" widget="monetary"/>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- ========== TOTAL COFFRES ========== -->
+                            <t t-if="record.type.raw_value == 'total_safe'">
+                                <div class="card mb-0 shadow border-dark border-3">
+                                    <div class="card-header py-2 bg-dark text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">
+                                                <i class="fa fa-lock me-1"/>
+                                                <field name="name"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center py-4">
+                                        <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-dark'}">
+                                            <field name="balance" widget="monetary"/>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- ========== TOTAL GÉNÉRAL ========== -->
+                            <t t-if="record.type.raw_value == 'grand_total'">
+                                <div class="card mb-0 shadow border-warning border-3">
+                                    <div class="card-header py-2 bg-warning text-dark">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">
+                                                <i class="fa fa-balance-scale me-1"/>
+                                                <field name="name"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center py-4 bg-warning bg-opacity-10">
+                                        <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-warning'}">
+                                            <field name="balance" widget="monetary"/>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- ========== CAISSES INDIVIDUELLES ========== -->
+                            <t t-if="record.type.raw_value == 'cash'">
+                                <div t-attf-class="card mb-0 shadow-sm #{record.balance.raw_value &lt; 0 ? 'border-danger border-2' : 'border-success border-2'}">
+                                    <div t-attf-class="card-header py-2 #{record.balance.raw_value &lt; 0 ? 'bg-danger' : 'bg-success'} text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">
+                                                <i class="fa fa-money me-1"/>
+                                                <field name="name"/>
+                                            </span>
+                                            <span class="badge bg-light text-dark">
+                                                <field name="code"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center py-3">
+                                        <h3 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-success'}">
+                                            <field name="balance" widget="monetary"/>
+                                        </h3>
+                                    </div>
+                                    <div class="card-footer bg-light py-1 text-center">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span t-attf-class="badge #{record.state.raw_value == 'open' ? 'bg-success' : 'bg-warning'}">
+                                                <t t-if="record.state.raw_value == 'open'">Ouverte</t>
+                                                <t t-if="record.state.raw_value == 'closed'">Fermée</t>
+                                                <t t-if="record.state.raw_value == 'locked'">Verrouillée</t>
+                                            </span>
+                                            <t t-if="record.is_balance_final.raw_value">
+                                                <span class="badge bg-info" title="Solde finalisé">
+                                                    <i class="fa fa-check-circle me-1"/>Finalisé
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge bg-warning text-dark" title="Clôture en cours">
+                                                    <i class="fa fa-clock-o me-1"/>En cours
+                                                </span>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- ========== BANQUES INDIVIDUELLES ========== -->
+                            <t t-if="record.type.raw_value == 'bank'">
+                                <div t-attf-class="card mb-0 shadow-sm #{record.balance.raw_value &lt; 0 ? 'border-danger border-2' : 'border-primary border-2'}">
+                                    <div t-attf-class="card-header py-2 #{record.balance.raw_value &lt; 0 ? 'bg-danger' : 'bg-primary'} text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">
+                                                <i class="fa fa-university me-1"/>
+                                                <field name="name"/>
+                                            </span>
+                                            <span class="badge bg-light text-dark">
+                                                <field name="code"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center py-3">
+                                        <h3 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-primary'}">
+                                            <field name="balance" widget="monetary"/>
+                                        </h3>
+                                    </div>
+                                    <div class="card-footer bg-light py-1 text-center">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span t-attf-class="badge #{record.state.raw_value == 'active' ? 'bg-success' : 'bg-warning'}">
+                                                <t t-if="record.state.raw_value == 'active'">Actif</t>
+                                                <t t-if="record.state.raw_value == 'suspended'">Suspendu</t>
+                                                <t t-if="record.state.raw_value == 'closed'">Fermé</t>
+                                            </span>
+                                            <t t-if="record.is_balance_final.raw_value">
+                                                <span class="badge bg-info" title="Solde finalisé">
+                                                    <i class="fa fa-check-circle me-1"/>Finalisé
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge bg-warning text-dark" title="Rapprochement en cours">
+                                                    <i class="fa fa-clock-o me-1"/>En cours
+                                                </span>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- ========== COFFRES INDIVIDUELS ========== -->
+                            <t t-if="record.type.raw_value == 'safe'">
+                                <div t-attf-class="card mb-0 shadow-sm #{record.balance.raw_value &lt; 0 ? 'border-danger border-2' : 'border-dark border-2'}">
+                                    <div t-attf-class="card-header py-2 #{record.balance.raw_value &lt; 0 ? 'bg-danger' : 'bg-dark'} text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">
+                                                <i class="fa fa-lock me-1"/>
+                                                <field name="name"/>
+                                            </span>
+                                            <span class="badge bg-light text-dark">
+                                                <field name="code"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center py-3">
+                                        <h3 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-dark'}">
+                                            <field name="balance" widget="monetary"/>
+                                        </h3>
+                                    </div>
+                                    <div class="card-footer bg-light py-1 text-center">
+                                        <span t-attf-class="badge #{record.state.raw_value == 'active' ? 'bg-success' : 'bg-warning'}">
+                                            <t t-if="record.state.raw_value == 'active'">Actif</t>
+                                            <t t-if="record.state.raw_value == 'open'">Ouvert</t>
+                                            <t t-if="record.state.raw_value == 'closed'">Fermé</t>
+                                            <t t-if="record.state.raw_value == 'locked'">Verrouillé</t>
+                                        </span>
+                                    </div>
+                                </div>
+                            </t>
+
+                        </div>
+                    </div>
+                </t>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue Tree étendue avec indicateur finalisé -->
+    <record id="treasury_dashboard_view_tree_extended" model="ir.ui.view">
+        <field name="name">treasury.dashboard.tree.extended</field>
+        <field name="model">treasury.dashboard</field>
+        <field name="inherit_id" ref="adi_treasury_dashboard.treasury_dashboard_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="is_balance_final" string="Finalisé" widget="boolean"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

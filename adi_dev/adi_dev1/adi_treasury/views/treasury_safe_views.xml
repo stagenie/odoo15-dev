@@ -238,11 +238,36 @@
         </field>
     </record>
 
+    <!-- Vue Pivot pour les coffres -->
+    <record id="view_treasury_safe_pivot" model="ir.ui.view">
+        <field name="name">treasury.safe.pivot</field>
+        <field name="model">treasury.safe</field>
+        <field name="arch" type="xml">
+            <pivot string="Analyse des coffres">
+                <field name="name" type="row"/>
+                <field name="state" type="col"/>
+                <field name="current_balance" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Vue Graph pour les coffres -->
+    <record id="view_treasury_safe_graph" model="ir.ui.view">
+        <field name="name">treasury.safe.graph</field>
+        <field name="model">treasury.safe</field>
+        <field name="arch" type="xml">
+            <graph string="Soldes des coffres" type="bar">
+                <field name="name" type="row"/>
+                <field name="current_balance" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
     <!-- Action pour les coffres -->
     <record id="action_treasury_safe" model="ir.actions.act_window">
         <field name="name">Coffres-forts</field>
         <field name="res_model">treasury.safe</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph</field>
         <field name="search_view_id" ref="view_treasury_safe_search"/>
         <field name="context">{'search_default_active': 1}</field>
         <field name="help" type="html">

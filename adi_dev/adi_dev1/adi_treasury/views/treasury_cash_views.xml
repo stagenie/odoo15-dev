@@ -235,6 +235,8 @@
                 <field name="days_since_closing"/>
                 <field name="auto_close_days"/>
                 <field name="require_closing"/>
+                <field name="has_pending_closing"/>
+                <field name="is_closing_late"/>
                 <field name="color"/>
                 <templates>
                     <t t-name="kanban-box">
@@ -272,14 +274,13 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div t-if="record.days_since_closing.raw_value > record.auto_close_days.raw_value and record.auto_close_days.raw_value > 0 and record.require_closing.raw_value"
+                                <!-- Indicateur clôture en cours (affiché seulement s'il y a une clôture en cours) -->
+                                <div t-if="record.has_pending_closing.raw_value"
                                      class="row mt-2">
                                     <div class="col-12">
-                                        <div class="alert alert-warning text-center p-1 mb-1">
-                                            <i class="fa fa-warning"/>
-                                            Clôture en retard (
-                                            <field name="days_since_closing"/>
-                                            jours)
+                                        <div class="alert alert-info text-center p-1 mb-1">
+                                            <i class="fa fa-clock-o"/>
+                                            Clôture en cours
                                         </div>
                                     </div>
                                 </div>

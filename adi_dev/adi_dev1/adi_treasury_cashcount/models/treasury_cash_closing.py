@@ -67,15 +67,13 @@ class TreasuryCashClosing(models.Model):
 
         self.count_line_ids = count_lines
 
+        # Recharger le formulaire pour afficher les lignes créées
         return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Comptage initialisé'),
-                'message': _('%d lignes de comptage ont été créées. Vous pouvez maintenant saisir les quantités.') % len(denominations),
-                'type': 'success',
-                'sticky': False,
-            }
+            'type': 'ir.actions.act_window',
+            'res_model': 'treasury.cash.closing',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'current',
         }
 
     def action_clear_count_lines(self):
@@ -84,13 +82,11 @@ class TreasuryCashClosing(models.Model):
         for line in self.count_line_ids:
             line.quantity = 0
 
+        # Recharger le formulaire pour afficher les changements
         return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Comptage réinitialisé'),
-                'message': _('Toutes les quantités ont été remises à 0.'),
-                'type': 'info',
-                'sticky': False,
-            }
+            'type': 'ir.actions.act_window',
+            'res_model': 'treasury.cash.closing',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'current',
         }

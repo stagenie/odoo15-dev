@@ -1,47 +1,12 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+from odoo import models, fields, api
 
 
-class TreasuryDashboard(models.Model):
-    _name = 'treasury.dashboard'
-    _description = 'Tableau de Bord Trésorerie'
-    _auto = False  # Pas de table en base
-    _order = 'sequence, type'
-
-    name = fields.Char(string='Nom')
-    code = fields.Char(string='Code')
-    balance = fields.Monetary(string='Solde', currency_field='currency_id')
-    currency_id = fields.Many2one('res.currency', string='Devise')
-    type = fields.Selection([
-        ('cash', 'Caisse'),
-        ('bank', 'Banque'),
-        ('safe', 'Coffre'),
-        ('total_cash', 'Total Caisses'),
-        ('total_bank', 'Total Banques'),
-        ('total_safe', 'Total Coffres'),
-        ('grand_total', 'Total Général'),
-    ], string='Type')
-    color = fields.Integer(string='Couleur')
-    sequence = fields.Integer(string='Séquence')
-    state = fields.Selection([
-        ('open', 'Ouvert'),
-        ('active', 'Actif'),
-        ('closed', 'Fermé'),
-    ], string='État')
-    icon = fields.Char(string='Icône')
-    res_id = fields.Integer(string='ID Source')
-    res_model = fields.Char(string='Modèle Source')
-    has_pending_closing = fields.Boolean(string='Clôture/Rapprochement en cours')
-    is_balance_final = fields.Boolean(string='Solde finalisé')
-
-    @api.model
-    def _refresh_view(self):
-        """Force la recréation de la vue SQL - à appeler manuellement si nécessaire"""
-        self.init()
-        return True
+class TreasuryDashboardExtended(models.Model):
+    _inherit = 'treasury.dashboard'
 
     def init(self):
-        """Créer la vue SQL pour le tableau de bord (Caisses et Banques uniquement)"""
+        """Recréer la vue SQL pour inclure les coffres et les totaux étendus"""
         self.env.cr.execute("""
             DROP VIEW IF EXISTS treasury_dashboard;
             CREATE OR REPLACE VIEW treasury_dashboard AS (
@@ -63,8 +28,14 @@ class TreasuryDashboard(models.Model):
                     'fa-money' as icon,
                     c.id as res_id,
                     'treasury.cash' as res_model,
-                    false as has_pending_closing,
-                    true as is_balance_final
+                    EXISTS(
+                        SELECT 1 FROM treasury_cash_closing cc
+                        WHERE cc.cash_id = c.id AND cc.state IN ('draft', 'confirmed')
+                    ) as has_pending_closing,
+                    NOT EXISTS(
+                        SELECT 1 FROM treasury_cash_closing cc
+                        WHERE cc.cash_id = c.id AND cc.state IN ('draft', 'confirmed')
+                    ) as is_balance_final
                 FROM treasury_cash c
                 WHERE c.active = true
 
@@ -88,10 +59,41 @@ class TreasuryDashboard(models.Model):
                     'fa-university' as icon,
                     b.id as res_id,
                     'treasury.bank' as res_model,
-                    false as has_pending_closing,
-                    true as is_balance_final
+                    EXISTS(
+                        SELECT 1 FROM treasury_bank_closing bc
+                        WHERE bc.bank_id = b.id AND bc.state IN ('draft', 'confirmed')
+                    ) as has_pending_closing,
+                    NOT EXISTS(
+                        SELECT 1 FROM treasury_bank_closing bc
+                        WHERE bc.bank_id = b.id AND bc.state IN ('draft', 'confirmed')
+                    ) as is_balance_final
                 FROM treasury_bank b
                 WHERE b.active = true
+
+                UNION ALL
+
+                -- Coffres individuels (pas de clôture, solde toujours finalisé)
+                SELECT
+                    3000000 + s.id as id,
+                    COALESCE(s.name, s.code, 'Coffre') as name,
+                    s.code as code,
+                    s.current_balance as balance,
+                    s.currency_id as currency_id,
+                    'safe' as type,
+                    CASE
+                        WHEN s.current_balance < 0 THEN 1
+                        WHEN s.current_balance > 0 THEN 8
+                        ELSE 0
+                    END as color,
+                    3 as sequence,
+                    s.state as state,
+                    'fa-lock' as icon,
+                    s.id as res_id,
+                    'treasury.safe' as res_model,
+                    false as has_pending_closing,
+                    true as is_balance_final
+                FROM treasury_safe s
+                WHERE s.active = true
 
                 UNION ALL
 
@@ -138,12 +140,61 @@ class TreasuryDashboard(models.Model):
                     '' as res_model,
                     false as has_pending_closing,
                     true as is_balance_final
+
+                UNION ALL
+
+                -- Total Coffres
+                SELECT
+                    2000004 as id,
+                    'TOTAL COFFRES' as name,
+                    'TOT-SAFE' as code,
+                    COALESCE((SELECT SUM(current_balance) FROM treasury_safe WHERE active = true), 0) as balance,
+                    (SELECT id FROM res_currency WHERE name = 'XOF' LIMIT 1) as currency_id,
+                    'total_safe' as type,
+                    CASE
+                        WHEN COALESCE((SELECT SUM(current_balance) FROM treasury_safe WHERE active = true), 0) < 0 THEN 1
+                        WHEN COALESCE((SELECT SUM(current_balance) FROM treasury_safe WHERE active = true), 0) > 0 THEN 8
+                        ELSE 0
+                    END as color,
+                    6 as sequence,
+                    'active' as state,
+                    'fa-lock' as icon,
+                    0 as res_id,
+                    '' as res_model,
+                    false as has_pending_closing,
+                    true as is_balance_final
+
+                UNION ALL
+
+                -- Total Général (Caisses + Banques + Coffres)
+                SELECT
+                    2000003 as id,
+                    'TOTAL GÉNÉRAL' as name,
+                    'TOTAL' as code,
+                    COALESCE((SELECT SUM(current_balance) FROM treasury_cash WHERE active = true), 0) +
+                    COALESCE((SELECT SUM(current_balance) FROM treasury_bank WHERE active = true), 0) +
+                    COALESCE((SELECT SUM(current_balance) FROM treasury_safe WHERE active = true), 0) as balance,
+                    (SELECT id FROM res_currency WHERE name = 'XOF' LIMIT 1) as currency_id,
+                    'grand_total' as type,
+                    CASE
+                        WHEN COALESCE((SELECT SUM(current_balance) FROM treasury_cash WHERE active = true), 0) +
+                             COALESCE((SELECT SUM(current_balance) FROM treasury_bank WHERE active = true), 0) +
+                             COALESCE((SELECT SUM(current_balance) FROM treasury_safe WHERE active = true), 0) < 0 THEN 1
+                        ELSE 5
+                    END as color,
+                    7 as sequence,
+                    'active' as state,
+                    'fa-balance-scale' as icon,
+                    0 as res_id,
+                    '' as res_model,
+                    false as has_pending_closing,
+                    true as is_balance_final
             )
         """)
 
     @api.model
     def get_dashboard_data(self):
-        """Récupérer les données du tableau de bord (Caisses et Banques uniquement)"""
+        """Récupérer toutes les données du tableau de bord (avec coffres)"""
         company = self.env.company
         currency = company.currency_id
 
@@ -193,23 +244,39 @@ class TreasuryDashboard(models.Model):
             })
             total_bank += bank.current_balance
 
+        # Récupérer les coffres
+        safes = self.env['treasury.safe'].search([
+            ('company_id', '=', company.id),
+            ('active', '=', True)
+        ])
+
+        safe_data = []
+        total_safe = 0.0
+        for safe in safes:
+            safe_data.append({
+                'id': safe.id,
+                'name': safe.name,
+                'code': safe.code,
+                'balance': safe.current_balance,
+                'currency_id': safe.currency_id.id,
+                'currency_symbol': safe.currency_id.symbol,
+                'state': safe.state,
+                'type': 'safe',
+                'location': safe.location or '',
+                'color': 'danger' if safe.current_balance < 0 else ('purple' if safe.current_balance > 0 else 'secondary'),
+            })
+            total_safe += safe.current_balance
+
+        grand_total = total_cash + total_bank + total_safe
+
         return {
             'cashes': cash_data,
             'banks': bank_data,
+            'safes': safe_data,
             'total_cash': total_cash,
             'total_bank': total_bank,
+            'total_safe': total_safe,
+            'grand_total': grand_total,
             'currency_symbol': currency.symbol,
             'currency_id': currency.id,
         }
-
-    def action_open_record(self):
-        """Ouvrir l'enregistrement source"""
-        self.ensure_one()
-        if self.res_model and self.res_id:
-            return {
-                'type': 'ir.actions.act_window',
-                'res_model': self.res_model,
-                'res_id': self.res_id,
-                'view_mode': 'form',
-                'target': 'current',
-            }

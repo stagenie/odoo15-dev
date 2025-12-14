@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Tableau de Bord Trésorerie',
-    'version': '15.0.1.0.0',
+    'version': '15.0.1.1.0',
     'category': 'Accounting/Treasury',
-    'summary': 'Tableau de bord pour visualiser les soldes de trésorerie',
+    'summary': 'Tableau de bord pour visualiser les soldes des caisses et banques',
     'description': """
 Tableau de Bord Trésorerie
 ==========================
@@ -12,9 +12,12 @@ Ce module ajoute un tableau de bord visuel pour la trésorerie:
 
 * Affichage des caisses avec leurs soldes
 * Affichage des banques avec leurs soldes
-* Totaux par catégorie
-* Total général (Caisses + Banques)
+* Total Caisses
+* Total Banques
 * Interface avec couleurs Bootstrap
+
+Note: Pour les coffres et le Total Général, installez le module
+adi_treasury_dashboard_extended.
     """,
     'author': 'ADI',
     'website': '',

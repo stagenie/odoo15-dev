@@ -217,6 +217,12 @@ class TreasuryCash(models.Model):
         store=True,
         help="Indique si la caisse n'a pas été clôturée dans les délais"
     )
+    has_pending_closing = fields.Boolean(
+        string='Clôture en cours',
+        compute='_compute_has_pending_closing',
+        store=True,
+        help="Indique si une clôture est en cours (brouillon ou confirmée)"
+    )
 
     # Champs relationnels pour les transferts
     transfer_out_ids = fields.One2many(
@@ -290,6 +296,13 @@ class TreasuryCash(models.Model):
                 cash.is_closing_late = cash.days_since_closing > cash.auto_close_days
             else:
                 cash.is_closing_late = False
+
+    @api.depends('closing_ids.state')
+    def _compute_has_pending_closing(self):
+        """Détermine si une clôture est en cours (brouillon ou confirmée)"""
+        for cash in self:
+            pending = cash.closing_ids.filtered(lambda c: c.state in ('draft', 'confirmed'))
+            cash.has_pending_closing = bool(pending)
 
     @api.model
     def _cron_update_days_since_closing(self):
