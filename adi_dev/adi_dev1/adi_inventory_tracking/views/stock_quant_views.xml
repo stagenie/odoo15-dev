@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage de la vue tree pour l'ajustement d'inventaire -->
+    <record id="view_stock_quant_tree_inventory_editable_inherit" model="ir.ui.view">
+        <field name="name">stock.quant.tree.inventory.editable.inherit</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree_inventory_editable"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="last_inventory_date" optional="show"/>
+                <field name="last_inventory_user_id" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Héritage de la vue tree standard des quants (editable) -->
+    <record id="view_stock_quant_tree_editable_inherit" model="ir.ui.view">
+        <field name="name">stock.quant.tree.editable.inherit</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree_editable"/>
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field name="last_inventory_date" optional="show"/>
+                <field name="last_inventory_user_id" optional="hide"/>
+                <field name="inventory_status" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Héritage de la vue tree readonly -->
+    <record id="view_stock_quant_tree_inherit" model="ir.ui.view">
+        <field name="name">stock.quant.tree.inherit</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree"/>
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field name="last_inventory_date" optional="show"/>
+                <field name="last_inventory_user_id" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Héritage de la vue de recherche pour l'inventaire -->
+    <record id="quant_search_view_inherit" model="ir.ui.view">
+        <field name="name">stock.quant.search.inherit</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.quant_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="negative" position="after">
+                <separator/>
+                <filter string="Jamais inventorié" name="never_inventoried"
+                    domain="[('last_inventory_date', '=', False)]"/>
+                <filter string="Inventorié aujourd'hui" name="inventoried_today"
+                    domain="[('last_inventory_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Inventorié cette semaine" name="inventoried_this_week"
+                    domain="[('last_inventory_date', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Inventorié ce mois" name="inventoried_this_month"
+                    domain="[('last_inventory_date', '&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Non inventorié depuis 30 jours" name="not_inventoried_30_days"
+                    domain="['|', ('last_inventory_date', '=', False), ('last_inventory_date', '&lt;', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Non inventorié depuis 90 jours" name="not_inventoried_90_days"
+                    domain="['|', ('last_inventory_date', '=', False), ('last_inventory_date', '&lt;', (context_today() - datetime.timedelta(days=90)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+            </filter>
+            <filter name="productgroup" position="after">
+                <filter string="Date inventaire" name="group_inventory_date" context="{'group_by': 'last_inventory_date'}"/>
+                <filter string="Inventorié par" name="group_inventory_user" context="{'group_by': 'last_inventory_user_id'}"/>
+            </filter>
+        </field>
+    </record>
+
+    <!-- Héritage de la vue formulaire -->
+    <record id="view_stock_quant_form_editable_inherit" model="ir.ui.view">
+        <field name="name">stock.quant.form.editable.inherit</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_form_editable"/>
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field name="last_inventory_date"/>
+                <field name="last_inventory_user_id"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

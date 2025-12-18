@@ -9,7 +9,7 @@ class SaleOrder(models.Model):
         string='Solde client',
         compute='_compute_customer_balance',
         readonly=True,
-        help='Solde actuel du client (factures ouvertes - paiements - avoirs)'
+        help='Solde net du partenaire (receivable + payable) - prend en compte le cas client/fournisseur'
     )
 
     partner_credit_limit = fields.Float(
@@ -34,16 +34,20 @@ class SaleOrder(models.Model):
 
         Utilise la même logique que le rapport Partner Ledger (accounting_pdf_reports) :
         - SUM(debit - credit) sur les account_move_line
-        - Sur les comptes de type "receivable"
+        - Sur les comptes de type "receivable" ET "payable" (pour les partenaires client/fournisseur)
         - Pour les mouvements postés (state = 'posted')
         - En excluant les factures marquées avec exclude_from_partner_ledger = True
 
-        Cette approche garantit la cohérence avec le rapport Partner Ledger.
+        Cette approche garantit la cohérence avec le rapport Partner Ledger
+        et prend en compte le cas où le partenaire est à la fois client et fournisseur.
+
+        Le solde net = (ce que le client nous doit) - (ce qu'on lui doit en tant que fournisseur)
         """
-        # Récupérer les comptes de type "receivable" (comptes clients)
+        # Récupérer les comptes de type "receivable" et "payable"
+        # pour tenir compte des partenaires client/fournisseur
         self.env.cr.execute("""
             SELECT id FROM account_account
-            WHERE internal_type = 'receivable'
+            WHERE internal_type IN ('receivable', 'payable')
             AND NOT deprecated
         """)
         account_ids = [row[0] for row in self.env.cr.fetchall()]
@@ -53,6 +57,7 @@ class SaleOrder(models.Model):
 
         # Calculer le solde : SUM(debit - credit) sur les lignes comptables
         # Même logique que _sum_partner dans accounting_pdf_reports
+        # avec result_selection = 'customer_supplier' (Receivable and Payable Accounts)
         self.env.cr.execute("""
             SELECT COALESCE(SUM(aml.debit - aml.credit), 0)
             FROM account_move_line aml

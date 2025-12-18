@@ -7,7 +7,8 @@
         name="Tableau de Bord"
         parent="adi_treasury.menu_treasury_root"
         action="action_treasury_dashboard"
-        sequence="1"/>
+         groups="adi_treasury.group_treasury_manager"
+        sequence="10"/>
 
     <!-- Menu raccourci Caisses - Accès direct -->
     <menuitem

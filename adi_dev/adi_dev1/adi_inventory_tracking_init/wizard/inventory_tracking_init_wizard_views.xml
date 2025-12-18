@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inventory_tracking_init_wizard_form" model="ir.ui.view">
+        <field name="name">inventory.tracking.init.wizard.form</field>
+        <field name="model">inventory.tracking.init.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Initialiser Suivi Inventaire">
+                <group attrs="{'invisible': [('state', '=', 'done')]}">
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="location_ids" widget="many2many_tags"/>
+                        <field name="overwrite_existing"/>
+                    </group>
+                </group>
+
+                <field name="state" invisible="1"/>
+
+                <group attrs="{'invisible': [('result_message', '=', False)]}">
+                    <field name="result_message" nolabel="1" readonly="1"
+                           widget="text" style="font-family: monospace; white-space: pre-wrap;"/>
+                </group>
+
+                <footer>
+                    <button name="action_preview" string="Prévisualiser" type="object"
+                            class="btn-secondary" attrs="{'invisible': [('state', '=', 'done')]}"/>
+                    <button name="action_initialize" string="Initialiser" type="object"
+                            class="btn-primary" attrs="{'invisible': [('state', '=', 'done')]}"/>
+                    <button name="action_back" string="Nouvelle initialisation" type="object"
+                            class="btn-secondary" attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_inventory_tracking_init_wizard" model="ir.actions.act_window">
+        <field name="name">Initialiser Suivi Inventaire</field>
+        <field name="res_model">inventory.tracking.init.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

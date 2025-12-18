@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { FormController } from '@web/views/form/form_controller';
-import { patch } from 'web.utils';
+import { patch } from '@web/core/utils/patch';
 import { useService } from "@web/core/utils/hooks";
 
 const { onWillStart, onMounted, onWillUnmount } = owl;
@@ -9,7 +9,7 @@ const { onWillStart, onMounted, onWillUnmount } = owl;
 patch(FormController.prototype, 'adi_auto_save.FormController', {
     setup() {
         this._super(...arguments);
-        this.rpc = useService("rpc");
+        this.orm = useService("orm");
         this.notification = useService("notification");
         this.autoSaveTimer = null;
         this.autoSaveEnabled = false;
@@ -33,19 +33,19 @@ patch(FormController.prototype, 'adi_auto_save.FormController', {
      */
     async _loadAutoSaveConfig() {
         try {
-            const result = await this.rpc({
-                model: 'ir.config_parameter',
-                method: 'get_param',
-                args: ['adi_auto_save.auto_save_enabled', 'True'],
-            });
+            const result = await this.orm.call(
+                'ir.config_parameter',
+                'get_param',
+                ['adi_auto_save.auto_save_enabled', 'True']
+            );
             this.autoSaveEnabled = result === 'True';
 
             if (this.autoSaveEnabled) {
-                const interval = await this.rpc({
-                    model: 'ir.config_parameter',
-                    method: 'get_param',
-                    args: ['adi_auto_save.auto_save_interval', '30'],
-                });
+                const interval = await this.orm.call(
+                    'ir.config_parameter',
+                    'get_param',
+                    ['adi_auto_save.auto_save_interval', '30']
+                );
                 this.autoSaveInterval = parseInt(interval) * 1000;
             }
         } catch (error) {
@@ -89,11 +89,11 @@ patch(FormController.prototype, 'adi_auto_save.FormController', {
             }
 
             if (paramName) {
-                const result = await this.rpc({
-                    model: 'ir.config_parameter',
-                    method: 'get_param',
-                    args: [paramName, 'True'],
-                });
+                const result = await this.orm.call(
+                    'ir.config_parameter',
+                    'get_param',
+                    [paramName, 'True']
+                );
                 return result === 'True';
             }
         } catch (error) {

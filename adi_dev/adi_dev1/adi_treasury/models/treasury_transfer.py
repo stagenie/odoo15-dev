@@ -216,7 +216,7 @@ class TreasuryTransfer(models.Model):
                     ('company_id', '=', self.env.company.id)
                 ], limit=1)
                 if not sequence:
-                    sequence = self.env['ir.sequence'].create({
+                    sequence = self.env['ir.sequence'].sudo().create({
                         'name': 'Transfert de trésorerie',
                         'code': 'treasury.transfer',
                         'prefix': 'TR/%(year)s/',

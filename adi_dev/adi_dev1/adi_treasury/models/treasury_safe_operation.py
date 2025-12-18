@@ -115,7 +115,7 @@ class TreasurySafeOperation(models.Model):
                         ('company_id', '=', self.env.company.id)
                     ], limit=1)
                     if not sequence:
-                        sequence = self.env['ir.sequence'].create({
+                        sequence = self.env['ir.sequence'].sudo().create({
                             'name': 'Opération coffre',
                             'code': 'treasury.safe.operation',
                             'prefix': 'OP/%(year)s/',

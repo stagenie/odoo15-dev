@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem
+        id="menu_inventory_tracking_init"
+        name="Initialiser Suivi Inventaire"
+        parent="stock.menu_stock_config_settings"
+        action="action_inventory_tracking_init_wizard"
+        sequence="100"/>
+
+</odoo>

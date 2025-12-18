@@ -289,7 +289,7 @@ class TreasuryCashOperation(models.Model):
                     ('company_id', '=', self.env.company.id)
                 ], limit=1)
                 if not sequence:
-                    sequence = self.env['ir.sequence'].create({
+                    sequence = self.env['ir.sequence'].sudo().create({
                         'name': 'Opération de caisse',
                         'code': 'treasury.cash.operation',
                         'prefix': 'OPC/%(year)s/',
