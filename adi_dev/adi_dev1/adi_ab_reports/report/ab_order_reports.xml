@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================== -->
+    <!-- RAPPORT BON DE COMMANDE AB ENERGIE        -->
+    <!-- ========================================== -->
+
+    <template id="report_ab_saleorder_document">
+        <t t-call="web.external_layout">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="doc" t-value="o"/>
+
+                <div class="page">
+                <main>
+                <div class="oe_structure"/>
+
+                <h2 class="mt16">
+                    <span>Bon de commande # </span>
+                    <span t-field="doc.name"/>
+                </h2>
+
+                <div class="row mt32 mb32" id="informations">
+                    <div t-if="doc.client_order_ref" class="col-auto col-3 mw-100 mb-2">
+                        <strong>Votre référence:</strong>
+                        <p class="m-0" t-field="doc.client_order_ref"/>
+                    </div>
+                    <div t-if="doc.date_order" class="col-auto col-3 mw-100 mb-2">
+                        <strong>Date de commande:</strong>
+                        <p class="m-0" t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                    </div>
+                    <div t-if="doc.user_id.name" class="col-auto col-3 mw-100 mb-2">
+                        <strong>Vendeur:</strong>
+                        <p class="m-0" t-field="doc.user_id"/>
+                    </div>
+                </div>
+
+                <!-- Table des lignes avec Prix TTC et sans TVA -->
+                <table class="table table-sm o_main_table">
+                    <thead>
+                        <tr>
+                            <th name="th_description" class="text-start">Description</th>
+                            <th name="th_quantity" class="text-end">Quantité</th>
+                            <th name="th_priceunit" class="text-end">Prix TTC</th>
+                            <th name="th_discount" class="text-end" groups="product.group_discount_per_so_line">Remise %</th>
+                            <!-- PAS DE COLONNE TVA -->
+                            <th name="th_subtotal" class="text-end">Total TTC</th>
+                        </tr>
+                    </thead>
+                    <tbody class="sale_tbody">
+                        <t t-foreach="doc.order_line" t-as="line">
+                            <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                <t t-if="not line.display_type">
+                                    <td name="td_name"><span t-field="line.name"/></td>
+                                    <td name="td_quantity" class="text-end">
+                                        <span t-field="line.product_uom_qty"/>
+                                        <span t-field="line.product_uom" groups="uom.group_uom"/>
+                                    </td>
+                                    <td name="td_priceunit" class="text-end">
+                                        <span t-field="line.price_unit"/>
+                                    </td>
+                                    <td name="td_discount" class="text-end" groups="product.group_discount_per_so_line">
+                                        <span t-if="line.discount > 0" t-esc="'%.2f' % line.discount"/>
+                                    </td>
+                                    <td name="td_subtotal" class="text-end o_price_total">
+                                        <span t-field="line.price_total"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </t>
+                                <t t-if="line.display_type == 'line_section'">
+                                    <td name="td_section_line" colspan="99">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                </t>
+                                <t t-if="line.display_type == 'line_note'">
+                                    <td name="td_note_line" colspan="99">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <div class="clearfix">
+                    <div id="total" class="row">
+                        <div class="col-6">
+                            <table class="table table-sm">
+                                <!-- Délais de livraison -->
+                                <tr t-if="doc.delivery_deadline">
+                                    <td><strong>Délais de livraison:</strong></td>
+                                    <td class="text-end">
+                                        <span t-field="doc.delivery_deadline"/>
+                                    </td>
+                                </tr>
+                                <!-- Modalités de paiement -->
+                                <tr t-if="doc.payment_terms_custom">
+                                    <td><strong>Modalités de paiement:</strong></td>
+                                    <td class="text-end">
+                                        <span t-field="doc.payment_terms_custom"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table class="table table-sm">
+                                <!-- Afficher total remise si présent -->
+                                <tr t-if="doc.amount_discount and doc.amount_discount > 0" groups="product.group_discount_per_so_line">
+                                    <td>Total remise</td>
+                                    <td class="text-end">
+                                        <span t-field="doc.amount_discount"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <!-- Net à payer (Total TTC) -->
+                                <tr class="border-black o_total">
+                                    <td><strong>Net à payer</strong></td>
+                                    <td class="text-end">
+                                        <span t-field="doc.amount_total"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div t-if="doc.note" class="mt32">
+                    <p><strong>Conditions générales:</strong></p>
+                    <p t-field="doc.note"/>
+                </div>
+
+                <div class="oe_structure"/>
+                </main>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Définir le rapport Bon de commande -->
+    <record id="action_report_ab_saleorder" model="ir.actions.report">
+        <field name="name">Bon de commande AB Energie</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_ab_reports.report_ab_saleorder_document</field>
+        <field name="report_file">adi_ab_reports.report_ab_saleorder_document</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="adi_ab_reports.paperformat_ab_reports"/>
+    </record>
+
+</odoo>

@@ -4,7 +4,7 @@
         <xpath expr="//div[@name='company_address']" position="replace">
         
             <!-- Vérification pour les devis/commandes clients -->
-            <t t-if="docs and docs[0]._name == 'sale.order'">
+            <t t-if="docs and len(docs) > 0 and docs[0]._name == 'sale.order'">
                 <t t-foreach="docs" t-as="doc">
                     <div t-if="doc.team_id" style="display: inline-block;">
                         <p>
@@ -22,7 +22,7 @@
             </t>
 
             <!-- Vérification pour les bons de livraison -->
-            <t t-if="docs and docs[0]._name == 'stock.picking'">
+            <t t-if="docs and len(docs) > 0 and docs[0]._name == 'stock.picking'">
                 <t t-foreach="docs" t-as="o">
                     <div t-if="o.sale_id and o.sale_id.team_id" style="display: inline-block;">
                         <p>                
@@ -52,7 +52,7 @@
             </t>
 
             <!-- Vérification pour les factures -->
-            <t t-if="docs and docs[0]._name == 'account.move'">
+            <t t-if="docs and len(docs) > 0 and docs[0]._name == 'account.move'">
                 <t t-foreach="docs" t-as="o">
                     <div t-if="o.team_id" style="display: inline-block;">
                         <p>
@@ -70,7 +70,7 @@
             </t>
 
             <!-- Cas par défaut : demandes de prix, commandes fournisseurs, etc. -->
-            <t t-if="docs and docs[0]._name not in ['sale.order', 'stock.picking', 'account.move']">
+            <t t-if="docs and len(docs) > 0 and docs[0]._name not in ['sale.order', 'stock.picking', 'account.move']">
                 <t t-foreach="docs" t-as="doc">
                     <div style="display: inline-block;">
                         <p>

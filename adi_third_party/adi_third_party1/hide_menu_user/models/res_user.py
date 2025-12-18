@@ -65,4 +65,10 @@ class HideMenuUser(models.Model):
 class RestrictMenu(models.Model):
     _inherit = 'ir.ui.menu'
 
-    restrict_user_ids = fields.Many2many('res.users')
+    restrict_user_ids = fields.Many2many(
+        'res.users',
+        'ir_ui_menu_restrict_user_rel',
+        'menu_id',
+        'user_id',
+        string='Restricted Users'
+    )

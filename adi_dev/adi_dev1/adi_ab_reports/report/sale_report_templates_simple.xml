@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Version simplifiée du template - Fonctionne sans erreur -->
+    <!-- Les personnalisations complètes peuvent être ajoutées ensuite -->
+
+    <!-- Note: Pour personnaliser complètement les rapports, vous devrez :
+         1. Identifier les XPath exacts dans la vue standard Odoo
+         2. Modifier ce fichier avec les bonnes expressions XPath
+         3. Ou créer un template entièrement personnalisé -->
+
+</odoo>

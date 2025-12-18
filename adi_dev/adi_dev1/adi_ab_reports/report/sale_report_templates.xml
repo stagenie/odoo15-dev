@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template principal pour les rapports de vente -->
+    <template id="report_saleorder_document_ab" inherit_id="sale.report_saleorder_document">
+
+        <!-- Remplacer l'en-tête des colonnes pour afficher TTC au lieu de HT -->
+        <xpath expr="//table[@class='o_main_table table table-sm']//thead//th[@name='th_priceunit']" position="replace">
+            <th name="th_priceunit" class="text-end">
+                <t t-if="doc.state in ['draft', 'sent']"><!-- Devis -->
+                    <span>Prix TTC</span>
+                </t>
+                <t t-if="doc.state not in ['draft', 'sent']">
+                    <span>Prix unitaire</span>
+                </t>
+            </th>
+        </xpath>
+
+        <!-- Enlever la colonne TVA pour le devis -->
+        <xpath expr="//table[@class='o_main_table table table-sm']//thead//th[@name='th_taxes']" position="attributes">
+            <attribute name="t-if">doc.state not in ['draft', 'sent']</attribute>
+        </xpath>
+
+        <!-- Enlever la colonne Remise pour le devis -->
+        <xpath expr="//table[@class='o_main_table table table-sm']//thead//th[@name='th_discount']" position="attributes">
+            <attribute name="t-if">doc.state not in ['draft', 'sent'] and display_discount</attribute>
+        </xpath>
+
+        <!-- Modifier les lignes pour afficher le prix TTC -->
+        <xpath expr="//table[@class='o_main_table table table-sm']//tbody//t[@t-foreach='doc.order_line']//td[@name='td_priceunit']" position="replace">
+            <td name="td_priceunit" class="text-end">
+                <t t-if="doc.state in ['draft', 'sent']"><!-- Devis: afficher TTC -->
+                    <span t-field="line.price_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                </t>
+                <t t-if="doc.state not in ['draft', 'sent']">
+                    <span t-field="line.price_unit"/>
+                </t>
+            </td>
+        </xpath>
+
+        <!-- Enlever la colonne TVA dans les lignes pour le devis -->
+        <xpath expr="//table[@class='o_main_table table table-sm']//tbody//t[@t-foreach='doc.order_line']//td[@name='td_taxes']" position="attributes">
+            <attribute name="t-if">doc.state not in ['draft', 'sent']</attribute>
+        </xpath>
+
+        <!-- Enlever la colonne Remise dans les lignes pour le devis -->
+        <xpath expr="//table[@class='o_main_table table table-sm']//tbody//t[@t-foreach='doc.order_line']//td[@name='td_discount']" position="attributes">
+            <attribute name="t-if">doc.state not in ['draft', 'sent'] and display_discount</attribute>
+        </xpath>
+
+        <!-- Modifier le total pour le devis (enlever HT et TVA, afficher seulement Net à payer) -->
+        <xpath expr="//div[@id='total']" position="replace">
+            <div id="total" class="row" name="total">
+                <div class="col-6">
+                    <table class="table table-sm table-borderless">
+                        <!-- Offre valable jusqu'à pour devis et proforma -->
+                        <t t-if="doc.quotation_validity_date and doc.state in ['draft', 'sent']">
+                            <tr>
+                                <td><strong>Offre valable jusqu'au:</strong></td>
+                                <td class="text-end">
+                                    <span t-field="doc.quotation_validity_date"/>
+                                </td>
+                            </tr>
+                        </t>
+
+                        <!-- Délais de livraison pour bon de commande -->
+                        <t t-if="doc.delivery_deadline and doc.state == 'sale'">
+                            <tr>
+                                <td><strong>Délais de livraison:</strong></td>
+                                <td class="text-end">
+                                    <span t-field="doc.delivery_deadline"/>
+                                </td>
+                            </tr>
+                        </t>
+
+                        <!-- Modalités de paiement pour bon de commande -->
+                        <t t-if="doc.payment_terms_custom and doc.state == 'sale'">
+                            <tr>
+                                <td><strong>Modalités de paiement:</strong></td>
+                                <td class="text-end">
+                                    <span t-field="doc.payment_terms_custom"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+                <div class="col-6">
+                    <table class="table table-sm table-borderless">
+                        <!-- Pour le DEVIS uniquement: afficher seulement Net à payer (TTC) -->
+                        <t t-if="doc.state in ['draft'] and not doc.name.startswith('P')">
+                            <tr class="border-black o_total">
+                                <td><strong>Net à payer</strong></td>
+                                <td class="text-end">
+                                    <span t-field="doc.amount_total"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+
+                        <!-- Pour le PROFORMA: afficher HT, TVA et Net à payer -->
+                        <t t-elif="doc.state == 'sent' or (doc.state == 'draft' and doc.name.startswith('P'))">
+                            <tr class="border-black o_subtotal">
+                                <td><strong>Total HT</strong></td>
+                                <td class="text-end">
+                                    <span t-field="doc.amount_untaxed"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black o_subtotal">
+                                <td>TVA</td>
+                                <td class="text-end">
+                                    <span t-field="doc.amount_tax"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black o_total">
+                                <td><strong>Net à payer</strong></td>
+                                <td class="text-end">
+                                    <span t-field="doc.amount_total"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+
+                        <!-- Pour le BON DE COMMANDE: afficher remise si présente, puis Net à payer -->
+                        <t t-elif="doc.state == 'sale'">
+                            <!-- Afficher la remise totale si elle existe -->
+                            <t t-if="doc.amount_discount and doc.amount_discount > 0">
+                                <tr class="border-black o_subtotal">
+                                    <td>Total remise</td>
+                                    <td class="text-end">
+                                        <span t-field="doc.amount_discount"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <tr class="border-black o_total">
+                                <td><strong>Net à payer</strong></td>
+                                <td class="text-end">
+                                    <span t-field="doc.amount_total"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+
+                        <!-- Autres états: affichage standard -->
+                        <t t-if="doc.state not in ['draft', 'sent', 'sale']">
+                            <tr class="border-black o_subtotal">
+                                <td><strong>Total HT</strong></td>
+                                <td class="text-end">
+                                    <span t-field="doc.amount_untaxed"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black o_subtotal">
+                                <td>TVA</td>
+                                <td class="text-end">
+                                    <span t-field="doc.amount_tax"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black o_total">
+                                <td><strong>Total</strong></td>
+                                <td class="text-end">
+                                    <span t-field="doc.amount_total"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
