@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ajout des champs personnalisés dans le formulaire de bon de commande -->
+    <record id="view_order_form_ab_sale_reports" model="ir.ui.view">
+        <field name="name">sale.order.form.ab.sale.reports</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter les champs après les informations de paiement -->
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="quotation_validity_date"
+                       attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
+                <field name="delivery_deadline"
+                       attrs="{'invisible': [('state', 'in', ['draft', 'sent'])]}"/>
+                <field name="payment_modality_id"
+                       attrs="{'invisible': [('state', 'in', ['draft', 'sent'])]}"
+                       options="{'no_create': False, 'no_create_edit': False}"/>
+                <field name="payment_modality_text"
+                       attrs="{'invisible': [('state', 'in', ['draft', 'sent'])]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Modalités de paiement par défaut -->
+        <record id="payment_modality_50_30_20" model="ab.payment.modality">
+            <field name="name">50% Commande - 30% Livraison - 20% Réception</field>
+            <field name="sequence">10</field>
+            <field name="description">50% à la commande, 30% à la livraison, 20% à la réception des marchandises</field>
+        </record>
+
+        <record id="payment_modality_100_commande" model="ab.payment.modality">
+            <field name="name">100% à la commande</field>
+            <field name="sequence">20</field>
+            <field name="description">Paiement intégral à la commande</field>
+        </record>
+
+        <record id="payment_modality_100_livraison" model="ab.payment.modality">
+            <field name="name">100% à la livraison</field>
+            <field name="sequence">30</field>
+            <field name="description">Paiement intégral à la livraison</field>
+        </record>
+
+        <record id="payment_modality_30_jours" model="ab.payment.modality">
+            <field name="name">30 jours net</field>
+            <field name="sequence">40</field>
+            <field name="description">Paiement à 30 jours date de facture</field>
+        </record>
+
+        <record id="payment_modality_60_jours" model="ab.payment.modality">
+            <field name="name">60 jours net</field>
+            <field name="sequence">50</field>
+            <field name="description">Paiement à 60 jours date de facture</field>
+        </record>
+    </data>
+</odoo>

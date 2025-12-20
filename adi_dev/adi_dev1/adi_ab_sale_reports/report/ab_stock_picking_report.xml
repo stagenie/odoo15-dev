@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================== -->
+    <!-- PERSONNALISATION DES BONS DE LIVRAISON/RÉCEPTION -->
+    <!-- - Ajoute le titre "Bon de Livraison" pour OUT -->
+    <!-- - Ajoute le titre "Bon de Réception" pour IN -->
+    <!-- ========================================== -->
+
+    <!-- Hériter du rapport de picking (Operations) pour ajouter le titre -->
+    <template id="report_picking_inherit_title" inherit_id="stock.report_picking">
+        <!-- Remplacer le h1 avec le nom par un titre + nom -->
+        <xpath expr="//h1[@t-field='o.name']" position="replace">
+            <!-- Titre selon le type de picking -->
+            <h1 class="mt0">
+                <t t-if="o.picking_type_id.code == 'outgoing'">
+                    <span>Bon de Livraison N°:  </span>
+                </t>
+                <t t-elif="o.picking_type_id.code == 'incoming'">
+                    <span>Bon de Réception N°: </span>
+                </t>
+                <t t-else="">
+                    <span>Transfert </span>
+                </t>
+                <span t-field="o.name"/>
+            </h1>
+        </xpath>
+    </template>
+
+    <!-- Hériter du rapport Delivery Slip (Bon de Livraison PDF) pour ajouter le titre -->
+    <template id="report_delivery_document_inherit_title" inherit_id="stock.report_delivery_document">
+        <!-- Remplacer le h2 avec le nom par un titre + nom -->
+        <xpath expr="//div[@class='page']/h2" position="replace">
+            <!-- Titre selon le type de picking -->
+            <h2>
+                <t t-if="o.picking_type_id.code == 'outgoing'">
+                    <span>Bon de Livraison </span>
+                </t>
+                <t t-elif="o.picking_type_id.code == 'incoming'">
+                    <span>Bon de Réception </span>
+                </t>
+                <t t-else="">
+                    <span>Transfert </span>
+                </t>
+                <span t-field="o.name"/>
+            </h2>
+        </xpath>
+    </template>
+</odoo>

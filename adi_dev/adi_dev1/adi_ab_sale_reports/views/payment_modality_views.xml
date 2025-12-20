@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire des modalités de paiement -->
+    <record id="view_ab_payment_modality_form" model="ir.ui.view">
+        <field name="name">ab.payment.modality.form</field>
+        <field name="model">ab.payment.modality</field>
+        <field name="arch" type="xml">
+            <form string="Modalité de paiement">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <field name="active" widget="boolean_toggle" options='{"on_value": true, "off_value": false}'/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Ex: 50% Commande - 30% Livraison - 20% Réception"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="description" placeholder="Description détaillée..."/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste des modalités de paiement -->
+    <record id="view_ab_payment_modality_tree" model="ir.ui.view">
+        <field name="name">ab.payment.modality.tree</field>
+        <field name="model">ab.payment.modality</field>
+        <field name="arch" type="xml">
+            <tree string="Modalités de paiement">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="active"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action pour ouvrir les modalités de paiement -->
+    <record id="action_ab_payment_modality" model="ir.actions.act_window">
+        <field name="name">Modalités de paiement</field>
+        <field name="res_model">ab.payment.modality</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre première modalité de paiement
+            </p>
+            <p>
+                Les modalités de paiement permettent de définir les conditions de paiement
+                pour les bons de commande (ex: 50% à la commande, 30% à la livraison, 20% à la réception).
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu pour les modalités de paiement -->
+    <menuitem id="menu_ab_payment_modality"
+              name="Modalités de paiement"
+              action="action_ab_payment_modality"
+              parent="sale.menu_sale_config"
+              sequence="30"/>
+</odoo>

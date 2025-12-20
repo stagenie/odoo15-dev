@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================== -->
+    <!-- VENTE - Héritage de ADI BL                 -->
+    <!-- - Sans titre "Bon de livraison"            -->
+    <!-- - Sans Origine et Date échéance            -->
+    <!-- - Remise avec 2 décimales                  -->
+    <!-- ========================================== -->
+
+    <!-- Héritage du template ADI BL pour Vente -->
+    <template id="ab_vente_document_inherit"
+              inherit_id="l10n_dz_droit_timbre.adi_bl_report_invoice_document">
+
+        <!-- Remplacer le titre pour afficher uniquement la séquence -->
+        <xpath expr="//div[@class='page']/h2" position="replace">
+            <h2>
+                <span t-if="o.name != '/'" t-field="o.name"/>
+            </h2>
+        </xpath>
+
+        <!-- Supprimer la date d'échéance -->
+        <xpath expr="//div[@name='due_date']" position="replace"/>
+
+        <!-- Supprimer la source/origine -->
+        <xpath expr="//div[@name='origin']" position="replace"/>
+
+        <!-- Remplacer l'affichage de la remise pour avoir 2 décimales -->
+        <xpath expr="//td[contains(@t-if,'display_discount')]//span[@t-field='line.discount']" position="replace">
+            <span t-if="line.discount > 0" t-esc="'%.2f' % line.discount"/>
+        </xpath>
+
+        <!-- Ajouter le mode de règlement avant le montant en lettres -->
+        <xpath expr="//div[@name='montant_en_lettre_timbre']" position="before">
+            <div class="row mt-3 mb-3">
+                <div class="col-6">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Mode de règlement:</strong></td>
+                            <td class="text-end">
+                                <t t-if="o.payment_mode_id">
+                                    <span t-field="o.payment_mode_id.name"/>
+                                    <!-- Afficher N° pour Chèque ou Virement -->
+                                    <t t-if="'Chèque' in (o.payment_mode_id.name or '')">
+                                        <br/><span>N° Chèque: _______________</span>
+                                    </t>
+                                    <t t-elif="'Virement' in (o.payment_mode_id.name or '') or 'virement' in (o.payment_mode_id.name or '')">
+                                        <br/><span>N° Virement: _______________</span>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <span>Date à terme</span>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Modifier le texte "Arrêtée le présent Bon de livraison" -->
+        <xpath expr="//div[@name='montant_en_lettre_timbre']" position="replace">
+            <div style="text-align: left; font-weight: bold; page-break-inside: always;" name="montant_en_lettre_timbre">
+                <strong>Arrêtée la présente
+                    <t t-if="o.state != 'draft'">Vente</t>
+                    <t t-if="o.state == 'draft'">Devis</t>
+                        à la somme de :</strong>
+                <div t-esc="o.get_amount_to_text_dz()"/>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Créer un nouveau rapport Vente -->
+    <record id="action_report_ab_vente" model="ir.actions.report">
+        <field name="name">Vente AB</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_dz_droit_timbre.adi_bl_report_invoice</field>
+        <field name="report_file">l10n_dz_droit_timbre.adi_bl_report_invoice</field>
+        <field name="print_report_name">'Vente - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
