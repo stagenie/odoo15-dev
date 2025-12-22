@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================================
+         EXTENSION DU FORMULAIRE DE CAISSE
+         =================================================================== -->
+
+    <record id="treasury_cash_form_control" model="ir.ui.view">
+        <field name="name">treasury.cash.form.control</field>
+        <field name="model">treasury.cash</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_form"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter un onglet pour les paramètres de contrôle -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Contrôle des transferts" name="transfer_control">
+                    <group>
+                        <group string="Paramètres de contrôle">
+                            <field name="control_level"/>
+                            <field name="allow_negative_balance"/>
+                            <field name="min_balance"/>
+                        </group>
+                        <group string="Transferts en cours">
+                            <field name="transfer_out_count" readonly="1"/>
+                            <field name="transfer_in_count" readonly="1"/>
+                            <field name="pending_transfer_amount" readonly="1"/>
+                            <field name="available_balance" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <button name="action_view_pending_transfers"
+                                type="object"
+                                string="Voir les transferts en attente"
+                                class="btn-link"
+                                icon="fa-exchange"
+                                attrs="{'invisible': [('transfer_out_count', '=', 0), ('transfer_in_count', '=', 0)]}"/>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ===================================================================
+         EXTENSION DE LA VUE LISTE
+         =================================================================== -->
+
+    <record id="treasury_cash_tree_control" model="ir.ui.view">
+        <field name="name">treasury.cash.tree.control</field>
+        <field name="model">treasury.cash</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='current_balance']" position="after">
+                <field name="available_balance" string="Disponible"
+                       optional="hide"/>
+                <field name="control_level" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================================
+         CATÉGORIE DE MODULE
+         =================================================================== -->
+
+    <record id="module_category_transfer_control" model="ir.module.category">
+        <field name="name">Contrôle des Transferts</field>
+        <field name="description">Gestion des contrôles de transferts de trésorerie</field>
+        <field name="sequence">10</field>
+        <field name="parent_id" ref="adi_treasury.module_category_treasury"/>
+    </record>
+
+    <!-- ===================================================================
+         GROUPES DE SÉCURITÉ
+         =================================================================== -->
+
+    <!-- Groupe Utilisateur - Peut voir les contrôles -->
+    <record id="group_transfer_control_user" model="res.groups">
+        <field name="name">Utilisateur Contrôle Transferts</field>
+        <field name="category_id" ref="module_category_transfer_control"/>
+        <field name="implied_ids" eval="[(4, ref('adi_treasury.group_treasury_user'))]"/>
+        <field name="comment">
+            Peut effectuer des contrôles sur ses propres transferts.
+            Ne peut pas forcer les transferts avec des erreurs.
+        </field>
+    </record>
+
+    <!-- Groupe Manager - Peut forcer les transferts -->
+    <record id="group_transfer_control_manager" model="res.groups">
+        <field name="name">Manager Contrôle Transferts</field>
+        <field name="category_id" ref="module_category_transfer_control"/>
+        <field name="implied_ids" eval="[(4, ref('group_transfer_control_user')), (4, ref('adi_treasury.group_treasury_manager'))]"/>
+        <field name="comment">
+            Peut effectuer tous les contrôles.
+            Peut forcer les transferts malgré les erreurs.
+            Peut configurer les paramètres de contrôle.
+        </field>
+    </record>
+
+    <!-- ===================================================================
+         RÈGLES D'ACCÈS
+         =================================================================== -->
+
+    <!-- Règle pour les transferts - Utilisateurs peuvent voir/modifier leurs contrôles -->
+    <record id="transfer_control_rule_user" model="ir.rule">
+        <field name="name">Contrôle Transferts: Utilisateurs - Voir leurs transferts</field>
+        <field name="model_id" ref="adi_treasury.model_treasury_transfer"/>
+        <field name="domain_force">[
+            '|', '|', '|', '|', '|',
+            ('cash_from_id.user_ids', 'in', user.id),
+            ('cash_to_id.user_ids', 'in', user.id),
+            ('safe_from_id.responsible_ids', 'in', user.id),
+            ('safe_to_id.responsible_ids', 'in', user.id),
+            ('create_uid', '=', user.id),
+            ('control_user_id', '=', user.id)
+        ]</field>
+        <field name="groups" eval="[(4, ref('group_transfer_control_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Règle pour les managers - Accès complet -->
+    <record id="transfer_control_rule_manager" model="ir.rule">
+        <field name="name">Contrôle Transferts: Managers - Accès complet</field>
+        <field name="model_id" ref="adi_treasury.model_treasury_transfer"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_transfer_control_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+</odoo>

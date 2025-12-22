@@ -99,7 +99,8 @@
                                     </td>
                                     <td class="text-right">
                                         <span t-field="line.quantity"/>
-                                        <span t-field="line.product_uom_id" groups="uom.group_uom"/>
+                                        <span t-field="line.product_uom_id"
+                                              groups="uom.group_uom"/>
                                     </td>
                                     <td class="text-right">
                                         <!-- Prix unitaire TTC = prix_unit * (1 + taux_tva) -->

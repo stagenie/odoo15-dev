@@ -2,7 +2,7 @@
 <odoo>
     <template id="external_layout_custom_header" inherit_id="web.external_layout_standard">
         <xpath expr="//div[@name='company_address']" position="replace">
-        
+
             <!-- Vérification pour les devis/commandes clients -->
             <t t-if="docs and len(docs) > 0 and docs[0]._name == 'sale.order'">
                 <t t-foreach="docs" t-as="doc">
@@ -25,7 +25,7 @@
             <t t-if="docs and len(docs) > 0 and docs[0]._name == 'stock.picking'">
                 <t t-foreach="docs" t-as="o">
                     <div t-if="o.sale_id and o.sale_id.team_id" style="display: inline-block;">
-                        <p>                
+                        <p>
                             <span t-if="o.sale_id.team_id.team_address" t-field="o.sale_id.team_id.team_address"/><br/>
                             <span t-if="o.sale_id.team_id.team_description" t-field="o.sale_id.team_id.team_description"/><br/>
                             <t t-if="o.sale_id.team_id.rc"><span t-field="o.sale_id.team_id.rc"/> - </t>
@@ -37,7 +37,7 @@
                         </p>
                     </div>
                     <div t-else="" style="display: inline-block;">
-                        <p>                
+                        <p>
                             <span t-if="o.company_id.activity_description" t-field="o.company_id.activity_description"/><br/>
                             <span t-if="o.company_id.street" t-field="o.company_id.street"/><br/>
                             <t t-if="o.company_id.rc"><span>RC: </span><span t-field="o.company_id.rc"/> - </t>

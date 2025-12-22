@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================================
+         EXTENSION DU FORMULAIRE DE BANQUE
+         =================================================================== -->
+
+    <record id="treasury_bank_form_control" model="ir.ui.view">
+        <field name="name">treasury.bank.form.control</field>
+        <field name="model">treasury.bank</field>
+        <field name="inherit_id" ref="adi_treasury_bank.view_treasury_bank_form"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les champs de contrôle après le champ user_ids -->
+            <xpath expr="//field[@name='user_ids']" position="after">
+                <field name="control_level"/>
+                <field name="allow_negative_balance"/>
+                <field name="min_balance"/>
+            </xpath>
+
+            <!-- Ajouter les statistiques de transfert à la fin de la sheet -->
+            <xpath expr="//sheet" position="inside">
+                <group string="Transferts en cours" attrs="{'invisible': [('transfer_out_count', '=', 0), ('transfer_in_count', '=', 0)]}">
+                    <group>
+                        <field name="transfer_out_count" readonly="1"/>
+                        <field name="transfer_in_count" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="pending_transfer_amount" readonly="1"/>
+                        <field name="effective_available_balance" readonly="1"/>
+                        <field name="overdraft_remaining" readonly="1"/>
+                    </group>
+                    <button name="action_view_pending_transfers"
+                            type="object"
+                            string="Voir les transferts en attente"
+                            class="btn-link"
+                            icon="fa-exchange"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ===================================================================
+         EXTENSION DE LA VUE LISTE
+         =================================================================== -->
+
+    <record id="treasury_bank_tree_control" model="ir.ui.view">
+        <field name="name">treasury.bank.tree.control</field>
+        <field name="model">treasury.bank</field>
+        <field name="inherit_id" ref="adi_treasury_bank.view_treasury_bank_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='available_balance']" position="after">
+                <field name="effective_available_balance" string="Disponible réel"
+                       optional="hide"/>
+                <field name="overdraft_remaining" string="Découvert restant"
+                       optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

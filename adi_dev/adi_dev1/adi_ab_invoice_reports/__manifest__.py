@@ -31,6 +31,7 @@
         'account',
         'l10n_dz_droit_timbre',
         'adi_bank_payment_mode',
+        'adi_invoice_payment_button',
     ],
     'data': [
         'report/ab_invoice_inherit.xml',

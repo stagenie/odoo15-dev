@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit stock transfer form view to add dest_responsible_id and print button -->
+    <record id="view_stock_transfer_form_inherit_report" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.form.inherit.report</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_form"/>
+        <field name="arch" type="xml">
+            <!-- Add print button in header -->
+            <xpath expr="//header" position="inside">
+                <button name="%(adi_stock_transfer_report.action_report_stock_transfer)d"
+                        string="Imprimer Bon de Transfert"
+                        type="action"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'cancelled'])]}"/>
+            </xpath>
+
+            <!-- Add dest_responsible_id after dest_warehouse_id -->
+            <field name="dest_warehouse_id" position="after">
+                <field name="dest_responsible_id" options="{'no_create': True}"/>
+            </field>
+
+            <!-- Add computed team fields (readonly, for info) -->
+            <field name="source_warehouse_id" position="after">
+                <field name="source_team_id" readonly="1"/>
+            </field>
+
+            <field name="dest_responsible_id" position="after">
+                <field name="dest_team_id" readonly="1"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

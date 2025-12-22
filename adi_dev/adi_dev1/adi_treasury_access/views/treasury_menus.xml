@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         CONFIGURATION DES GROUPES SUR LES MENUS
+
+         Note: Dans Odoo, les menus ne peuvent pas être cachés dynamiquement
+         en fonction des données. Ils sont contrôlés par les groupes.
+
+         Les règles d'accès (ir.rule) garantissent que les utilisateurs
+         ne voient que les données auxquelles ils ont accès.
+         Si un utilisateur n'a accès à aucune caisse, la liste sera vide.
+         ================================================================ -->
+
+    <!-- ================================================================
+         EXTENSION DES VUES POUR AJOUTER DES DOMAINES PAR DÉFAUT
+         ================================================================ -->
+
+    <!-- Extension de la vue des caisses pour filtrer par utilisateur autorisé -->
+    <record id="view_treasury_cash_tree_access" model="ir.ui.view">
+        <field name="name">treasury.cash.tree.access</field>
+        <field name="model">treasury.cash</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-muted">state == 'locked'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extension de la vue des coffres pour filtrer par utilisateur autorisé -->
+    <record id="view_treasury_safe_tree_access" model="ir.ui.view">
+        <field name="name">treasury.safe.tree.access</field>
+        <field name="model">treasury.safe</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_safe_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-muted">state == 'locked'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         ACTIONS AVEC DOMAINES FILTRANTS
+         Ces actions remplacent les actions par défaut pour s'assurer
+         que le domaine filtre correctement les enregistrements.
+         ================================================================ -->
+
+    <!-- Action pour les caisses - filtrée pour l'utilisateur -->
+    <record id="action_treasury_cash_filtered" model="ir.actions.act_window">
+        <field name="name">Mes Caisses</field>
+        <field name="res_model">treasury.cash</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune caisse accessible
+            </p>
+            <p>
+                Vous n'avez accès à aucune caisse.
+                Contactez votre administrateur pour obtenir les droits d'accès.
+            </p>
+        </field>
+    </record>
+
+    <!-- Action pour les coffres - filtrée pour l'utilisateur -->
+    <record id="action_treasury_safe_filtered" model="ir.actions.act_window">
+        <field name="name">Mes Coffres</field>
+        <field name="res_model">treasury.safe</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun coffre accessible
+            </p>
+            <p>
+                Vous n'avez accès à aucun coffre.
+                Contactez votre administrateur pour obtenir les droits d'accès.
+            </p>
+        </field>
+    </record>
+
+    <!-- Action pour les banques - filtrée pour l'utilisateur -->
+    <record id="action_treasury_bank_filtered" model="ir.actions.act_window">
+        <field name="name">Mes Comptes Bancaires</field>
+        <field name="res_model">treasury.bank</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun compte bancaire accessible
+            </p>
+            <p>
+                Vous n'avez accès à aucun compte bancaire.
+                Contactez votre administrateur pour obtenir les droits d'accès.
+            </p>
+        </field>
+    </record>
+
+    <!-- Action pour les transferts - filtrée pour l'utilisateur -->
+    <record id="action_treasury_transfer_filtered" model="ir.actions.act_window">
+        <field name="name">Mes Transferts</field>
+        <field name="res_model">treasury.transfer</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_draft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un nouveau transfert
+            </p>
+            <p>
+                Transférez des fonds entre vos caisses, coffres et comptes bancaires.
+            </p>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         MISE À JOUR DES MENUS EXISTANTS AVEC LES NOUVELLES ACTIONS
+         ================================================================ -->
+
+    <!-- Menu Caisses avec action filtrée -->
+    <record id="adi_treasury.menu_treasury_cash" model="ir.ui.menu">
+        <field name="action" ref="action_treasury_cash_filtered"/>
+    </record>
+
+    <!-- Menu Coffres avec action filtrée -->
+    <record id="adi_treasury.menu_treasury_safe" model="ir.ui.menu">
+        <field name="action" ref="action_treasury_safe_filtered"/>
+    </record>
+
+    <!-- Menu Banques avec action filtrée -->
+    <record id="adi_treasury_bank.menu_treasury_bank" model="ir.ui.menu">
+        <field name="action" ref="action_treasury_bank_filtered"/>
+    </record>
+
+    <!-- Menu Transferts avec action filtrée -->
+    <record id="adi_treasury.menu_treasury_transfer" model="ir.ui.menu">
+        <field name="action" ref="action_treasury_transfer_filtered"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit stock.warehouse form view to add team_id -->
+    <record id="view_stock_warehouse_form_inherit_team" model="ir.ui.view">
+        <field name="name">stock.warehouse.form.inherit.team</field>
+        <field name="model">stock.warehouse</field>
+        <field name="inherit_id" ref="stock.view_warehouse"/>
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field name="team_id" options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

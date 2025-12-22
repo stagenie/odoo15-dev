@@ -23,26 +23,74 @@
             <span t-if="line.discount > 0" t-esc="'%.2f' % line.discount"/>
         </xpath>
 
-        <!-- Ajouter le mode de règlement avant le montant en lettres -->
+        <!-- Ajouter les détails des paiements avant le montant en lettres -->
         <xpath expr="//div[@name='montant_en_lettre_timbre']" position="before">
-            <div class="row mt-3 mb-3">
+            <div class="row mt-3 mb-3" t-if="o.payment_ids">
+                <div class="col-12">
+                    <strong>Détails des paiements:</strong>
+                    <table class="table table-sm table-bordered mt-2">
+                        <thead>
+                            <tr style="background-color: #f5f5f5;">
+                                <th>Date</th>
+                                <th>Journal</th>
+                                <th>Mode de paiement</th>
+                                <th>Référence</th>
+                                <th class="text-end">Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="o.payment_ids" t-as="payment">
+                                <tr>
+                                    <td><span t-field="payment.date"/></td>
+                                    <td><span t-field="payment.journal_id.name"/></td>
+                                    <td>
+                                        <t t-if="payment.journal_id.type == 'cash'">
+                                            Espèces
+                                        </t>
+                                        <t t-elif="payment.journal_id.type == 'bank'">
+                                            <t t-if="payment.mode_payment == 'check'">Chèque</t>
+                                            <t t-elif="payment.mode_payment == 'bank_transfer'">Virement</t>
+                                            <t t-elif="payment.mode_payment == 'bank_deposit'">Versement</t>
+                                            <t t-else="">-</t>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                    <td>
+                                        <t t-if="payment.mode_payment == 'check' and payment.check_number">
+                                            N° <span t-field="payment.check_number"/>
+                                        </t>
+                                        <t t-elif="payment.mode_payment == 'bank_transfer' and payment.transfer_number">
+                                            N° <span t-field="payment.transfer_number"/>
+                                        </t>
+                                        <t t-elif="payment.mode_payment == 'bank_deposit' and payment.deposit_number">
+                                            N° <span t-field="payment.deposit_number"/>
+                                        </t>
+                                        <t t-elif="payment.ref">
+                                            <span t-field="payment.ref"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="payment.amount" t-options="{'widget': 'monetary', 'display_currency': payment.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Mode de règlement prévu si pas encore de paiements -->
+            <div class="row mt-3 mb-3" t-if="not o.payment_ids and o.payment_state != 'paid'">
                 <div class="col-6">
                     <table class="table table-sm">
                         <tr>
-                            <td><strong>Mode de règlement:</strong></td>
+                            <td><strong>Mode de règlement prévu:</strong></td>
                             <td class="text-end">
                                 <t t-if="o.payment_mode_id">
                                     <span t-field="o.payment_mode_id.name"/>
-                                    <!-- Afficher N° pour Chèque ou Virement -->
-                                    <t t-if="'Chèque' in (o.payment_mode_id.name or '')">
-                                        <br/><span>N° Chèque: _______________</span>
-                                    </t>
-                                    <t t-elif="'Virement' in (o.payment_mode_id.name or '') or 'virement' in (o.payment_mode_id.name or '')">
-                                        <br/><span>N° Virement: _______________</span>
-                                    </t>
                                 </t>
                                 <t t-else="">
-                                    <span>Date à terme</span>
+                                    <span>À définir</span>
                                 </t>
                             </td>
                         </tr>

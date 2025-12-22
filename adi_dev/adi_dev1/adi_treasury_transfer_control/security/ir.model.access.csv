@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_treasury_transfer_control_user,treasury.transfer.control.user,adi_treasury.model_treasury_transfer,group_transfer_control_user,1,1,1,0
+access_treasury_transfer_control_manager,treasury.transfer.control.manager,adi_treasury.model_treasury_transfer,group_transfer_control_manager,1,1,1,1
+access_treasury_cash_control_user,treasury.cash.control.user,adi_treasury.model_treasury_cash,group_transfer_control_user,1,1,0,0
+access_treasury_cash_control_manager,treasury.cash.control.manager,adi_treasury.model_treasury_cash,group_transfer_control_manager,1,1,1,1
+access_treasury_safe_control_user,treasury.safe.control.user,adi_treasury.model_treasury_safe,group_transfer_control_user,1,1,0,0
+access_treasury_safe_control_manager,treasury.safe.control.manager,adi_treasury.model_treasury_safe,group_transfer_control_manager,1,1,1,1
+access_treasury_bank_control_user,treasury.bank.control.user,adi_treasury_bank.model_treasury_bank,group_transfer_control_user,1,1,0,0
+access_treasury_bank_control_manager,treasury.bank.control.manager,adi_treasury_bank.model_treasury_bank,group_transfer_control_manager,1,1,1,1

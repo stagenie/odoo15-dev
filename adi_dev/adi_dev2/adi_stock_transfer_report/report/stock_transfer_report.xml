@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Report Action for Stock Transfer -->
+    <record id="action_report_stock_transfer" model="ir.actions.report">
+        <field name="name">Bon de Transfert</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_stock_transfer_report.report_stock_transfer_document</field>
+        <field name="report_file">adi_stock_transfer_report.report_stock_transfer_document</field>
+        <field name="print_report_name">'Bon_Transfert_%s' % (object.name or 'draft').replace('/', '_')</field>
+        <field name="binding_model_id" ref="adi_stock_transfer.model_adi_stock_transfer"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_stock_transfer"/>
+    </record>
+
+</odoo>

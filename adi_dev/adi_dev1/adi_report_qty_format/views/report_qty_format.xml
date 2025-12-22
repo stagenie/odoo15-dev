@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================ -->
+    <!-- Format quantités: supprime décimales inutiles -->
+    <!-- Utilise %g qui formate: 5.00→5, 5.50→5.5     -->
+    <!-- ============================================ -->
+
+    <!-- 1. Factures - Template principal l10n_dz_droit_timbre -->
+    <template id="qty_format_invoice"
+              inherit_id="l10n_dz_droit_timbre.adi_report_invoice_document">
+        <xpath expr="//span[@t-field='line.quantity']" position="replace">
+            <span t-esc="'%g' % line.quantity"/>
+        </xpath>
+    </template>
+
+    <!-- 2. BL - Template l10n_dz_droit_timbre -->
+    <template id="qty_format_bl"
+              inherit_id="l10n_dz_droit_timbre.adi_bl_report_invoice_document">
+        <xpath expr="//span[@t-field='line.quantity']" position="replace">
+            <span t-esc="'%g' % line.quantity"/>
+        </xpath>
+    </template>
+
+    <!-- 3. Vente TTC - adi_ab_invoice_reports -->
+    <template id="qty_format_vente_ttc"
+              inherit_id="adi_ab_invoice_reports.ab_vente_ttc_document">
+        <xpath expr="//span[@t-field='line.quantity']" position="replace">
+            <span t-esc="'%g' % line.quantity"/>
+        </xpath>
+    </template>
+
+    <!-- 4. Bon de commande - adi_ab_sale_reports -->
+    <template id="qty_format_saleorder"
+              inherit_id="adi_ab_sale_reports.report_ab_saleorder_document">
+        <xpath expr="//span[@t-field='line.product_uom_qty']" position="replace">
+            <span t-esc="'%g' % line.product_uom_qty"/>
+        </xpath>
+    </template>
+
+    <!-- 5. Proforma - adi_ab_sale_reports -->
+    <template id="qty_format_proforma"
+              inherit_id="adi_ab_sale_reports.report_ab_proforma_document">
+        <xpath expr="//span[@t-field='line.product_uom_qty']" position="replace">
+            <span t-esc="'%g' % line.product_uom_qty"/>
+        </xpath>
+    </template>
+
+    <!-- 6. Devis - adi_ab_sale_reports -->
+    <template id="qty_format_quotation"
+              inherit_id="adi_ab_sale_reports.report_ab_quotation_document">
+        <xpath expr="//span[@t-field='line.product_uom_qty']" position="replace">
+            <span t-esc="'%g' % line.product_uom_qty"/>
+        </xpath>
+    </template>
+
+</odoo>

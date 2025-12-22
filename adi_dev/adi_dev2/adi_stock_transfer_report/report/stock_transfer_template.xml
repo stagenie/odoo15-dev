@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Main Report Template - Using minimal layout -->
+    <template id="report_stock_transfer_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.basic_layout">
+                    <t t-call="adi_stock_transfer_report.report_stock_transfer_content"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Report Content Template -->
+    <template id="report_stock_transfer_content">
+        <t t-set="company" t-value="doc.source_company_id or doc.env.company"/>
+        <t t-set="source_team" t-value="doc.source_team_id"/>
+        <t t-set="dest_team" t-value="doc.dest_team_id"/>
+
+        <div class="page" style="font-family: Arial, sans-serif; font-size: 12px;">
+
+            <!-- ==================== HEADER WITH LOGO ==================== -->
+            <div style="text-align: center; margin-bottom: 10px;">
+                <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                     style="max-height: 60px; max-width: 200px;" alt="Logo"/>
+                <h3 style="margin: 5px 0;"><t t-esc="company.name"/></h3>
+            </div>
+
+            <!-- ==================== TITLE ==================== -->
+            <div style="text-align: center; margin: 15px 0; border: 2px solid #333; padding: 10px;">
+                <h2 style="margin: 0 0 8px 0; font-size: 22px; font-weight: bold;">BON DE TRANSFERT</h2>
+                <div style="font-size: 14px;">
+                    <strong>N°:</strong> <t t-esc="doc.name"/>
+                    <span style="margin: 0 20px;">|</span>
+                    <strong>Date:</strong> <span t-field="doc.request_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                </div>
+            </div>
+
+            <!-- ==================== TWO COLUMNS: EXPEDITEUR & DESTINATAIRE ==================== -->
+            <table style="width: 100%; margin-bottom: 15px;">
+                <tr>
+                    <!-- EXPEDITEUR - Full info like DESTINATAIRE -->
+                    <td style="width: 48%; vertical-align: top; padding-right: 10px;">
+                        <div style="border: 1px solid #333; padding: 10px; min-height: 180px;">
+                            <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 5px;">
+                                EXPEDITEUR
+                            </div>
+                            <t t-if="source_team">
+                                <!-- Description/Activite -->
+                                <div t-if="source_team.team_description" style="font-weight: bold; font-size: 11px; margin-bottom: 4px;">
+                                    <t t-esc="source_team.team_description"/>
+                                </div>
+                                <!-- Adresse -->
+                                <div t-if="source_team.team_address" style="font-size: 11px; margin-bottom: 4px;">
+                                    <t t-esc="source_team.team_address"/>
+                                </div>
+                                <!-- Donnees fiscales -->
+                                <div style="font-size: 10px; margin-bottom: 4px;">
+                                    <t t-if="source_team.rc"><t t-esc="source_team.rc"/><br/></t>
+                                    <t t-if="source_team.nif"><t t-esc="source_team.nif"/><br/></t>
+                                    <t t-if="source_team.ai"><t t-esc="source_team.ai"/><br/></t>
+                                    <t t-if="source_team.nis"><t t-esc="source_team.nis"/></t>
+                                </div>
+                                <!-- Contact -->
+                                <div style="font-size: 10px; margin-bottom: 4px;">
+                                    <t t-if="source_team.tel"><t t-esc="source_team.tel"/><br/></t>
+                                    <t t-if="source_team.email"><t t-esc="source_team.email"/></t>
+                                </div>
+                            </t>
+                            <hr style="margin: 5px 0;"/>
+                            <table style="width: 100%; font-size: 11px;">
+                                <tr>
+                                    <td style="width: 40%; padding: 2px 0;"><strong>Entrepot:</strong></td>
+                                    <td style="padding: 2px 0;"><t t-esc="doc.source_warehouse_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 2px 0;"><strong>Emplacement:</strong></td>
+                                    <td style="padding: 2px 0;"><t t-esc="doc.source_location_id.display_name"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+
+                    <!-- DESTINATAIRE -->
+                    <td style="width: 48%; vertical-align: top; padding-left: 10px;">
+                        <div style="border: 2px solid #333; padding: 10px; min-height: 180px; background-color: #f9f9f9;">
+                            <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 5px;">
+                                DESTINATAIRE
+                            </div>
+                            <t t-if="dest_team">
+                                <!-- Description/Activite -->
+                                <div t-if="dest_team.team_description" style="font-weight: bold; font-size: 11px; margin-bottom: 4px;">
+                                    <t t-esc="dest_team.team_description"/>
+                                </div>
+                                <!-- Adresse -->
+                                <div t-if="dest_team.team_address" style="font-size: 11px; margin-bottom: 4px;">
+                                    <t t-esc="dest_team.team_address"/>
+                                </div>
+                                <!-- Donnees fiscales -->
+                                <div style="font-size: 10px; margin-bottom: 4px;">
+                                    <t t-if="dest_team.rc"><t t-esc="dest_team.rc"/><br/></t>
+                                    <t t-if="dest_team.nif"><t t-esc="dest_team.nif"/><br/></t>
+                                    <t t-if="dest_team.ai"><t t-esc="dest_team.ai"/><br/></t>
+                                    <t t-if="dest_team.nis"><t t-esc="dest_team.nis"/></t>
+                                </div>
+                                <!-- Contact -->
+                                <div style="font-size: 10px; margin-bottom: 4px;">
+                                    <t t-if="dest_team.tel"><t t-esc="dest_team.tel"/><br/></t>
+                                    <t t-if="dest_team.email"><t t-esc="dest_team.email"/></t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div style="font-size: 13px; font-weight: bold; margin-bottom: 4px;">
+                                    <t t-esc="doc.dest_warehouse_id.name"/>
+                                </div>
+                            </t>
+                            <hr style="margin: 5px 0;"/>
+                            <table style="width: 100%; font-size: 11px;">
+                                <tr>
+                                    <td style="width: 40%; padding: 2px 0;"><strong>Entrepot:</strong></td>
+                                    <td style="padding: 2px 0;"><t t-esc="doc.dest_warehouse_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 2px 0;"><strong>Emplacement:</strong></td>
+                                    <td style="padding: 2px 0;"><t t-esc="doc.dest_location_id.display_name"/></td>
+                                </tr>
+                                <tr t-if="doc.dest_responsible_id">
+                                    <td style="padding: 2px 0;"><strong>Responsable:</strong></td>
+                                    <td style="padding: 2px 0;"><t t-esc="doc.dest_responsible_id.name"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- ==================== PRODUCTS TABLE ==================== -->
+            <table class="table table-sm table-bordered" style="width: 100%;">
+                <thead>
+                    <tr style="background-color: #333; color: white;">
+                        <th style="text-align: center; width: 5%;">N°</th>
+                        <th style="text-align: left; width: 18%;">Reference</th>
+                        <th style="text-align: left; width: 47%;">Designation</th>
+                        <th style="text-align: center; width: 15%;">Unite</th>
+                        <th style="text-align: right; width: 15%;">Quantite</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-set="line_num" t-value="0"/>
+                    <t t-foreach="doc.transfer_line_ids" t-as="line">
+                        <t t-set="line_num" t-value="line_num + 1"/>
+                        <tr>
+                            <td style="text-align: center;"><t t-esc="line_num"/></td>
+                            <td><t t-esc="line.product_id.default_code or ''"/></td>
+                            <td><t t-esc="line.product_id.name"/></td>
+                            <td style="text-align: center;"><t t-esc="line.product_uom_id.name"/></td>
+                            <td style="text-align: right;">
+                                <t t-if="line.quantity == int(line.quantity)">
+                                    <t t-esc="int(line.quantity)"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-esc="'%.2f' % line.quantity"/>
+                                </t>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+                <tfoot>
+                    <tr style="background-color: #333; color: white; font-weight: bold;">
+                        <td colspan="4" style="text-align: right;">TOTAL</td>
+                        <td style="text-align: right;">
+                            <t t-if="doc.total_quantity == int(doc.total_quantity)">
+                                <t t-esc="int(doc.total_quantity)"/>
+                            </t>
+                            <t t-else="">
+                                <t t-esc="'%.2f' % doc.total_quantity"/>
+                            </t>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- ==================== NOTES ==================== -->
+            <div t-if="doc.note" style="margin: 15px 0;">
+                <strong>Observations:</strong>
+                <div style="border: 1px solid #ccc; padding: 10px; margin-top: 5px; min-height: 40px;">
+                    <t t-esc="doc.note"/>
+                </div>
+            </div>
+
+            <!-- ==================== SIGNATURES ==================== -->
+            <table style="width: 100%; margin-top: 30px;">
+                <tr>
+                    <td style="width: 33%; text-align: center; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 45px;">Expediteur</div>
+                        <div style="border-top: 1px solid #333; width: 150px; margin: 0 auto; padding-top: 5px;">
+                            Signature et cachet
+                        </div>
+                    </td>
+                    <td style="width: 33%; text-align: center; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 45px;">Transporteur</div>
+                        <div style="border-top: 1px solid #333; width: 150px; margin: 0 auto; padding-top: 5px;">
+                            Signature
+                        </div>
+                    </td>
+                    <td style="width: 33%; text-align: center; vertical-align: top;">
+                        <div style="font-weight: bold; margin-bottom: 45px;">Receptionnaire</div>
+                        <div style="border-top: 1px solid #333; width: 150px; margin: 0 auto; padding-top: 5px;">
+                            Signature et cachet
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+</odoo>

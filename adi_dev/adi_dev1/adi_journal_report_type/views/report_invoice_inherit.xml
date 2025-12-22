@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Masquer le Solde Total dans le rapport AB (mai_customer_overdue_balance) si type = invoice -->
+    <template id="report_hide_solde_ab"
+              inherit_id="mai_customer_overdue_balance.stamp_duty_invoice_report_invoice_dz">
+        <xpath expr="//div[@id='total']/following-sibling::div[1]" position="attributes">
+            <attribute name="t-if">(o.company_id.show_total_due or o.company_id.show_total_balance) and o.move_type not in ('in_invoice', 'in_refund') and o.journal_id.invoice_report_type != 'invoice'</attribute>
+        </xpath>
+    </template>
+
+</odoo>

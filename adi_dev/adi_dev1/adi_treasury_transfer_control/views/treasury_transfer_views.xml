@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================================
+         CORRECTION DE L'AFFICHAGE DES SOURCES/DESTINATIONS BANCAIRES
+         =================================================================== -->
+
+    <!-- Cette vue corrige les conditions d'invisibilité pour inclure les types bancaires -->
+    <record id="treasury_transfer_form_bank_fix" model="ir.ui.view">
+        <field name="name">treasury.transfer.form.bank.fix</field>
+        <field name="model">treasury.transfer</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_transfer_form"/>
+        <field name="priority">60</field>
+        <field name="arch" type="xml">
+
+            <!-- Corriger cash_from_id : ajouter cash_to_bank -->
+            <xpath expr="//field[@name='cash_from_id']" position="attributes">
+                <attribute name="attrs">{
+                    'readonly': [('state', '!=', 'draft')],
+                    'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'cash_to_safe', 'cash_to_bank'])],
+                    'required': [('transfer_type', 'in', ['cash_to_cash', 'cash_to_safe', 'cash_to_bank'])]
+                }</attribute>
+            </xpath>
+
+            <!-- Corriger le solde caisse source -->
+            <xpath expr="//group[@name='group_source']/field[@name='balance_before_from'][1]" position="attributes">
+                <attribute name="attrs">{'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'cash_to_safe', 'cash_to_bank'])]}</attribute>
+            </xpath>
+
+            <!-- Corriger safe_from_id : ajouter safe_to_bank -->
+            <xpath expr="//field[@name='safe_from_id']" position="attributes">
+                <attribute name="attrs">{
+                    'readonly': [('state', '!=', 'draft')],
+                    'invisible': [('transfer_type', 'not in', ['safe_to_cash', 'safe_to_safe', 'safe_to_bank'])],
+                    'required': [('transfer_type', 'in', ['safe_to_cash', 'safe_to_safe', 'safe_to_bank'])]
+                }</attribute>
+            </xpath>
+
+            <!-- Corriger le solde coffre source -->
+            <xpath expr="//group[@name='group_source']/field[@name='balance_before_from'][2]" position="attributes">
+                <attribute name="attrs">{'invisible': [('transfer_type', 'not in', ['safe_to_cash', 'safe_to_safe', 'safe_to_bank'])]}</attribute>
+            </xpath>
+
+            <!-- Corriger cash_to_id : ajouter bank_to_cash -->
+            <xpath expr="//field[@name='cash_to_id']" position="attributes">
+                <attribute name="attrs">{
+                    'readonly': [('state', '!=', 'draft')],
+                    'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'safe_to_cash', 'bank_to_cash'])],
+                    'required': [('transfer_type', 'in', ['cash_to_cash', 'safe_to_cash', 'bank_to_cash'])]
+                }</attribute>
+            </xpath>
+
+            <!-- Corriger le solde caisse destination -->
+            <xpath expr="//group[@name='group_destination']/field[@name='balance_before_to'][1]" position="attributes">
+                <attribute name="attrs">{'invisible': [('transfer_type', 'not in', ['cash_to_cash', 'safe_to_cash', 'bank_to_cash'])]}</attribute>
+            </xpath>
+
+            <!-- Corriger safe_to_id : ajouter bank_to_safe -->
+            <xpath expr="//field[@name='safe_to_id']" position="attributes">
+                <attribute name="attrs">{
+                    'readonly': [('state', '!=', 'draft')],
+                    'invisible': [('transfer_type', 'not in', ['cash_to_safe', 'safe_to_safe', 'bank_to_safe'])],
+                    'required': [('transfer_type', 'in', ['cash_to_safe', 'safe_to_safe', 'bank_to_safe'])]
+                }</attribute>
+            </xpath>
+
+            <!-- Corriger le solde coffre destination -->
+            <xpath expr="//group[@name='group_destination']/field[@name='balance_before_to'][2]" position="attributes">
+                <attribute name="attrs">{'invisible': [('transfer_type', 'not in', ['cash_to_safe', 'safe_to_safe', 'bank_to_safe'])]}</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ===================================================================
+         EXTENSION DU FORMULAIRE DE TRANSFERT - CONTRÔLE
+         =================================================================== -->
+
+    <record id="treasury_transfer_form_control" model="ir.ui.view">
+        <field name="name">treasury.transfer.form.control</field>
+        <field name="model">treasury.transfer</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_transfer_form"/>
+        <field name="priority">70</field>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter le bouton de contrôle à côté des autres boutons -->
+            <xpath expr="//header/button[@name='action_confirm']" position="before">
+                <button name="action_check_transfer"
+                        type="object"
+                        string="Vérifier le transfert"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('control_checked', '=', True)]}"
+                        icon="fa-check-circle"/>
+                <button name="action_reset_control"
+                        type="object"
+                        string="Réinitialiser le contrôle"
+                        class="btn-secondary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('control_checked', '=', False)]}"
+                        confirm="Êtes-vous sûr de vouloir réinitialiser le contrôle ?"
+                        icon="fa-refresh"/>
+            </xpath>
+
+            <!-- Ajouter la section de contrôle dans le formulaire -->
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Contrôle du transfert" name="control_page">
+                        <group>
+                            <group string="État du contrôle">
+                                <field name="control_checked" readonly="1"
+                                       widget="boolean_toggle"/>
+                                <field name="control_date" readonly="1"/>
+                                <field name="control_user_id" readonly="1"/>
+                            </group>
+                            <group string="Options">
+                                <field name="force_transfer"
+                                       attrs="{'invisible': [('control_warning', '=', False)]}"
+                                       groups="adi_treasury_transfer_control.group_transfer_control_manager"/>
+                            </group>
+                        </group>
+
+                        <!-- Afficher les avertissements -->
+                        <group attrs="{'invisible': [('control_warning', '=', False)]}">
+                            <div class="alert alert-warning" role="alert">
+                                <h4 class="alert-heading">
+                                    <i class="fa fa-exclamation-triangle"/> Avertissements
+                                </h4>
+                                <field name="control_warning" readonly="1" nolabel="1"/>
+                            </div>
+                        </group>
+
+                        <!-- Soldes avant/après -->
+                        <group string="Simulation du transfert"
+                               attrs="{'invisible': [('control_checked', '=', False)]}">
+                            <group string="Source">
+                                <field name="source_balance_before" readonly="1"/>
+                                <field name="source_balance_after" readonly="1"/>
+                            </group>
+                            <group string="Destination">
+                                <field name="dest_balance_before" readonly="1"/>
+                                <field name="dest_balance_after" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <!-- Message si non contrôlé -->
+                        <group attrs="{'invisible': [('control_checked', '=', True)]}">
+                            <div class="alert alert-info" role="alert">
+                                <i class="fa fa-info-circle"/>
+                                Cliquez sur "Vérifier le transfert" pour effectuer
+                                le contrôle de solde avant la confirmation.
+                            </div>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath>
+
+            <!-- Badge pour indiquer si le contrôle est fait -->
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="control_checked" invisible="1"/>
+                <span class="badge badge-success"
+                      attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('control_checked', '=', False)]}">
+                    <i class="fa fa-check"/> Contrôlé
+                </span>
+                <span class="badge badge-warning"
+                      attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('control_checked', '=', True)]}">
+                    <i class="fa fa-exclamation"/> Non contrôlé
+                </span>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ===================================================================
+         EXTENSION DE LA VUE LISTE
+         =================================================================== -->
+
+    <record id="treasury_transfer_tree_control" model="ir.ui.view">
+        <field name="name">treasury.transfer.tree.control</field>
+        <field name="model">treasury.transfer</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_transfer_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="control_checked" string="Contrôlé"
+                       widget="boolean"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ===================================================================
+         FILTRE DE RECHERCHE
+         =================================================================== -->
+
+    <record id="treasury_transfer_search_control" model="ir.ui.view">
+        <field name="name">treasury.transfer.search.control</field>
+        <field name="model">treasury.transfer</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_transfer_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[last()]" position="after">
+                <separator/>
+                <filter string="Contrôlés" name="controlled"
+                        domain="[('control_checked', '=', True)]"/>
+                <filter string="Non contrôlés" name="not_controlled"
+                        domain="[('control_checked', '=', False), ('state', '=', 'draft')]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

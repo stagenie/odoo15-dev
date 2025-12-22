@@ -1,0 +1,56 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'Treasury Access Control',
+    'version': '15.0.1.0.0',
+    'category': 'Accounting/Treasury',
+    'summary': 'Gestion des accès et visibilité pour la trésorerie',
+    'description': """
+Treasury Access Control - Contrôle des Accès Trésorerie
+========================================================
+
+Ce module gère les droits d'accès et la visibilité des éléments de trésorerie :
+
+Fonctionnalités :
+-----------------
+* Règles d'accès par utilisateur pour :
+  - Caisses (treasury.cash)
+  - Coffres (treasury.safe)
+  - Banques (treasury.bank)
+  - Opérations de caisse/coffre/banque
+  - Transferts
+
+* Menus dynamiques :
+  - Menu "Caisses" visible si l'utilisateur a au moins une caisse
+  - Menu "Coffres" visible si l'utilisateur a au moins un coffre
+  - Menu "Banques" visible si l'utilisateur a au moins une banque
+
+* Filtres automatiques :
+  - Affichage uniquement des entités autorisées
+  - Domaines dynamiques sur les champs relationnels
+
+Principe :
+----------
+Un utilisateur ne voit QUE les caisses/coffres/banques où il est :
+- Dans la liste des utilisateurs autorisés (user_ids)
+- Le responsable (responsible_id / responsible_ids)
+- Le créateur (create_uid)
+
+Les managers ont accès à tout.
+    """,
+    'author': 'ADI',
+    'website': 'https://www.adi.com',
+    'depends': [
+        'adi_treasury',
+        'adi_treasury_bank',
+    ],
+    'data': [
+        # Sécurité - Règles d'accès
+        'security/treasury_access_rules.xml',
+        # Vues
+        'views/treasury_menus.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+    'license': 'LGPL-3',
+}
