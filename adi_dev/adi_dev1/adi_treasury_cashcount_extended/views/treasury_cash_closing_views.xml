@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage de la vue Form pour modifier le comptage -->
+    <record id="view_treasury_cash_closing_form_extended" model="ir.ui.view">
+        <field name="name">treasury.cash.closing.form.extended</field>
+        <field name="model">treasury.cash.closing</field>
+        <field name="inherit_id" ref="adi_treasury_cashcount.view_treasury_cash_closing_form_cashcount"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- =============================================
+                 COMPTAGE FINAL - Bouton à côté de balance_end_real
+                 ============================================= -->
+            <xpath expr="//field[@name='balance_end_real']" position="replace">
+                <label for="balance_end_real"/>
+                <div class="o_row">
+                    <field name="balance_end_real" widget="monetary"
+                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                           class="oe_inline"/>
+                    <button name="action_open_cash_count_wizard"
+                            string="Comptage de caisse"
+                            type="object"
+                            class="btn-secondary oe_inline"
+                            icon="fa-calculator"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <field name="force_cash_count" invisible="1"/>
+                    <span class="badge badge-warning ml-2"
+                          attrs="{'invisible': ['|', ('force_cash_count', '=', False), ('state', '!=', 'draft')]}">
+                        Comptage obligatoire
+                    </span>
+                </div>
+            </xpath>
+
+            <!-- Masquer le champ use_cash_count et counted_total -->
+            <xpath expr="//field[@name='use_cash_count']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='counted_total'][not(ancestor::page)]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- =============================================
+                 ONGLET COMPTAGE (modifié)
+                 ============================================= -->
+            <xpath expr="//page[@name='cash_count']" position="replace">
+                <page string="Comptage" name="cash_count"
+                      attrs="{'invisible': [('use_cash_count', '=', False)]}">
+
+                    <!-- Instructions -->
+                    <group>
+                        <group>
+                            <div class="alert alert-info" role="alert"
+                                 attrs="{'invisible': [('state', '!=', 'draft')]}">
+                                <strong>Comptage de caisse :</strong>
+                                <p class="mb-0 mt-2">
+                                    Cliquez sur le bouton <strong>"Comptage de caisse"</strong>
+                                    à côté du champ "Solde réel" pour effectuer le comptage.
+                                </p>
+                            </div>
+                            <div class="alert alert-warning" role="alert"
+                                 attrs="{'invisible': ['|', ('force_cash_count', '=', False), ('state', '!=', 'draft')]}">
+                                <i class="fa fa-exclamation-triangle"/>
+                                <strong>Comptage obligatoire</strong> :
+                                Vous devez effectuer le comptage avant de confirmer la clôture.
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Tableau en lecture seule -->
+                    <field name="count_line_ids" nolabel="1" readonly="1">
+                        <tree create="false" delete="false" edit="false">
+                            <field name="denomination_id"
+                                   options="{'no_create': True}"
+                                   domain="[('currency_id', '=', parent.currency_id)]"/>
+                            <field name="denomination_type" string="Type"/>
+                            <field name="denomination_value" string="Valeur unitaire" widget="monetary"/>
+                            <field name="quantity" string="Nombre" sum="Total"/>
+                            <field name="subtotal" widget="monetary" sum="Total général"/>
+                            <field name="currency_id" invisible="1"/>
+                        </tree>
+                    </field>
+
+                    <!-- Résumé du comptage -->
+                    <group class="mt-3">
+                        <group string="Comptage">
+                            <field name="counted_total" widget="monetary" readonly="1" string="Solde compté"/>
+                        </group>
+                        <group string="Comparaison">
+                            <field name="balance_end_theoretical" widget="monetary" readonly="1" string="Solde théorique"/>
+                            <field name="difference"
+                                   widget="monetary"
+                                   readonly="1"
+                                   string="Écart"
+                                   decoration-danger="difference != 0"
+                                   decoration-success="difference == 0"/>
+                        </group>
+                    </group>
+
+                    <!-- Bouton pour ouvrir le wizard depuis l'onglet -->
+                    <group attrs="{'invisible': [('state', '!=', 'draft')]}">
+                        <div class="text-center mt-3">
+                            <button name="action_open_cash_count_wizard"
+                                    string="Modifier le comptage"
+                                    type="object"
+                                    class="btn-primary"
+                                    icon="fa-edit"/>
+                        </div>
+                    </group>
+                </page>
+            </xpath>
+
+            <!-- Masquer les boutons d'initialisation/effacement car le wizard les remplace -->
+            <xpath expr="//button[@name='action_auto_fill_count_lines']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_clear_count_lines']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage de la vue des paramètres pour ajouter les options de comptage initial -->
+    <record id="res_config_settings_view_form_init_count" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.init.count</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="adi_treasury_cashcount_extended.res_config_settings_view_form_cashcount"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les options de comptage initial dans la section Comptage de Caisse -->
+            <xpath expr="//div[@id='cash_count_settings']//div[hasclass('o_setting_box')][last()]" position="before">
+
+                <!-- Activer Comptage Initial -->
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="enable_initial_count_global"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="enable_initial_count_global"/>
+                        <div class="text-muted">
+                            Si activé, le comptage initial sera disponible pour TOUTES les caisses
+                            pour vérifier le solde de départ lors de l'ouverture des clôtures.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forcer Comptage Initial -->
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="force_initial_count_global"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="force_initial_count_global"/>
+                        <div class="text-muted">
+                            Si activé, le comptage initial des billets et pièces sera obligatoire
+                            pour TOUTES les clôtures de caisse.<br/>
+                            L'utilisateur devra effectuer le comptage initial avant de confirmer.
+                        </div>
+                    </div>
+                </div>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

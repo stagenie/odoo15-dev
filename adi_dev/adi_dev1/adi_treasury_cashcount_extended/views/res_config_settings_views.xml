@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage de la vue des paramètres pour ajouter les options globales -->
+    <record id="res_config_settings_view_form_cashcount" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.cashcount</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter une section pour le comptage de caisse après la section Analytique -->
+            <xpath expr="//div[@id='analytic']" position="after">
+                <h2>Comptage de Caisse</h2>
+                <div class="row mt16 o_settings_container" id="cash_count_settings">
+
+                    <!-- Comptage Final -->
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="force_cash_count_global"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="force_cash_count_global"/>
+                            <div class="text-muted">
+                                Si activé, le comptage des billets et pièces sera obligatoire
+                                pour TOUTES les clôtures de caisse.<br/>
+                                L'utilisateur devra utiliser le wizard de comptage pour saisir le solde réel.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Masquer Comptage dans les Rapports -->
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="hide_count_in_report_global"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="hide_count_in_report_global"/>
+                            <div class="text-muted">
+                                Si activé, le détail du comptage des billets et pièces sera masqué
+                                dans TOUS les rapports de clôture.<br/>
+                                Seuls les totaux seront affichés.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Note informative -->
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <div class="alert alert-info mt-2" role="status">
+                                <i class="fa fa-info-circle"/>
+                                Ces options peuvent aussi être configurées individuellement sur chaque caisse
+                                dans <strong>Trésorerie > Configuration > Caisses</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

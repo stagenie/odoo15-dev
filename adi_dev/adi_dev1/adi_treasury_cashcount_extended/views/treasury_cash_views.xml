@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage de la vue Form de la caisse pour ajouter les options de comptage -->
+    <record id="view_treasury_cash_form_force_count" model="ir.ui.view">
+        <field name="name">treasury.cash.form.force.count</field>
+        <field name="model">treasury.cash</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les options de comptage dans la section Configuration de clôture -->
+            <xpath expr="//field[@name='auto_close_days']" position="after">
+                <separator string="Comptage de caisse"/>
+                <!-- Comptage Final -->
+                <field name="force_cash_count"
+                       attrs="{'readonly': [('state', '=', 'locked')]}"/>
+                <!-- Affichage dans les rapports -->
+                <field name="show_count_in_report"
+                       attrs="{'readonly': [('state', '=', 'locked')]}"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

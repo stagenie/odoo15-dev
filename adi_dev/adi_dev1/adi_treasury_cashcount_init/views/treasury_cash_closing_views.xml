@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage de la vue Form pour ajouter le comptage initial -->
+    <record id="view_treasury_cash_closing_form_init" model="ir.ui.view">
+        <field name="name">treasury.cash.closing.form.init</field>
+        <field name="model">treasury.cash.closing</field>
+        <field name="inherit_id" ref="adi_treasury_cashcount_extended.view_treasury_cash_closing_form_extended"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+
+            <!-- =============================================
+                 COMPTAGE INITIAL - Bouton à côté de balance_start
+                 ============================================= -->
+            <xpath expr="//field[@name='balance_start']" position="replace">
+                <label for="balance_start"/>
+                <div class="o_row">
+                    <field name="balance_start" widget="monetary" readonly="1" class="oe_inline"/>
+                    <field name="use_initial_count" invisible="1"/>
+                    <field name="force_initial_count" invisible="1"/>
+                    <field name="initial_count_done" invisible="1"/>
+                    <button name="action_open_initial_count_wizard"
+                            string="Comptage initial"
+                            type="object"
+                            class="btn-secondary oe_inline"
+                            icon="fa-calculator"
+                            attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('use_initial_count', '=', False)]}"/>
+                    <span class="badge badge-warning ml-2"
+                          attrs="{'invisible': ['|', '|', ('force_initial_count', '=', False), ('state', '!=', 'draft'), ('use_initial_count', '=', False)]}">
+                        Comptage initial obligatoire
+                    </span>
+                    <!-- Afficher le solde initial compté et l'écart s'il existe -->
+                    <span class="ml-3"
+                          attrs="{'invisible': [('initial_count_done', '=', False)]}">
+                        <i class="fa fa-check text-success"/> Compté:
+                        <field name="initial_counted_total" widget="monetary" nolabel="1" class="oe_inline"/>
+                        <span attrs="{'invisible': [('initial_difference', '=', 0)]}"
+                              class="ml-2 badge badge-danger">
+                            Écart: <field name="initial_difference" widget="monetary" nolabel="1" class="oe_inline"/>
+                        </span>
+                        <span attrs="{'invisible': [('initial_difference', '!=', 0)]}"
+                              class="ml-2 badge badge-success">
+                            <i class="fa fa-check"/> OK
+                        </span>
+                    </span>
+                </div>
+            </xpath>
+
+            <!-- =============================================
+                 ONGLET COMPTAGE INITIAL (nouveau)
+                 ============================================= -->
+            <xpath expr="//page[@name='cash_count']" position="before">
+                <page string="Comptage Initial" name="initial_cash_count"
+                      attrs="{'invisible': [('use_initial_count', '=', False)]}">
+
+                    <!-- Instructions -->
+                    <group>
+                        <group>
+                            <div class="alert alert-info" role="alert"
+                                 attrs="{'invisible': [('state', '!=', 'draft')]}">
+                                <strong>Comptage initial :</strong>
+                                <p class="mb-0 mt-2">
+                                    Cliquez sur le bouton <strong>"Comptage initial"</strong>
+                                    à côté du champ "Solde de départ" pour vérifier le solde d'ouverture.
+                                </p>
+                            </div>
+                            <div class="alert alert-warning" role="alert"
+                                 attrs="{'invisible': ['|', ('force_initial_count', '=', False), ('state', '!=', 'draft')]}">
+                                <i class="fa fa-exclamation-triangle"/>
+                                <strong>Comptage initial obligatoire</strong> :
+                                Vous devez effectuer le comptage initial avant de confirmer la clôture.
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Tableau en lecture seule -->
+                    <field name="initial_count_line_ids" nolabel="1" readonly="1">
+                        <tree create="false" delete="false" edit="false">
+                            <field name="denomination_id"
+                                   options="{'no_create': True}"
+                                   domain="[('currency_id', '=', parent.currency_id)]"/>
+                            <field name="denomination_type" string="Type"/>
+                            <field name="denomination_value" string="Valeur unitaire" widget="monetary"/>
+                            <field name="quantity" string="Nombre" sum="Total"/>
+                            <field name="subtotal" widget="monetary" sum="Total général"/>
+                            <field name="currency_id" invisible="1"/>
+                        </tree>
+                    </field>
+
+                    <!-- Résumé du comptage initial -->
+                    <group class="mt-3">
+                        <group string="Comptage Initial">
+                            <field name="initial_counted_total" widget="monetary" readonly="1" string="Solde initial compté"/>
+                        </group>
+                        <group string="Comparaison">
+                            <field name="balance_start" widget="monetary" readonly="1" string="Solde de départ (théorique)"/>
+                            <field name="initial_difference"
+                                   widget="monetary"
+                                   readonly="1"
+                                   string="Écart initial"
+                                   decoration-danger="initial_difference != 0"
+                                   decoration-success="initial_difference == 0"/>
+                        </group>
+                    </group>
+
+                    <!-- Explication de l'impact sur le calcul du solde théorique -->
+                    <group attrs="{'invisible': [('initial_count_done', '=', False)]}">
+                        <group string="Impact sur le calcul du solde théorique" colspan="2">
+                            <div class="alert alert-info" role="alert" attrs="{'invisible': [('initial_difference', '=', 0)]}">
+                                <i class="fa fa-info-circle"/>
+                                <strong>Prise en compte de l'écart initial :</strong>
+                                <p class="mb-0 mt-2">
+                                    Le solde initial compté (<field name="initial_counted_total" widget="monetary" nolabel="1" class="oe_inline"/>)
+                                    sera utilisé comme base pour le calcul du solde théorique final,
+                                    au lieu du solde de départ théorique (<field name="balance_start" widget="monetary" nolabel="1" class="oe_inline"/>).
+                                </p>
+                            </div>
+                            <field name="balance_start_adjusted"
+                                   widget="monetary"
+                                   readonly="1"
+                                   string="Solde de départ utilisé pour le calcul"
+                                   help="Ce montant est utilisé pour calculer le solde théorique final"/>
+                        </group>
+                    </group>
+
+                    <!-- Bouton pour ouvrir le wizard depuis l'onglet -->
+                    <group attrs="{'invisible': [('state', '!=', 'draft')]}">
+                        <div class="text-center mt-3">
+                            <button name="action_open_initial_count_wizard"
+                                    string="Modifier le comptage initial"
+                                    type="object"
+                                    class="btn-primary"
+                                    icon="fa-edit"/>
+                        </div>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- =============================================
+         VUE LISTE - Ajouter les colonnes de comptage initial
+         ============================================= -->
+    <record id="view_treasury_cash_closing_tree_init" model="ir.ui.view">
+        <field name="name">treasury.cash.closing.tree.init</field>
+        <field name="model">treasury.cash.closing</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_closing_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les colonnes de comptage initial après balance_start -->
+            <xpath expr="//field[@name='balance_start']" position="after">
+                <field name="initial_counted_total" widget="monetary" string="Solde initial compté" optional="hide"/>
+                <field name="initial_difference" widget="monetary" string="Écart initial" optional="hide"
+                       decoration-danger="initial_difference != 0"
+                       decoration-success="initial_difference == 0"/>
+                <field name="balance_start_adjusted" widget="monetary" string="Solde départ ajusté" optional="hide"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

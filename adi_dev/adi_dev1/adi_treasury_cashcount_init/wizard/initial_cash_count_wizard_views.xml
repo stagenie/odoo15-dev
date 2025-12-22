@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Form du Wizard de Comptage Initial -->
+    <record id="initial_cash_count_wizard_form_view" model="ir.ui.view">
+        <field name="name">initial.cash.count.wizard.form</field>
+        <field name="model">initial.cash.count.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Comptage Initial de Caisse">
+                <group>
+                    <group string="Informations">
+                        <field name="closing_id" invisible="1"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="balance_start" widget="monetary" string="Solde de départ (théorique)"/>
+                    </group>
+                    <group string="Résultat">
+                        <field name="total_counted" widget="monetary" class="oe_inline font-weight-bold" string="Solde initial compté"/>
+                        <field name="difference" widget="monetary" string="Écart initial"
+                               decoration-danger="difference &lt; 0"
+                               decoration-success="difference == 0"
+                               decoration-warning="difference &gt; 0"/>
+                    </group>
+                </group>
+
+                <notebook>
+                    <page string="Billets" name="bills">
+                        <field name="line_ids" nolabel="1"
+                               domain="[('denomination_type', '=', 'bill')]"
+                               context="{'default_denomination_type': 'bill'}">
+                            <tree editable="bottom" create="false" delete="false">
+                                <field name="denomination_id" invisible="1"/>
+                                <field name="denomination_name" string="Billet" readonly="1"/>
+                                <field name="denomination_value" string="Valeur" widget="monetary"/>
+                                <field name="quantity" string="Nombre"/>
+                                <field name="subtotal" widget="monetary" sum="Total Billets"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="denomination_type" invisible="1"/>
+                            </tree>
+                        </field>
+                        <group class="mt-2">
+                            <group>
+                                <field name="total_bills" widget="monetary" readonly="1" class="font-weight-bold"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page string="Pièces" name="coins">
+                        <field name="line_ids" nolabel="1"
+                               domain="[('denomination_type', '=', 'coin')]"
+                               context="{'default_denomination_type': 'coin'}">
+                            <tree editable="bottom" create="false" delete="false">
+                                <field name="denomination_id" invisible="1"/>
+                                <field name="denomination_name" string="Pièce" readonly="1"/>
+                                <field name="denomination_value" string="Valeur" widget="monetary"/>
+                                <field name="quantity" string="Nombre"/>
+                                <field name="subtotal" widget="monetary" sum="Total Pièces"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="denomination_type" invisible="1"/>
+                            </tree>
+                        </field>
+                        <group class="mt-2">
+                            <group>
+                                <field name="total_coins" widget="monetary" readonly="1" class="font-weight-bold"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page string="Tout" name="all">
+                        <field name="line_ids" nolabel="1">
+                            <tree editable="bottom" create="false" delete="false">
+                                <field name="denomination_id" invisible="1"/>
+                                <field name="denomination_type" string="Type"/>
+                                <field name="denomination_name" string="Dénomination" readonly="1"/>
+                                <field name="denomination_value" string="Valeur" widget="monetary"/>
+                                <field name="quantity" string="Nombre"/>
+                                <field name="subtotal" widget="monetary" sum="Total"/>
+                                <field name="currency_id" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+
+                <!-- Résumé final -->
+                <group class="mt-3">
+                    <div class="alert alert-info" role="alert">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Total Billets :</strong>
+                                <field name="total_bills" widget="monetary" nolabel="1" class="oe_inline"/>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Total Pièces :</strong>
+                                <field name="total_coins" widget="monetary" nolabel="1" class="oe_inline"/>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>TOTAL INITIAL :</strong>
+                                <field name="total_counted" widget="monetary" nolabel="1" class="oe_inline font-weight-bold"/>
+                            </div>
+                        </div>
+                    </div>
+                </group>
+
+                <footer>
+                    <button name="action_confirm" string="Valider le comptage initial" type="object" class="btn-primary"/>
+                    <button name="action_reset" string="Réinitialiser" type="object" class="btn-secondary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

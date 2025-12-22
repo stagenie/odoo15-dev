@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage de la vue Form de la caisse pour ajouter les options de comptage initial -->
+    <record id="view_treasury_cash_form_init_count" model="ir.ui.view">
+        <field name="name">treasury.cash.form.init.count</field>
+        <field name="model">treasury.cash</field>
+        <field name="inherit_id" ref="adi_treasury_cashcount_extended.view_treasury_cash_form_force_count"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les options de comptage initial après force_cash_count -->
+            <xpath expr="//field[@name='force_cash_count']" position="after">
+                <field name="enable_initial_count"
+                       attrs="{'readonly': [('state', '=', 'locked')]}"/>
+                <field name="force_initial_count"
+                       attrs="{'readonly': [('state', '=', 'locked')], 'invisible': [('enable_initial_count', '=', False)]}"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

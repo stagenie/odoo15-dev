@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_initial_cash_count_wizard,initial.cash.count.wizard.user,model_initial_cash_count_wizard,account.group_account_user,1,1,1,1
+access_initial_cash_count_wizard_line,initial.cash.count.wizard.line.user,model_initial_cash_count_wizard_line,account.group_account_user,1,1,1,1
+access_treasury_cash_closing_initial_count,treasury.cash.closing.initial.count.user,model_treasury_cash_closing_initial_count,account.group_account_user,1,1,1,1
