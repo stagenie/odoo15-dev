@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage Vue Kanban - Affichage des 3 soldes -->
+    <record id="view_treasury_bank_kanban_balance_display" model="ir.ui.view">
+        <field name="name">treasury.bank.kanban.balance.display</field>
+        <field name="model">treasury.bank</field>
+        <field name="inherit_id" ref="adi_treasury_bank.view_treasury_bank_kanban"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter les nouveaux champs -->
+            <xpath expr="//field[@name='available_balance']" position="after">
+                <field name="reconciled_balance"/>
+                <field name="unreconciled_balance"/>
+            </xpath>
+
+            <!-- Remplacer le contenu central avec les 3 soldes -->
+            <xpath expr="//div[hasclass('o_kanban_card_content')]" position="replace">
+                <div class="container o_kanban_card_content">
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- Solde Actuel (Principal) -->
+                            <div class="text-center mb-2">
+                                <span class="text-muted small">Solde Actuel</span>
+                                <h2 class="mt-0 mb-0">
+                                    <field name="current_balance" widget="monetary"/>
+                                </h2>
+                            </div>
+
+                            <!-- Ligne de séparation -->
+                            <hr class="my-2"/>
+
+                            <!-- Soldes Rapproché et Non Rapproché côte à côte -->
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <span class="text-success small">
+                                        <i class="fa fa-check-circle"/> Rapproché
+                                    </span>
+                                    <div class="font-weight-bold text-success">
+                                        <field name="reconciled_balance" widget="monetary"/>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <span class="text-warning small">
+                                        <i class="fa fa-clock-o"/> Non Rapproché
+                                    </span>
+                                    <div class="font-weight-bold text-warning">
+                                        <field name="unreconciled_balance" widget="monetary"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Informations bancaires -->
+                            <div class="text-center mt-2">
+                                <p class="text-muted mb-1 small">
+                                    <i class="fa fa-university"/>
+                                    <field name="bank_name"/>
+                                </p>
+                                <p class="text-muted small mb-0">
+                                    <field name="account_number"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Héritage Vue Formulaire - Ajouter les soldes rapprochés -->
+    <record id="view_treasury_bank_form_balance_display" model="ir.ui.view">
+        <field name="name">treasury.bank.form.balance.display</field>
+        <field name="model">treasury.bank</field>
+        <field name="inherit_id" ref="adi_treasury_bank.view_treasury_bank_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter après available_balance -->
+            <xpath expr="//field[@name='available_balance']" position="after">
+                <field name="reconciled_balance" widget="monetary"/>
+                <field name="unreconciled_balance" widget="monetary"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Héritage Vue Liste - Ajouter les colonnes -->
+    <record id="view_treasury_bank_tree_balance_display" model="ir.ui.view">
+        <field name="name">treasury.bank.tree.balance.display</field>
+        <field name="model">treasury.bank</field>
+        <field name="inherit_id" ref="adi_treasury_bank.view_treasury_bank_tree"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter après available_balance -->
+            <xpath expr="//field[@name='available_balance']" position="after">
+                <field name="reconciled_balance" widget="monetary" optional="show"/>
+                <field name="unreconciled_balance" widget="monetary" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
