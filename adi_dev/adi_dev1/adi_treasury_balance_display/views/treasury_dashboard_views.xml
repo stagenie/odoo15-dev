@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage de la vue Kanban Extended pour ajouter les soldes rapprochés -->
+    <record id="treasury_dashboard_kanban_reconciled" model="ir.ui.view">
+        <field name="name">treasury.dashboard.kanban.reconciled</field>
+        <field name="model">treasury.dashboard</field>
+        <field name="inherit_id" ref="adi_treasury_dashboard_extended.treasury_dashboard_view_kanban_extended"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les champs reconciled_balance et unreconciled_balance -->
+            <xpath expr="//field[@name='is_balance_final']" position="after">
+                <field name="reconciled_balance"/>
+                <field name="unreconciled_balance"/>
+            </xpath>
+
+            <!-- Modifier la carte BANQUES INDIVIDUELLES pour ajouter les soldes rapprochés -->
+            <xpath expr="//t[@t-if=&quot;record.type.raw_value == 'bank'&quot;]//div[hasclass('card-body')]" position="replace">
+                <div class="card-body text-center py-2">
+                    <h3 t-attf-class="mb-1 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-primary'}">
+                        <field name="balance" widget="monetary"/>
+                    </h3>
+                    <hr class="my-1"/>
+                    <div class="row text-center small">
+                        <div class="col-6">
+                            <span class="text-success">
+                                <i class="fa fa-check-circle"/> Rapp.
+                            </span>
+                            <div class="fw-bold text-success">
+                                <field name="reconciled_balance" widget="monetary"/>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-warning">
+                                <i class="fa fa-clock-o"/> Non R.
+                            </span>
+                            <div class="fw-bold text-warning">
+                                <field name="unreconciled_balance" widget="monetary"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+
+            <!-- Modifier TOTAL BANQUES pour ajouter les soldes rapprochés -->
+            <xpath expr="//t[@t-if=&quot;record.type.raw_value == 'total_bank'&quot;]//div[hasclass('card-body')]" position="replace">
+                <div class="card-body text-center py-3">
+                    <h2 t-attf-class="mb-1 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-primary'}">
+                        <field name="balance" widget="monetary"/>
+                    </h2>
+                    <hr class="my-1"/>
+                    <div class="row text-center small">
+                        <div class="col-6">
+                            <span class="text-success"><i class="fa fa-check-circle"/> Rapproché</span>
+                            <div class="fw-bold text-success">
+                                <field name="reconciled_balance" widget="monetary"/>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-warning"><i class="fa fa-clock-o"/> Non Rapp.</span>
+                            <div class="fw-bold text-warning">
+                                <field name="unreconciled_balance" widget="monetary"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+
+            <!-- Ajouter les nouvelles cartes après TOTAL GÉNÉRAL -->
+            <xpath expr="//t[@t-if=&quot;record.type.raw_value == 'grand_total'&quot;]" position="after">
+
+                <!-- Carte Total Banques Rapproché -->
+                <t t-if="record.type.raw_value == 'total_bank_reconciled'">
+                    <div class="card mb-0 shadow border-success border-3">
+                        <div class="card-header py-2 bg-success text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">
+                                    <i class="fa fa-check-circle me-1"/>
+                                    <field name="name"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body text-center py-4">
+                            <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-success'}">
+                                <field name="balance" widget="monetary"/>
+                            </h2>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Carte Total Banques Non Rapproché -->
+                <t t-if="record.type.raw_value == 'total_bank_unreconciled'">
+                    <div class="card mb-0 shadow border-warning border-3">
+                        <div class="card-header py-2 bg-warning text-dark">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">
+                                    <i class="fa fa-clock-o me-1"/>
+                                    <field name="name"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body text-center py-4">
+                            <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-warning'}">
+                                <field name="balance" widget="monetary"/>
+                            </h2>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Carte Total Général Rapproché -->
+                <t t-if="record.type.raw_value == 'grand_total_reconciled'">
+                    <div class="card mb-0 shadow border-success border-4">
+                        <div class="card-header py-2 bg-success text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">
+                                    <i class="fa fa-check-circle me-1"/>
+                                    <field name="name"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body text-center py-3">
+                            <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-success'}">
+                                <field name="balance" widget="monetary"/>
+                            </h2>
+                            <small class="text-muted">Caisses + Coffres + Banques Rapprochées</small>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Carte Total Général Non Rapproché -->
+                <t t-if="record.type.raw_value == 'grand_total_unreconciled'">
+                    <div class="card mb-0 shadow border-warning border-4">
+                        <div class="card-header py-2 bg-warning text-dark">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">
+                                    <i class="fa fa-clock-o me-1"/>
+                                    <field name="name"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body text-center py-3">
+                            <h2 t-attf-class="mb-0 fw-bold #{record.balance.raw_value &lt; 0 ? 'text-danger' : 'text-warning'}">
+                                <field name="balance" widget="monetary"/>
+                            </h2>
+                            <small class="text-muted">Caisses + Coffres + Banques Non Rapprochées</small>
+                        </div>
+                    </div>
+                </t>
+
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Extension de la vue Tree -->
+    <record id="treasury_dashboard_tree_reconciled" model="ir.ui.view">
+        <field name="name">treasury.dashboard.tree.reconciled</field>
+        <field name="model">treasury.dashboard</field>
+        <field name="inherit_id" ref="adi_treasury_dashboard.treasury_dashboard_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='balance']" position="after">
+                <field name="reconciled_balance" string="Solde Rapproché" optional="show"/>
+                <field name="unreconciled_balance" string="Solde Non Rapproché" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

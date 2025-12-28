@@ -63,7 +63,7 @@
                 <!-- Calculer le total des remises -->
                 <t t-set="total_discount" t-value="sum((l.price_unit * l.product_uom_qty * l.discount / 100) for l in doc.order_line if not l.display_type and l.discount)"/>
 
-                <!-- Table des lignes: N°, Description, Qté, Prix TTC, Remise, Total TTC -->
+                <!-- Table des lignes: N°, Description, Qté, Prix U, Remise, Montant -->
                 <!-- SANS colonne TVA -->
                 <t t-set="line_num" t-value="0"/>
                 <table class="table table-sm o_main_table">
@@ -72,10 +72,10 @@
                             <th name="th_num" class="text-center" style="width: 30px;">N°</th>
                             <th name="th_description" class="text-start">Description</th>
                             <th name="th_quantity" class="text-end">Quantité</th>
-                            <th name="th_priceunit" class="text-end">Prix TTC</th>
+                            <th name="th_priceunit" class="text-end">Prix U</th>
                             <th name="th_discount" t-if="display_discount" class="text-end">Remise %</th>
                             <!-- PAS DE COLONNE TVA -->
-                            <th name="th_subtotal" class="text-end">Montant TTC</th>
+                            <th name="th_subtotal" class="text-end">Montant</th>
                         </tr>
                     </thead>
                     <tbody class="sale_tbody">

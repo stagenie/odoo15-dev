@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Héritage de la vue des paramètres de comptabilité -->
+    <record id="res_config_settings_view_form_treasury_reconciliation" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.treasury.reconciliation</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('app_settings_block') and @data-key='account']" position="inside">
+                <h2>Trésorerie - Affichage</h2>
+                <div class="row mt16 o_settings_container" name="treasury_display_settings">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="treasury_show_reconciliation_details"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="treasury_show_reconciliation_details"/>
+                            <div class="text-muted">
+                                Affiche les soldes rapprochés et non rapprochés dans le tableau de bord
+                                et les vues des banques
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

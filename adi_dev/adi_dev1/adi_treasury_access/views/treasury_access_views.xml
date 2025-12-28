@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =============================================
+         RESTRICTION DES CHAMPS SENSIBLES - CAISSES
+         Seuls les managers peuvent modifier user_ids et responsible_id
+         Les non-managers voient les champs en lecture seule
+         ============================================= -->
+
+    <record id="view_treasury_cash_form_access_restriction" model="ir.ui.view">
+        <field name="name">treasury.cash.form.access.restriction</field>
+        <field name="model">treasury.cash</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_form"/>
+        <field name="priority">100</field>
+        <field name="groups_id" eval="[(4, ref('adi_treasury.group_treasury_user'))]"/>
+        <field name="arch" type="xml">
+
+            <!-- Rendre responsible_id en lecture seule pour les non-managers -->
+            <xpath expr="//field[@name='responsible_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+            <!-- Rendre user_ids en lecture seule pour les non-managers -->
+            <xpath expr="//field[@name='user_ids']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Vue spéciale pour les managers - champs modifiables -->
+    <record id="view_treasury_cash_form_manager_access" model="ir.ui.view">
+        <field name="name">treasury.cash.form.manager.access</field>
+        <field name="model">treasury.cash</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_form"/>
+        <field name="priority">200</field>
+        <field name="groups_id" eval="[(4, ref('adi_treasury.group_treasury_manager'))]"/>
+        <field name="arch" type="xml">
+
+            <!-- Rendre responsible_id modifiable pour les managers -->
+            <xpath expr="//field[@name='responsible_id']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+
+            <!-- Rendre user_ids modifiable pour les managers -->
+            <xpath expr="//field[@name='user_ids']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- =============================================
+         RESTRICTION DES CHAMPS SENSIBLES - COFFRES
+         Seuls les managers peuvent modifier responsible_ids
+         ============================================= -->
+
+    <record id="view_treasury_safe_form_access_restriction" model="ir.ui.view">
+        <field name="name">treasury.safe.form.access.restriction</field>
+        <field name="model">treasury.safe</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_safe_form"/>
+        <field name="priority">100</field>
+        <field name="groups_id" eval="[(4, ref('adi_treasury.group_treasury_user'))]"/>
+        <field name="arch" type="xml">
+
+            <!-- Rendre responsible_ids en lecture seule pour les non-managers -->
+            <xpath expr="//field[@name='responsible_ids']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Vue spéciale pour les managers coffres - champs modifiables -->
+    <record id="view_treasury_safe_form_manager_access" model="ir.ui.view">
+        <field name="name">treasury.safe.form.manager.access</field>
+        <field name="model">treasury.safe</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_safe_form"/>
+        <field name="priority">200</field>
+        <field name="groups_id" eval="[(4, ref('adi_treasury.group_treasury_manager'))]"/>
+        <field name="arch" type="xml">
+
+            <!-- Rendre responsible_ids modifiable pour les managers -->
+            <xpath expr="//field[@name='responsible_ids']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- =============================================
+         RESTRICTION DES CHAMPS SENSIBLES - BANQUES
+         Seuls les managers peuvent modifier user_ids et responsible_id
+         ============================================= -->
+
+    <record id="view_treasury_bank_form_access_restriction" model="ir.ui.view">
+        <field name="name">treasury.bank.form.access.restriction</field>
+        <field name="model">treasury.bank</field>
+        <field name="inherit_id" ref="adi_treasury_bank.view_treasury_bank_form"/>
+        <field name="priority">100</field>
+        <field name="groups_id" eval="[(4, ref('adi_treasury_bank.group_treasury_bank_user'))]"/>
+        <field name="arch" type="xml">
+
+            <!-- Rendre responsible_id en lecture seule pour les non-managers -->
+            <xpath expr="//field[@name='responsible_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+            <!-- Rendre user_ids en lecture seule pour les non-managers -->
+            <xpath expr="//field[@name='user_ids']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Vue spéciale pour les managers banques - champs modifiables -->
+    <record id="view_treasury_bank_form_manager_access" model="ir.ui.view">
+        <field name="name">treasury.bank.form.manager.access</field>
+        <field name="model">treasury.bank</field>
+        <field name="inherit_id" ref="adi_treasury_bank.view_treasury_bank_form"/>
+        <field name="priority">200</field>
+        <field name="groups_id" eval="[(4, ref('adi_treasury_bank.group_treasury_bank_manager'))]"/>
+        <field name="arch" type="xml">
+
+            <!-- Rendre responsible_id modifiable pour les managers -->
+            <xpath expr="//field[@name='responsible_id']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+
+            <!-- Rendre user_ids modifiable pour les managers -->
+            <xpath expr="//field[@name='user_ids']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

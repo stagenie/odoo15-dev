@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Treasury Access Control',
-    'version': '15.0.1.0.0',
+    'version': '15.0.1.6.0',
     'category': 'Accounting/Treasury',
     'summary': 'Gestion des accès et visibilité pour la trésorerie',
     'description': """
@@ -42,12 +42,15 @@ Les managers ont accès à tout.
     'depends': [
         'adi_treasury',
         'adi_treasury_bank',
+        'adi_treasury_transfer_control',
     ],
     'data': [
-        # Sécurité - Règles d'accès
+        # Sécurité - Droits d'accès et règles
+        'security/ir.model.access.csv',
         'security/treasury_access_rules.xml',
         # Vues
         'views/treasury_menus.xml',
+        'views/treasury_access_views.xml',
     ],
     'installable': True,
     'application': False,
