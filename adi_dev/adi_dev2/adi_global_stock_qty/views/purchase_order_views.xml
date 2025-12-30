@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Formulaire Commande d'Achat - Ajout Stock Total dans les lignes -->
+    <record id="purchase_order_form_global_qty" model="ir.ui.view">
+        <field name="name">purchase.order.form.global.qty</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="after">
+                <field name="global_qty_available" string="Stock Total" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

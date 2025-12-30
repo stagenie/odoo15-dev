@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extension de la vue commande de vente pour afficher l'avertissement -->
+    <record id="view_order_form_credit_limit_warning" model="ir.ui.view">
+        <field name="name">sale.order.form.credit.limit.warning</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter la bannière d'avertissement en haut du formulaire -->
+            <xpath expr="//form/sheet" position="before">
+                <field name="show_credit_limit_warning" invisible="1"/>
+                <div class="alert alert-danger mb-0" role="alert"
+                     attrs="{'invisible': [('show_credit_limit_warning', '=', False)]}">
+                    <field name="credit_limit_warning" readonly="1" nolabel="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ajout du champ prix manuel dans les lignes de commande -->
+    <record id="view_order_form_price_preserve" model="ir.ui.view">
+        <field name="name">sale.order.form.price.preserve</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/tree//field[@name='price_unit']" position="after">
+                <field name="price_manually_set" invisible="1"/>
+                <button name="action_reset_price_to_pricelist"
+                        type="object"
+                        icon="fa-refresh"
+                        title="Réinitialiser le prix vers la liste de prix"
+                        attrs="{'invisible': [('price_manually_set', '=', False)]}"
+                        class="oe_link"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

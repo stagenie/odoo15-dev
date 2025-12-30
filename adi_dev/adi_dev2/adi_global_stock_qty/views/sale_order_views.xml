@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Formulaire Devis/Commande de Vente - Ajout Stock Total dans les lignes -->
+    <!-- Positionné après available_qty (module devnix_available_qty) -->
+    <record id="sale_order_form_global_qty" model="ir.ui.view">
+        <field name="name">sale.order.form.global.qty</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="devnix_available_qty.view_order_form2"/>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/tree/field[@name='available_qty']" position="after">
+                <field name="global_qty_available" string="Stock Total" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

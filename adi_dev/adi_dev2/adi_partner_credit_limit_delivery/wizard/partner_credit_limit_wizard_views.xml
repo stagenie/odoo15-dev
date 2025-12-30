@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire du wizard -->
+    <record id="view_partner_credit_limit_wizard_form" model="ir.ui.view">
+        <field name="name">partner.credit.limit.wizard.form</field>
+        <field name="model">partner.credit.limit.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Configuration limite crédit clients">
+                <group>
+                    <group string="Sélection des clients">
+                        <field name="filter_type" widget="radio"/>
+                        <field name="partner_ids" widget="many2many_tags"
+                               attrs="{'invisible': [('filter_type', '!=', 'selected')], 'required': [('filter_type', '=', 'selected')]}"/>
+                        <field name="partner_count" readonly="1"/>
+                    </group>
+                    <group string="Paramètres à appliquer">
+                        <field name="credit_limit_active"/>
+                        <label for="update_limit"/>
+                        <div class="o_row">
+                            <field name="update_limit"/>
+                            <field name="credit_limit"
+                                   attrs="{'invisible': [('update_limit', '=', False)]}"/>
+                        </div>
+                        <label for="update_block_mode"/>
+                        <div class="o_row">
+                            <field name="update_block_mode"/>
+                            <field name="credit_limit_block_mode"
+                                   attrs="{'invisible': [('update_block_mode', '=', False)]}"/>
+                        </div>
+                        <label for="update_show_warning"/>
+                        <div class="o_row">
+                            <field name="update_show_warning"/>
+                            <field name="credit_limit_show_warning"
+                                   attrs="{'invisible': [('update_show_warning', '=', False)]}"/>
+                        </div>
+                    </group>
+                </group>
+                <group string="Aperçu des clients concernés">
+                    <field name="preview_partner_ids" nolabel="1" readonly="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="credit_limit_active"/>
+                            <field name="credit_limit"/>
+                            <field name="credit_limit_block_mode"/>
+                            <field name="credit_limit_show_warning"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_apply" string="Appliquer" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action pour ouvrir le wizard depuis le menu -->
+    <record id="action_partner_credit_limit_wizard" model="ir.actions.act_window">
+        <field name="name">Configuration limite crédit</field>
+        <field name="res_model">partner.credit.limit.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Action contextuelle depuis la liste des clients -->
+    <record id="action_partner_credit_limit_wizard_multi" model="ir.actions.act_window">
+        <field name="name">Configurer limite crédit</field>
+        <field name="res_model">partner.credit.limit.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <!-- Menu dans Ventes > Configuration -->
+    <menuitem id="menu_partner_credit_limit_config"
+              name="Limite crédit clients"
+              parent="sale.menu_sale_config"
+              action="action_partner_credit_limit_wizard"
+              sequence="100"/>
+</odoo>

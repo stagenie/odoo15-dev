@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extension de la vue partenaire pour ajouter le mode de blocage -->
+    <record id="view_partner_form_credit_limit_delivery" model="ir.ui.view">
+        <field name="name">res.partner.form.credit.limit.delivery</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="adi_partner_credit_limit.view_partner_form_credit_limit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='credit_limit']" position="after">
+                <field name="credit_limit_block_mode"
+                       attrs="{'invisible': [('credit_limit_active', '=', False)]}"/>
+                <field name="credit_limit_show_warning"
+                       attrs="{'invisible': [('credit_limit_active', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

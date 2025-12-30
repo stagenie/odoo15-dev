@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Formulaire Product Template - Ajout du champ Qté Globale -->
+    <record id="product_template_form_view_global_qty" model="ir.ui.view">
+        <field name="name">product.template.form.global.qty</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <!-- Ajouter le champ dans le groupe d'informations générales -->
+            <xpath expr="//div[@name='options']" position="after">
+                <div class="oe_title" style="margin-top: 8px;">
+                    <label for="global_qty_available" string="Stock Total Disponible"/>
+                    <h2>
+                        <field name="global_qty_available" class="oe_inline" readonly="1"/>
+                        <span class="oe_grey oe_inline"> unités</span>
+                    </h2>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue Kanban Product Template - Ajout du champ Qté Globale -->
+    <record id="product_template_kanban_view_global_qty" model="ir.ui.view">
+        <field name="name">product.template.kanban.global.qty</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name="global_qty_available"/>
+            </xpath>
+            <xpath expr="//div[@name='product_lst_price']" position="after">
+                <div name="global_stock_total" class="mt-1">
+                    <strong>Stock Total: </strong>
+                    <span><t t-esc="record.global_qty_available.value"/></span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue Liste/Tree Product Template - Ajout du champ Qté Globale -->
+    <record id="product_template_tree_view_global_qty" model="ir.ui.view">
+        <field name="name">product.template.tree.global.qty</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='uom_id']" position="after">
+                <field name="global_qty_available" string="Stock Total" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue Formulaire Product Product (Variante) -->
+    <record id="product_product_form_view_global_qty" model="ir.ui.view">
+        <field name="name">product.product.form.global.qty</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='options']" position="after">
+                <div class="oe_title" style="margin-top: 8px;">
+                    <label for="global_qty_available" string="Stock Total Disponible"/>
+                    <h2>
+                        <field name="global_qty_available" class="oe_inline" readonly="1"/>
+                        <span class="oe_grey oe_inline"> unités</span>
+                    </h2>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue Liste/Tree Product Product (Variante) -->
+    <record id="product_product_tree_view_global_qty" model="ir.ui.view">
+        <field name="name">product.product.tree.global.qty</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="global_qty_available" string="Stock Total" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
