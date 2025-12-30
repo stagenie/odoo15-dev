@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_transfer_line_source_requester,adi.stock.transfer.line.source.requester,model_adi_stock_transfer_line_source,adi_stock_transfer.group_stock_transfer_requester,1,0,0,0
+access_stock_transfer_line_source_validator,adi.stock.transfer.line.source.validator,model_adi_stock_transfer_line_source,adi_stock_transfer.group_stock_transfer_validator,1,1,1,1
+access_stock_transfer_line_source_manager,adi.stock.transfer.line.source.manager,model_adi_stock_transfer_line_source,adi_stock_transfer.group_stock_transfer_manager,1,1,1,1

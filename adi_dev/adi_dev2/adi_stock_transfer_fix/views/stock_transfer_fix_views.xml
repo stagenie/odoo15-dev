@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================== -->
+    <!-- VUE TREE - Liste des transferts bloqués -->
+    <!-- ============================================== -->
+    <record id="view_stock_transfer_fix_tree" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.fix.tree</field>
+        <field name="model">adi.stock.transfer.fix</field>
+        <field name="arch" type="xml">
+            <tree string="Transferts Bloqués" decoration-danger="state=='detected'" decoration-warning="state=='analyzed'" decoration-success="state=='fixed'" decoration-muted="state=='failed'">
+                <field name="can_fix" invisible="1"/>
+                <field name="transfer_name"/>
+                <field name="transfer_state"/>
+                <field name="source_picking_id"/>
+                <field name="source_picking_state"/>
+                <field name="dest_picking_id"/>
+                <field name="dest_picking_state"/>
+                <field name="issue_type"/>
+                <field name="blocked_line_count" string="Lignes"/>
+                <field name="state" widget="badge" decoration-danger="state=='detected'" decoration-warning="state=='analyzed'" decoration-success="state=='fixed'" decoration-muted="state=='failed'"/>
+                <button name="action_analyze" type="object" string="Analyser" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['fixed', 'failed'])]}"/>
+                <button name="action_fix" type="object" string="Corriger" class="btn-primary" attrs="{'invisible': ['|', ('can_fix', '=', False), ('state', 'in', ['fixed'])]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- VUE FORM - Détail d'un diagnostic -->
+    <!-- ============================================== -->
+    <record id="view_stock_transfer_fix_form" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.fix.form</field>
+        <field name="model">adi.stock.transfer.fix</field>
+        <field name="arch" type="xml">
+            <form string="Diagnostic Transfert">
+                <header>
+                    <button name="action_analyze" type="object" string="Analyser" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['fixed', 'failed'])]}"/>
+                    <button name="action_fix" type="object" string="Corriger" class="btn-primary" attrs="{'invisible': ['|', ('can_fix', '=', False), ('state', 'in', ['fixed'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="detected,analyzed,fixed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_transfer" type="object" class="oe_stat_button" icon="fa-exchange">
+                            <span>Voir Transfert</span>
+                        </button>
+                        <button name="action_view_source_picking" type="object" class="oe_stat_button" icon="fa-truck" attrs="{'invisible': [('source_picking_id', '=', False)]}">
+                            <span>Voir Picking</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="transfer_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Transfert">
+                            <field name="transfer_id" invisible="1"/>
+                            <field name="transfer_state"/>
+                            <field name="issue_type"/>
+                            <field name="can_fix" invisible="1"/>
+                        </group>
+                        <group string="Pickings">
+                            <field name="source_picking_id"/>
+                            <field name="source_picking_state"/>
+                            <field name="dest_picking_id"/>
+                            <field name="dest_picking_state"/>
+                        </group>
+                    </group>
+                    <group string="Diagnostic">
+                        <field name="diagnosis" nolabel="1" readonly="1"/>
+                    </group>
+                    <group string="Action de Correction" attrs="{'invisible': [('can_fix', '=', False)]}">
+                        <field name="fix_action" nolabel="1" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Lignes Bloquées" name="blocked_lines">
+                            <field name="blocked_line_ids" nolabel="1">
+                                <tree string="Lignes" decoration-danger="is_blocked==True" decoration-success="is_blocked==False" editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity_requested"/>
+                                    <field name="quantity_in_source"/>
+                                    <field name="quantity_in_transit"/>
+                                    <field name="quantity_done_source_picking"/>
+                                    <field name="is_blocked"/>
+                                    <field name="blocking_reason"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Historique" name="history" attrs="{'invisible': [('state', '=', 'detected')]}">
+                            <group>
+                                <field name="fix_date" readonly="1"/>
+                                <field name="fix_user_id" readonly="1"/>
+                                <field name="fix_notes" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- ACTION - Liste des transferts bloqués -->
+    <!-- ============================================== -->
+    <record id="action_stock_transfer_fix" model="ir.actions.act_window">
+        <field name="name">Transferts Bloqués</field>
+        <field name="res_model">adi.stock.transfer.fix</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun transfert bloqué détecté
+            </p>
+            <p>
+                Cliquez sur <strong>Action > Détecter les Transferts Bloqués</strong> pour rechercher les transferts avec des incohérences.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- ACTION - Détecter les transferts bloqués -->
+    <!-- ============================================== -->
+    <record id="action_detect_blocked_transfers" model="ir.actions.server">
+        <field name="name">Détecter les Transferts Bloqués</field>
+        <field name="model_id" ref="model_adi_stock_transfer_fix"/>
+        <field name="binding_model_id" ref="model_adi_stock_transfer_fix"/>
+        <field name="state">code</field>
+        <field name="code">
+action = model.action_detect_blocked_transfers()
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- MENU - Détecter (accès direct) -->
+    <!-- ============================================== -->
+    <menuitem
+        id="menu_detect_blocked_transfers"
+        name="Détecter les Transferts Bloqués"
+        parent="adi_stock_transfer.menu_stock_transfer_config"
+        action="action_detect_blocked_transfers"
+        sequence="99"/>
+
+    <!-- ============================================== -->
+    <!-- MENU -->
+    <!-- ============================================== -->
+    <menuitem
+        id="menu_stock_transfer_fix"
+        name="Transferts Bloqués"
+        parent="adi_stock_transfer.menu_stock_transfer_config"
+        action="action_stock_transfer_fix"
+        sequence="100"/>
+
+</odoo>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- EXTENSION DU FORMULAIRE PRINCIPAL                            -->
+    <!-- ============================================================ -->
+
+    <record id="view_stock_transfer_form_enhanced" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.form.enhanced</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter le bouton pour voir la répartition des sources -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_source_allocation" type="object"
+                        class="oe_stat_button" icon="fa-cubes"
+                        attrs="{'invisible': ['|', ('use_multi_source', '=', False), ('state', 'in', ['draft', 'requested'])]}">
+                    <span class="o_stat_text">Sources</span>
+                </button>
+            </xpath>
+
+            <!-- Ajouter une alerte informative pour le mode multi-source -->
+            <xpath expr="//div[hasclass('alert-warning')]" position="after">
+                <div class="alert alert-info"
+                     attrs="{'invisible': ['|', ('use_multi_source', '=', False), ('has_child_locations', '=', False)]}"
+                     role="alert">
+                    <i class="fa fa-info-circle"/>
+                    Mode Multi-Source activé: <field name="child_locations_info" readonly="1" class="oe_inline"/>
+                    - Le système réservera automatiquement dans les sous-emplacements.
+                </div>
+            </xpath>
+
+            <!-- Ajouter les champs invisibles nécessaires -->
+            <xpath expr="//field[@name='transit_location_id']" position="after">
+                <field name="has_child_locations" invisible="1"/>
+            </xpath>
+
+            <!-- Ajouter les options multi-source dans le groupe Source -->
+            <xpath expr="//field[@name='source_location_id']" position="after">
+                <field name="use_multi_source"
+                       attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                <field name="source_location_order"
+                       attrs="{'invisible': [('use_multi_source', '=', False)],
+                               'readonly': [('state', '!=', 'draft')]}"/>
+                <field name="source_team_id"
+                       options="{'no_create': True}"
+                       attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+            </xpath>
+
+            <!-- Ajouter l'équipe destination dans le groupe Destination -->
+            <xpath expr="//field[@name='dest_location_id']" position="after">
+                <field name="dest_team_id"
+                       options="{'no_create': True}"
+                       attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+            </xpath>
+
+            <!-- Ajouter le nouvel onglet "Répartition Sources" dans le notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Répartition Sources" name="source_allocation"
+                      attrs="{'invisible': ['|', ('use_multi_source', '=', False), ('state', 'in', ['draft', 'requested'])]}">
+                    <field name="source_allocation_count" invisible="1"/>
+                    <div class="alert alert-info" role="alert"
+                         attrs="{'invisible': [('source_allocation_count', '>', 0)]}">
+                        <i class="fa fa-info-circle"/>
+                        La répartition des sources sera affichée après l'approbation du transfert.
+                    </div>
+                    <field name="source_allocation_ids" nolabel="1"
+                           attrs="{'invisible': [('source_allocation_count', '=', 0)]}">
+                        <tree create="false" edit="false" decoration-success="quantity_done > 0">
+                            <field name="product_id"/>
+                            <field name="location_name" string="Emplacement Source"/>
+                            <field name="quantity_reserved" string="Qté Réservée" sum="Total Réservé"/>
+                            <field name="quantity_done" string="Qté Envoyée" sum="Total Envoyé"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- EXTENSION DE LA VUE TREE DES LIGNES (dans le formulaire)     -->
+    <!-- ============================================================ -->
+
+    <record id="view_stock_transfer_form_lines_enhanced" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.form.lines.enhanced</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les colonnes pour les sources dans les lignes -->
+            <xpath expr="//field[@name='transfer_line_ids']/tree/field[@name='line_state']" position="before">
+                <field name="source_count" string="Nb Sources" readonly="1" optional="show"
+                       attrs="{'invisible': [('parent_state', 'in', ['draft', 'requested'])]}"/>
+                <field name="source_locations_display" string="Répartition" readonly="1" optional="show"
+                       attrs="{'invisible': [('parent_state', 'in', ['draft', 'requested'])]}"/>
+            </xpath>
+
+            <!-- Ajouter un bouton pour voir le détail des sources par ligne -->
+            <xpath expr="//field[@name='transfer_line_ids']/tree/field[@name='note']" position="after">
+                <button name="action_view_source_detail" type="object"
+                        icon="fa-list-alt" title="Voir détail des sources"
+                        attrs="{'invisible': [('source_count', '=', 0)]}"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- VUE TREE POUR LES SOURCES DE LIGNE                           -->
+    <!-- ============================================================ -->
+
+    <record id="view_stock_transfer_line_source_tree" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.line.source.tree</field>
+        <field name="model">adi.stock.transfer.line.source</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false">
+                <field name="transfer_id" optional="hide"/>
+                <field name="product_id"/>
+                <field name="location_name" string="Emplacement Source"/>
+                <field name="quantity_reserved" string="Qté Réservée"/>
+                <field name="quantity_done" string="Qté Traitée"
+                       decoration-success="quantity_done > 0"
+                       decoration-muted="quantity_done == 0"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- EXTENSION DE LA VUE TREE PRINCIPALE                          -->
+    <!-- ============================================================ -->
+
+    <record id="view_stock_transfer_tree_enhanced" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.tree.enhanced</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter une indication du mode multi-source -->
+            <xpath expr="//field[@name='total_quantity']" position="after">
+                <field name="use_multi_source" string="Multi-Src" widget="boolean" optional="show"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- EXTENSION DE LA VUE SEARCH                                   -->
+    <!-- ============================================================ -->
+
+    <record id="view_stock_transfer_search_enhanced" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.search.enhanced</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_search"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter des filtres pour le mode multi-source -->
+            <xpath expr="//filter[@name='filter_done']" position="after">
+                <separator/>
+                <filter string="Multi-Source" name="filter_multi_source"
+                        domain="[('use_multi_source', '=', True)]"/>
+                <filter string="Mode Legacy" name="filter_legacy"
+                        domain="[('use_multi_source', '=', False)]"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

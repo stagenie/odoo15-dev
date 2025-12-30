@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- EXTENSION DES PARAMÈTRES DE CONFIGURATION (STOCK)            -->
+    <!-- ============================================================ -->
+
+    <record id="res_config_settings_view_form_transfer" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.transfer.enhanced</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="stock.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter dans la section Opérations -->
+            <xpath expr="//div[@name='operations_setting_container']" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box" id="transfer_team_restriction">
+                    <div class="o_setting_left_pane">
+                        <field name="transfer_restrict_by_team"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="transfer_restrict_by_team"/>
+                        <div class="text-muted">
+                            Restreindre l'envoi aux membres de l'équipe source et la réception aux membres de l'équipe destination.
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- MENU CONFIGURATION DANS L'APP TRANSFERT                      -->
+    <!-- ============================================================ -->
+
+    <!-- Menu principal Configuration -->
+    <menuitem id="menu_stock_transfer_config"
+              name="Configuration"
+              parent="adi_stock_transfer.menu_stock_transfer_root"
+              sequence="100"
+              groups="adi_stock_transfer.group_stock_transfer_manager"/>
+
+    <!-- Sous-menu: Paramètres -->
+    <record id="action_stock_transfer_config_settings" model="ir.actions.act_window">
+        <field name="name">Paramètres</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'stock', 'bin_size': False}</field>
+    </record>
+
+    <menuitem id="menu_stock_transfer_settings"
+              name="Paramètres"
+              parent="menu_stock_transfer_config"
+              action="action_stock_transfer_config_settings"
+              sequence="10"
+              groups="base.group_system"/>
+
+    <!-- Sous-menu: Équipes Commerciales -->
+    <record id="action_stock_transfer_teams" model="ir.actions.act_window">
+        <field name="name">Équipes Commerciales</field>
+        <field name="res_model">crm.team</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une équipe commerciale
+            </p>
+            <p>
+                Les équipes sont utilisées pour restreindre les opérations d'envoi et de réception des transferts.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_stock_transfer_teams"
+              name="Équipes"
+              parent="menu_stock_transfer_config"
+              action="action_stock_transfer_teams"
+              sequence="20"/>
+
+    <!-- Sous-menu: Utilisateurs (Admin uniquement) -->
+    <record id="action_stock_transfer_users" model="ir.actions.act_window">
+        <field name="name">Utilisateurs Transfert</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain" eval="[('groups_id', 'in', [
+            ref('adi_stock_transfer.group_stock_transfer_requester'),
+            ref('adi_stock_transfer.group_stock_transfer_validator'),
+            ref('adi_stock_transfer.group_stock_transfer_manager')
+        ])]"/>
+        <field name="context">{'search_default_filter_share': False}</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Gérer les utilisateurs de transfert
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_stock_transfer_users"
+              name="Utilisateurs"
+              parent="menu_stock_transfer_config"
+              action="action_stock_transfer_users"
+              sequence="30"
+              groups="base.group_system"/>
+
+</odoo>

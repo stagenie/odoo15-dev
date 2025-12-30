@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================== -->
+    <!-- VUE TREE - Liste des pickings bloqués -->
+    <!-- ============================================== -->
+    <record id="view_stock_picking_fix_tree" model="ir.ui.view">
+        <field name="name">adi.stock.picking.fix.tree</field>
+        <field name="model">adi.stock.picking.fix</field>
+        <field name="arch" type="xml">
+            <tree string="Pickings Bloqués" decoration-danger="state=='detected'" decoration-warning="state=='analyzed'" decoration-success="state=='fixed'" decoration-muted="state=='failed'">
+                <field name="can_fix" invisible="1"/>
+                <field name="picking_name"/>
+                <field name="picking_state"/>
+                <field name="picking_type_id"/>
+                <field name="location_id"/>
+                <field name="location_dest_id"/>
+                <field name="transfer_id" optional="show"/>
+                <field name="issue_type"/>
+                <field name="blocked_line_count" string="Lignes"/>
+                <field name="state" widget="badge" decoration-danger="state=='detected'" decoration-warning="state=='analyzed'" decoration-success="state=='fixed'" decoration-muted="state=='failed'"/>
+                <button name="action_analyze" type="object" string="Analyser" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['fixed', 'failed'])]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- VUE FORM - Détail d'un diagnostic picking -->
+    <!-- ============================================== -->
+    <record id="view_stock_picking_fix_form" model="ir.ui.view">
+        <field name="name">adi.stock.picking.fix.form</field>
+        <field name="model">adi.stock.picking.fix</field>
+        <field name="arch" type="xml">
+            <form string="Diagnostic Picking">
+                <header>
+                    <button name="action_analyze" type="object" string="Analyser" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['fixed', 'failed'])]}"/>
+                    <button name="action_fix_adjust_quantities" type="object" string="Ajuster Quantités" class="btn-primary" attrs="{'invisible': ['|', ('can_fix', '=', False), ('state', 'in', ['fixed'])]}"/>
+                    <button name="action_fix_stock_negative" type="object" string="Corriger Stocks Négatifs" class="btn-warning" attrs="{'invisible': ['|', ('issue_type', '!=', 'stock_negative'), ('state', 'in', ['fixed'])]}"/>
+                    <button name="action_fix_force_validate" type="object" string="Forcer Validation" class="btn-danger" attrs="{'invisible': ['|', ('can_fix', '=', False), ('state', 'in', ['fixed'])]}" confirm="Attention: cela peut créer du stock négatif. Continuer?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="detected,analyzed,fixed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_picking" type="object" class="oe_stat_button" icon="fa-truck">
+                            <span>Voir Picking</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="picking_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Picking">
+                            <field name="picking_id" invisible="1"/>
+                            <field name="picking_state"/>
+                            <field name="picking_type_id"/>
+                            <field name="issue_type"/>
+                            <field name="can_fix" invisible="1"/>
+                        </group>
+                        <group string="Emplacements">
+                            <field name="location_id"/>
+                            <field name="location_dest_id"/>
+                            <field name="transfer_id"/>
+                        </group>
+                    </group>
+                    <group string="Diagnostic">
+                        <field name="diagnosis" nolabel="1" readonly="1"/>
+                    </group>
+                    <group string="Actions de Correction" attrs="{'invisible': [('can_fix', '=', False)]}">
+                        <field name="fix_action" nolabel="1" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Lignes Bloquées" name="blocked_lines">
+                            <field name="blocked_line_ids" nolabel="1">
+                                <tree string="Lignes" decoration-danger="is_blocked==True" decoration-success="is_blocked==False">
+                                    <field name="product_id"/>
+                                    <field name="location_id"/>
+                                    <field name="quantity_demanded"/>
+                                    <field name="quantity_available"/>
+                                    <field name="quantity_reserved"/>
+                                    <field name="shortage" decoration-danger="shortage > 0"/>
+                                    <field name="is_blocked"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Historique" name="history" attrs="{'invisible': [('state', '=', 'detected')]}">
+                            <group>
+                                <field name="fix_date" readonly="1"/>
+                                <field name="fix_user_id" readonly="1"/>
+                                <field name="fix_notes" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- ACTION - Liste des pickings bloqués -->
+    <!-- ============================================== -->
+    <record id="action_stock_picking_fix" model="ir.actions.act_window">
+        <field name="name">Pickings Bloqués</field>
+        <field name="res_model">adi.stock.picking.fix</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun picking bloqué détecté
+            </p>
+            <p>
+                Cliquez sur <strong>Détecter les Pickings Bloqués</strong> dans le menu Configuration pour rechercher les pickings avec des problèmes de stock.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- ACTION - Détecter les pickings bloqués -->
+    <!-- ============================================== -->
+    <record id="action_detect_blocked_pickings" model="ir.actions.server">
+        <field name="name">Détecter les Pickings Bloqués</field>
+        <field name="model_id" ref="model_adi_stock_picking_fix"/>
+        <field name="binding_model_id" ref="model_adi_stock_picking_fix"/>
+        <field name="state">code</field>
+        <field name="code">
+action = model.action_detect_blocked_pickings()
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- MENUS -->
+    <!-- ============================================== -->
+    <menuitem
+        id="menu_detect_blocked_pickings"
+        name="Détecter les Pickings Bloqués"
+        parent="adi_stock_transfer.menu_stock_transfer_config"
+        action="action_detect_blocked_pickings"
+        sequence="98"/>
+
+    <menuitem
+        id="menu_stock_picking_fix"
+        name="Pickings Bloqués"
+        parent="adi_stock_transfer.menu_stock_transfer_config"
+        action="action_stock_picking_fix"
+        sequence="101"/>
+
+</odoo>

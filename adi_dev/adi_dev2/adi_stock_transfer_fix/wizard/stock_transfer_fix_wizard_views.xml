@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================== -->
+    <!-- WIZARD - Correction de transfert -->
+    <!-- ============================================== -->
+    <record id="view_stock_transfer_fix_wizard_form" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.fix.wizard.form</field>
+        <field name="model">adi.stock.transfer.fix.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Correction du Transfert">
+                <group>
+                    <group string="Transfert">
+                        <field name="fix_id" invisible="1"/>
+                        <field name="transfer_id" invisible="1"/>
+                        <field name="transfer_name" readonly="1"/>
+                        <field name="transfer_state" readonly="1"/>
+                    </group>
+                    <group string="Picking">
+                        <field name="source_picking_id" readonly="1"/>
+                        <field name="source_picking_state" readonly="1"/>
+                    </group>
+                </group>
+                <group string="Diagnostic">
+                    <field name="diagnosis" nolabel="1" readonly="1"/>
+                </group>
+                <separator string="Options de Correction"/>
+                <group>
+                    <group>
+                        <field name="fix_method" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="skip_backorder"/>
+                        <field name="use_done_quantities" attrs="{'invisible': [('fix_method', '!=', 'validate_source')]}"/>
+                        <field name="force_full_quantity" attrs="{'invisible': [('fix_method', '!=', 'validate_source')]}"/>
+                    </group>
+                </group>
+                <separator string="Prévisualisation"/>
+                <group>
+                    <field name="preview_lines" nolabel="1" readonly="1" widget="text"/>
+                </group>
+                <separator/>
+                <group>
+                    <field name="confirmation" widget="boolean_toggle"/>
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('confirmation', '=', True)]}">
+                        <strong>Attention!</strong> Cette action va modifier les mouvements de stock.
+                        Veuillez vérifier la prévisualisation avant de confirmer.
+                    </div>
+                </group>
+                <footer>
+                    <button name="action_fix" type="object" string="Corriger" class="btn-primary" attrs="{'invisible': [('confirmation', '=', False)]}"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
