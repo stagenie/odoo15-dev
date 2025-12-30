@@ -136,4 +136,36 @@
         </field>
     </record>
 
+    <!-- =============================================
+         BOUTON REMETTRE EN BROUILLON - OPÉRATIONS
+         Permet de remettre une opération comptabilisée en brouillon
+         pour permettre sa modification ou suppression
+         ============================================= -->
+
+    <record id="view_treasury_cash_operation_form_reset_draft" model="ir.ui.view">
+        <field name="name">treasury.cash.operation.form.reset.draft</field>
+        <field name="model">treasury.cash.operation</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_operation_form"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter le champ invisible pour le calcul -->
+            <xpath expr="//field[@name='closing_id']" position="after">
+                <field name="can_reset_to_draft" invisible="1"/>
+            </xpath>
+
+            <!-- Ajouter le bouton "Remettre en brouillon" pour les opérations posted -->
+            <xpath expr="//button[@name='action_draft']" position="after">
+                <button name="action_reset_to_draft"
+                        string="Remettre en brouillon"
+                        type="object"
+                        class="btn-warning"
+                        attrs="{'invisible': [('can_reset_to_draft', '=', False)]}"
+                        confirm="Êtes-vous sûr de vouloir remettre cette opération en brouillon ? Elle sera retirée de la clôture en cours."
+                        icon="fa-undo"/>
+            </xpath>
+
+        </field>
+    </record>
+
 </odoo>

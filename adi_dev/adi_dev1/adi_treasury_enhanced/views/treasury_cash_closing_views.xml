@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =============================================
+         VUE TREE SPÉCIALE POUR LES OPÉRATIONS MANUELLES
+         Avec boutons d'action pour valider/supprimer
+         ============================================= -->
+
+    <record id="view_treasury_cash_operation_pending_tree" model="ir.ui.view">
+        <field name="name">treasury.cash.operation.pending.tree</field>
+        <field name="model">treasury.cash.operation</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree string="Opérations manuelles à traiter"
+                  decoration-warning="state == 'draft'"
+                  decoration-success="state == 'posted'"
+                  decoration-muted="state == 'cancel'"
+                  create="true"
+                  delete="true">
+
+                <field name="name" readonly="1"/>
+                <field name="date"/>
+                <field name="operation_type"/>
+                <field name="category_id"/>
+                <field name="partner_id" optional="show"/>
+                <field name="description"/>
+                <field name="amount" widget="monetary" sum="Total"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'draft'"
+                       decoration-success="state == 'posted'"/>
+                <field name="closing_id" invisible="1"/>
+                <field name="is_manual" invisible="1"/>
+                <field name="can_reset_to_draft" invisible="1"/>
+
+                <!-- Bouton pour ouvrir le formulaire -->
+                <button name="action_open_form"
+                        type="object"
+                        string="Voir"
+                        class="btn-info btn-sm"
+                        icon="fa-eye"
+                        title="Ouvrir le formulaire"/>
+
+                <!-- Bouton pour comptabiliser -->
+                <button name="action_post"
+                        type="object"
+                        string="Valider"
+                        class="btn-success btn-sm"
+                        icon="fa-check"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        confirm="Voulez-vous comptabiliser cette opération ?"/>
+
+                <!-- Bouton pour remettre en brouillon (si posted) -->
+                <button name="action_reset_to_draft"
+                        type="object"
+                        string="Brouillon"
+                        class="btn-warning btn-sm"
+                        icon="fa-undo"
+                        attrs="{'invisible': [('can_reset_to_draft', '=', False)]}"
+                        confirm="Voulez-vous remettre cette opération en brouillon ?"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Search pour les opérations en attente -->
+    <record id="view_treasury_cash_operation_pending_search" model="ir.ui.view">
+        <field name="name">treasury.cash.operation.pending.search</field>
+        <field name="model">treasury.cash.operation</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher une opération">
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="partner_id"/>
+                <separator/>
+                <filter string="Brouillon" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Comptabilisé" name="posted" domain="[('state', '=', 'posted')]"/>
+                <separator/>
+                <filter string="Entrées" name="in" domain="[('operation_type', '=', 'in')]"/>
+                <filter string="Sorties" name="out" domain="[('operation_type', '=', 'out')]"/>
+                <separator/>
+                <group expand="0" string="Grouper par">
+                    <filter string="État" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'operation_type'}"/>
+                    <filter string="Catégorie" name="group_category" context="{'group_by': 'category_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- =============================================
+         EXTENSION DU FORMULAIRE DE CLÔTURE
+         Ajout du bouton intelligent et des opérations manuelles
+         ============================================= -->
+
+    <record id="view_treasury_cash_closing_form_enhanced" model="ir.ui.view">
+        <field name="name">treasury.cash.closing.form.enhanced</field>
+        <field name="model">treasury.cash.closing</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_closing_form"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter le bouton intelligent dans la button_box -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+
+                <!-- Bouton Opérations à traiter (brouillon) -->
+                <button name="action_view_pending_manual_operations"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-exclamation-triangle"
+                        attrs="{'invisible': [('pending_manual_operation_count', '=', 0)]}">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value text-warning">
+                            <field name="pending_manual_operation_count"/>
+                        </span>
+                        <span class="o_stat_text">À valider</span>
+                    </div>
+                </button>
+
+                <!-- Bouton Toutes les opérations en attente -->
+                <button name="action_view_all_pending_operations"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-list-alt"
+                        attrs="{'invisible': [('all_pending_manual_operation_count', '=', 0)]}">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="all_pending_manual_operation_count"/>
+                        </span>
+                        <span class="o_stat_text">En attente</span>
+                    </div>
+                </button>
+
+            </xpath>
+
+            <!-- Ajouter le bouton "Valider tout" dans l'en-tête -->
+            <xpath expr="//button[@name='action_create_manual_operation']" position="after">
+                <button name="action_validate_all_pending_operations"
+                        string="Valider les opérations"
+                        type="object"
+                        class="btn-success"
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('pending_manual_operation_count', '=', 0)]}"
+                        icon="fa-check-circle"
+                        confirm="Voulez-vous valider toutes les opérations manuelles en brouillon ?"/>
+
+                <button name="action_open_manual_operation_wizard"
+                        string="Gérer les opérations"
+                        type="object"
+                        class="oe_highlight btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        icon="fa-list-ul"/>
+            </xpath>
+
+            <!-- Ajouter un onglet dédié aux opérations manuelles -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Opérations manuelles" name="manual_operations"
+                      attrs="{'invisible': [('all_pending_manual_operation_count', '=', 0)]}">
+
+                    <!-- Alerte si des opérations en brouillon -->
+                    <div class="alert alert-warning" role="alert"
+                         attrs="{'invisible': [('pending_manual_operation_count', '=', 0)]}">
+                        <i class="fa fa-exclamation-triangle"/>
+                        <strong>Attention :</strong> Il y a <field name="pending_manual_operation_count" readonly="1"/> opération(s) manuelle(s) en brouillon.
+                        <br/>
+                        Vous devez les valider ou les supprimer avant de pouvoir confirmer la clôture.
+                        <br/>
+                        <button name="action_validate_all_pending_operations"
+                                string="Valider toutes les opérations"
+                                type="object"
+                                class="btn-success btn-sm mt-2"
+                                icon="fa-check-circle"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    </div>
+
+                    <!-- Liste des opérations manuelles à traiter -->
+                    <group string="Opérations manuelles en brouillon"
+                           attrs="{'invisible': [('pending_manual_operation_count', '=', 0)]}">
+                        <field name="pending_manual_operation_ids" nolabel="1" readonly="1">
+                            <tree string="Opérations en brouillon"
+                                  decoration-warning="state == 'draft'"
+                                  create="false" delete="false">
+                                <field name="name"/>
+                                <field name="date" widget="datetime"/>
+                                <field name="operation_type" widget="badge"
+                                       decoration-success="operation_type == 'in'"
+                                       decoration-danger="operation_type == 'out'"/>
+                                <field name="category_id"/>
+                                <field name="partner_id"/>
+                                <field name="description"/>
+                                <field name="amount" widget="monetary" sum="Total"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="state" widget="badge"/>
+
+                                <!-- Bouton rapide pour valider -->
+                                <button name="action_post"
+                                        type="object"
+                                        string="Valider"
+                                        class="btn-success btn-sm"
+                                        icon="fa-check"
+                                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                            </tree>
+                        </field>
+                    </group>
+
+                    <!-- Toutes les opérations manuelles en attente -->
+                    <group string="Toutes les opérations manuelles en attente"
+                           attrs="{'invisible': [('all_pending_manual_operation_count', '=', 0)]}">
+                        <field name="all_pending_manual_operation_ids" nolabel="1" readonly="1">
+                            <tree string="Opérations en attente"
+                                  decoration-warning="state == 'draft'"
+                                  decoration-success="state == 'posted'"
+                                  create="false" delete="false">
+                                <field name="name"/>
+                                <field name="date" widget="datetime"/>
+                                <field name="operation_type" widget="badge"
+                                       decoration-success="operation_type == 'in'"
+                                       decoration-danger="operation_type == 'out'"/>
+                                <field name="category_id"/>
+                                <field name="partner_id"/>
+                                <field name="description"/>
+                                <field name="amount" widget="monetary" sum="Total"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="state" widget="badge"/>
+                                <field name="closing_id" string="Clôture"/>
+                            </tree>
+                        </field>
+                    </group>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- =============================================
+         ACTION SERVEUR - Valider les opérations sélectionnées
+         ============================================= -->
+
+    <record id="action_validate_selected_operations" model="ir.actions.server">
+        <field name="name">Valider les opérations sélectionnées</field>
+        <field name="model_id" ref="adi_treasury.model_treasury_cash_operation"/>
+        <field name="binding_model_id" ref="adi_treasury.model_treasury_cash_operation"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    draft_ops = records.filtered(lambda o: o.state == 'draft' and o.is_manual)
+    if not draft_ops:
+        raise UserError("Aucune opération en brouillon sélectionnée.")
+
+    validated_count = 0
+    for op in draft_ops:
+        try:
+            op.action_post()
+            validated_count += 1
+        except Exception as e:
+            pass
+
+    if validated_count:
+        action = {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Succès',
+                'message': '%d opération(s) validée(s)' % validated_count,
+                'type': 'success',
+            }
+        }
+        </field>
+    </record>
+
+    <!-- =============================================
+         ACTION SERVEUR - Supprimer les opérations brouillon sélectionnées
+         ============================================= -->
+
+    <record id="action_delete_selected_draft_operations" model="ir.actions.server">
+        <field name="name">Supprimer les opérations brouillon</field>
+        <field name="model_id" ref="adi_treasury.model_treasury_cash_operation"/>
+        <field name="binding_model_id" ref="adi_treasury.model_treasury_cash_operation"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    draft_ops = records.filtered(lambda o: o.state == 'draft' and o.is_manual)
+    if not draft_ops:
+        raise UserError("Aucune opération en brouillon sélectionnée ou les opérations ne peuvent pas être supprimées.")
+
+    count = len(draft_ops)
+    draft_ops.unlink()
+
+    action = {
+        'type': 'ir.actions.client',
+        'tag': 'display_notification',
+        'params': {
+            'title': 'Succès',
+            'message': '%d opération(s) supprimée(s)' % count,
+            'type': 'success',
+        }
+    }
+        </field>
+    </record>
+
+</odoo>

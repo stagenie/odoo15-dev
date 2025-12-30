@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Treasury Access Control',
-    'version': '15.0.1.6.0',
+    'version': '15.0.1.7.0',
     'category': 'Accounting/Treasury',
-    'summary': 'Gestion des accès et visibilité pour la trésorerie',
+    'summary': 'Gestion des accès, visibilité et protection des opérations de trésorerie',
     'description': """
 Treasury Access Control - Contrôle des Accès Trésorerie
 ========================================================
@@ -27,6 +27,12 @@ Fonctionnalités :
 * Filtres automatiques :
   - Affichage uniquement des entités autorisées
   - Domaines dynamiques sur les champs relationnels
+
+* Protection des opérations (v1.7.0) :
+  - Interdiction de supprimer les opérations dans une clôture validée
+  - Interdiction de supprimer les opérations comptabilisées
+  - Bouton "Remettre en brouillon" pour permettre la suppression
+  - Protection des opérations liées aux transferts et paiements
 
 Principe :
 ----------
