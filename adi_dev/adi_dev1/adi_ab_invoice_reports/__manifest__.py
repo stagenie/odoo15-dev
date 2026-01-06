@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'AB Invoice Reports - Rapports Factures Personnalisés',
-    'version': '15.0.1.0.0',
+    'version': '15.0.1.2.0',
     'summary': 'Personnalisation des rapports de factures pour AB',
     'description': """
         Personnalisation des rapports de factures (par héritage):
@@ -34,9 +34,11 @@
         'adi_invoice_payment_button',
     ],
     'data': [
+        'views/account_move_views.xml',
         'report/ab_invoice_inherit.xml',
         'report/ab_vente_inherit.xml',
         'report/ab_vente_ttc_report.xml',
+        'report/tax_totals_inherit.xml',
     ],
     'installable': True,
     'auto_install': False,

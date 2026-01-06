@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Héritage pour afficher TVA au lieu de Taxes -->
+    <template id="ab_tax_groups_totals_inherit"
+              inherit_id="l10n_dz_droit_timbre.adi_tax_groups_totals">
+
+        <!-- Remplacer le premier span tax_group_name par TVA -->
+        <xpath expr="//t[@t-if]//td/span[@t-esc=&quot;amount_by_group['tax_group_name']&quot;]" position="replace">
+            <span>TVA</span>
+        </xpath>
+
+        <!-- Remplacer le deuxième span tax_group_name par TVA -->
+        <xpath expr="//t[@t-else='']//td/span[@t-esc=&quot;amount_by_group['tax_group_name']&quot;]" position="replace">
+            <span>TVA</span>
+        </xpath>
+
+    </template>
+</odoo>

@@ -166,6 +166,25 @@ class TreasuryCashOperation(models.Model):
 
         return super().write(vals)
 
+    def unlink(self):
+        """Permettre la suppression uniquement pour les opérations manuelles en brouillon"""
+        for operation in self:
+            # Les managers peuvent tout supprimer
+            if self.env.user.has_group('adi_treasury.group_treasury_manager'):
+                continue
+            # Les utilisateurs ne peuvent supprimer que les opérations manuelles en brouillon
+            if not operation.is_manual:
+                raise UserError(_(
+                    "Vous ne pouvez supprimer que les opérations manuelles. "
+                    "L'opération '%s' est liée à un paiement ou un transfert."
+                ) % operation.name)
+            if operation.state != 'draft':
+                raise UserError(_(
+                    "Vous ne pouvez supprimer que les opérations en brouillon. "
+                    "L'opération '%s' est en état '%s'."
+                ) % (operation.name, dict(operation._fields['state'].selection).get(operation.state)))
+        return super().unlink()
+
     # Ajouter une méthode pour marquer comme prélevé
     def action_mark_collected(self):
         """Marquer l'opération comme prélevée"""

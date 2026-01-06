@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ajouter le champ is_hidden dans le formulaire du journal -->
+    <record id="view_account_journal_form_inherit_visibility" model="ir.ui.view">
+        <field name="name">account.journal.form.inherit.visibility</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="is_hidden" groups="adi_journal_visibility.group_see_hidden_journals"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ajouter le champ is_hidden dans la vue liste des journaux -->
+    <record id="view_account_journal_tree_inherit_visibility" model="ir.ui.view">
+        <field name="name">account.journal.tree.inherit.visibility</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="is_hidden" optional="show" groups="adi_journal_visibility.group_see_hidden_journals"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ajouter un filtre pour les journaux masqués -->
+    <record id="view_account_journal_search_inherit_visibility" model="ir.ui.view">
+        <field name="name">account.journal.search.inherit.visibility</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[last()]" position="after">
+                <separator/>
+                <filter string="Journaux masqués" name="hidden_journals"
+                        domain="[('is_hidden', '=', True)]"
+                        groups="adi_journal_visibility.group_see_hidden_journals"/>
+                <filter string="Journaux visibles" name="visible_journals"
+                        domain="[('is_hidden', '=', False)]"
+                        groups="adi_journal_visibility.group_see_hidden_journals"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Menu pour accéder aux journaux masqués (pour les administrateurs) -->
+    <record id="action_account_journal_hidden" model="ir.actions.act_window">
+        <field name="name">Journaux masqués</field>
+        <field name="res_model">account.journal</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_hidden', '=', True)]</field>
+        <field name="context">{'search_default_hidden_journals': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun journal masqué
+            </p>
+            <p>
+                Les journaux masqués n'apparaissent pas pour les utilisateurs normaux.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_journal_hidden"
+              name="Journaux masqués"
+              parent="account.account_account_menu"
+              action="action_account_journal_hidden"
+              sequence="100"
+              groups="adi_journal_visibility.group_see_hidden_journals"/>
+</odoo>

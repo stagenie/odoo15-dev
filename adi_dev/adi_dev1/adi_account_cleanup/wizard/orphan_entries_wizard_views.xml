@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire du wizard de detection des ecritures orphelines -->
+    <record id="view_orphan_entries_wizard_form" model="ir.ui.view">
+        <field name="name">account.orphan.entries.wizard.form</field>
+        <field name="model">account.orphan.entries.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Detection des ecritures orphelines">
+                <group attrs="{'invisible': [('state', '!=', 'draft')]}">
+                    <div class="alert alert-info" role="alert">
+                        <p><strong>Assistant de detection des ecritures orphelines</strong></p>
+                        <p>Cet assistant detecte les ecritures comptables qui font reference a des paiements supprimes.</p>
+                        <p>Ces ecritures sont generalement des transferts de caisse crees automatiquement lors d'un paiement,
+                        mais qui n'ont pas ete supprimees lorsque le paiement a ete annule/supprime.</p>
+                    </div>
+                </group>
+
+                <group attrs="{'invisible': [('state', '!=', 'detected')]}">
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('orphan_count', '=', 0)]}">
+                        <p><strong><field name="orphan_count" nolabel="1"/> ecriture(s) orpheline(s) detectee(s)</strong></p>
+                        <p>Ces ecritures font reference a des paiements qui n'existent plus dans la base de donnees.</p>
+                        <p>Vous pouvez les contre-passer pour annuler leur impact comptable.</p>
+                    </div>
+                    <div class="alert alert-success" role="alert" attrs="{'invisible': [('orphan_count', '!=', 0)]}">
+                        <p><strong>Aucune ecriture orpheline detectee</strong></p>
+                        <p>Votre base de donnees ne contient pas d'ecritures orphelines.</p>
+                    </div>
+                </group>
+
+                <group attrs="{'invisible': [('state', '=', 'draft')]}">
+                    <field name="state" invisible="1"/>
+                    <field name="orphan_move_ids" invisible="1"/>
+                </group>
+
+                <!-- Liste des ecritures orphelines -->
+                <group string="Detail des ecritures orphelines" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('orphan_count', '=', 0)]}">
+                    <field name="line_ids" nolabel="1">
+                        <tree string="Ecritures orphelines" editable="bottom" create="false" delete="false">
+                            <field name="move_name"/>
+                            <field name="move_date"/>
+                            <field name="payment_reference"/>
+                            <field name="line_name"/>
+                            <field name="amount"/>
+                            <field name="currency_id" invisible="1"/>
+                            <button name="action_view_entry" type="object" string="Voir" icon="fa-eye" class="btn-link"/>
+                            <button name="action_reverse_entry" type="object" string="Contre-passer" icon="fa-undo" class="btn-link text-danger"/>
+                        </tree>
+                    </field>
+                </group>
+
+                <footer>
+                    <button name="action_detect_orphan_entries" string="Detecter" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_view_orphan_entries" string="Voir les ecritures" type="object" class="btn-secondary" attrs="{'invisible': ['|', ('state', '!=', 'detected'), ('orphan_count', '=', 0)]}"/>
+                    <button name="action_reverse_all_orphan_entries" string="Contre-passer toutes" type="object" class="btn-danger" attrs="{'invisible': ['|', ('state', '!=', 'detected'), ('orphan_count', '=', 0)]}" confirm="Etes-vous sur de vouloir contre-passer toutes les ecritures orphelines? Cette action va creer des ecritures de contre-passation."/>
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action pour ouvrir le wizard -->
+    <record id="action_orphan_entries_wizard" model="ir.actions.act_window">
+        <field name="name">Detection ecritures orphelines</field>
+        <field name="res_model">account.orphan.entries.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

@@ -23,9 +23,9 @@
             <span t-if="line.discount > 0" t-esc="'%.2f' % line.discount"/>
         </xpath>
 
-        <!-- Ajouter les détails des paiements avant le montant en lettres -->
+        <!-- Ajouter les détails des paiements avant le montant en lettres (optionnel) -->
         <xpath expr="//div[@name='montant_en_lettre_timbre']" position="before">
-            <div class="row mt-3 mb-3" t-if="o.payment_ids">
+            <div class="row mt-3 mb-3" t-if="o.show_payment_details and o.payment_ids">
                 <div class="col-12">
                     <strong>Détails des paiements:</strong>
                     <table class="table table-sm table-bordered mt-2">
@@ -79,8 +79,8 @@
                     </table>
                 </div>
             </div>
-            <!-- Mode de règlement prévu si pas encore de paiements -->
-            <div class="row mt-3 mb-3" t-if="not o.payment_ids and o.payment_state != 'paid'">
+            <!-- Mode de règlement prévu si pas encore de paiements (optionnel) -->
+            <div class="row mt-3 mb-3" t-if="o.show_payment_details and not o.payment_ids and o.payment_state != 'paid'">
                 <div class="col-6">
                     <table class="table table-sm">
                         <tr>

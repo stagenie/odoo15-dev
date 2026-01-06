@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu principal Nettoyage Comptable -->
+    <menuitem id="menu_account_cleanup_root"
+              name="Nettoyage Comptable"
+              parent="account.menu_finance_configuration"
+              sequence="100"
+              groups="account.group_account_manager"/>
+
+    <!-- Sous-menu: Detection ecritures orphelines -->
+    <menuitem id="menu_orphan_entries_wizard"
+              name="Ecritures orphelines"
+              parent="menu_account_cleanup_root"
+              action="action_orphan_entries_wizard"
+              sequence="10"
+              groups="account.group_account_manager"/>
+
+    <!-- Sous-menu: Nettoyage documents annules -->
+    <menuitem id="menu_cleanup_cancelled_wizard"
+              name="Documents annules"
+              parent="menu_account_cleanup_root"
+              action="action_cleanup_cancelled_wizard"
+              sequence="20"
+              groups="account.group_account_manager"/>
+
+</odoo>

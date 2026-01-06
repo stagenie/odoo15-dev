@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Catégorie pour le module -->
+    <record id="module_category_journal_visibility" model="ir.module.category">
+        <field name="name">Visibilité Journaux</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <!-- Groupe pour voir les journaux masqués -->
+    <record id="group_see_hidden_journals" model="res.groups">
+        <field name="name">Voir journaux masqués</field>
+        <field name="category_id" ref="module_category_journal_visibility"/>
+        <field name="comment">Les utilisateurs de ce groupe peuvent voir et gérer les journaux masqués.</field>
+    </record>
+
+    <!-- Les administrateurs ont automatiquement ce droit -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_see_hidden_journals'))]"/>
+    </record>
+</odoo>

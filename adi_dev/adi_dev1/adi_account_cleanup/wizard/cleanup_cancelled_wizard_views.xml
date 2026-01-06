@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire du wizard de nettoyage des documents annules -->
+    <record id="view_cleanup_cancelled_wizard_form" model="ir.ui.view">
+        <field name="name">account.cleanup.cancelled.wizard.form</field>
+        <field name="model">account.cleanup.cancelled.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Nettoyage des documents annules">
+                <field name="state" invisible="1"/>
+
+                <!-- Etape 1: Configuration -->
+                <group attrs="{'invisible': [('state', '!=', 'draft')]}">
+                    <div class="alert alert-danger" role="alert">
+                        <p><strong>ATTENTION: Operations irreversibles!</strong></p>
+                        <p>Cet assistant permet de supprimer definitivement les documents annules de la base de donnees.</p>
+                        <p>Il est fortement recommande de faire une <strong>sauvegarde de la base de donnees</strong> avant de proceder.</p>
+                    </div>
+                </group>
+
+                <group string="Configuration" attrs="{'invisible': [('state', '!=', 'draft')]}">
+                    <group>
+                        <field name="cleanup_type" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+
+                <!-- Etape 2: Apercu -->
+                <group attrs="{'invisible': [('state', '!=', 'preview')]}">
+                    <div class="alert alert-warning" role="alert">
+                        <p><strong>Apercu des documents a supprimer</strong></p>
+                        <p>Verifiez attentivement les documents ci-dessous avant de confirmer la suppression.</p>
+                    </div>
+                </group>
+
+                <group string="Documents trouves" attrs="{'invisible': [('state', '!=', 'preview')]}">
+                    <group>
+                        <div class="o_row">
+                            <field name="invoice_count" class="oe_inline"/>
+                            <span> facture(s) annulee(s)</span>
+                            <button name="action_view_cancelled_invoices" type="object"
+                                    string="Voir" icon="fa-eye" class="btn-link"
+                                    attrs="{'invisible': [('invoice_count', '=', 0)]}"/>
+                        </div>
+                        <div class="o_row">
+                            <field name="payment_count" class="oe_inline"/>
+                            <span> paiement(s) annule(s)</span>
+                            <button name="action_view_cancelled_payments" type="object"
+                                    string="Voir" icon="fa-eye" class="btn-link"
+                                    attrs="{'invisible': [('payment_count', '=', 0)]}"/>
+                        </div>
+                        <div class="o_row">
+                            <field name="move_count" class="oe_inline"/>
+                            <span> ecriture(s) annulee(s)</span>
+                            <button name="action_view_cancelled_moves" type="object"
+                                    string="Voir" icon="fa-eye" class="btn-link"
+                                    attrs="{'invisible': [('move_count', '=', 0)]}"/>
+                        </div>
+                    </group>
+                </group>
+
+                <group attrs="{'invisible': [('state', '!=', 'preview')]}">
+                    <div class="alert alert-danger" role="alert">
+                        <field name="confirm_delete"/>
+                        <label for="confirm_delete" class="text-danger">
+                            <strong>Je comprends que cette operation est IRREVERSIBLE et je confirme vouloir supprimer definitivement ces documents.</strong>
+                        </label>
+                    </div>
+                </group>
+
+                <!-- Etape 3: Termine -->
+                <group attrs="{'invisible': [('state', '!=', 'done')]}">
+                    <div class="alert alert-success" role="alert">
+                        <p><strong>Nettoyage termine!</strong></p>
+                        <p>Les documents annules ont ete supprimes de la base de donnees.</p>
+                    </div>
+                </group>
+
+                <field name="cancelled_invoice_ids" invisible="1"/>
+                <field name="cancelled_payment_ids" invisible="1"/>
+                <field name="cancelled_move_ids" invisible="1"/>
+
+                <footer>
+                    <!-- Boutons etape 1 -->
+                    <button name="action_search_cancelled" string="Rechercher" type="object"
+                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+
+                    <!-- Boutons etape 2 -->
+                    <button name="action_back_to_config" string="Retour" type="object"
+                            class="btn-secondary" attrs="{'invisible': [('state', '!=', 'preview')]}"/>
+                    <button name="action_delete_cancelled" string="Supprimer definitivement" type="object"
+                            class="btn-danger" attrs="{'invisible': [('state', '!=', 'preview')]}"
+                            confirm="Cette action va supprimer DEFINITIVEMENT les documents annules. Cette operation est IRREVERSIBLE. Continuer?"/>
+
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action pour ouvrir le wizard -->
+    <record id="action_cleanup_cancelled_wizard" model="ir.actions.act_window">
+        <field name="name">Nettoyage documents annules</field>
+        <field name="res_model">account.cleanup.cancelled.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

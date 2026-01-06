@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_orphan_entries_wizard,account.orphan.entries.wizard,model_account_orphan_entries_wizard,account.group_account_manager,1,1,1,1
+access_orphan_entries_wizard_line,account.orphan.entries.wizard.line,model_account_orphan_entries_wizard_line,account.group_account_manager,1,1,1,1
+access_cleanup_cancelled_wizard,account.cleanup.cancelled.wizard,model_account_cleanup_cancelled_wizard,account.group_account_manager,1,1,1,1

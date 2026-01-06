@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Exclusion de Factures des Rapports Comptables',
-    'version': '15.0.2.1.0',
+    'version': '15.0.2.2.0',
     'category': 'Accounting/Reports',
     'summary': 'Exclure des factures du calcul des soldes dans tous les rapports comptables',
     'description': """
@@ -20,6 +20,7 @@
         * Filtres pour masquer/afficher les écritures exclues
         * Menu dédié pour visualiser les factures exclues
         * Compatible avec le module accounting_pdf_reports (Odoo Mates)
+        * Filtrage des écritures annulées (cancel) dans le Grand Livre
 
         Rapports et vues affectés :
         ---------------------------
@@ -40,6 +41,12 @@
         ------
         Ce module étend les rapports du module accounting_pdf_reports
         et les vues comptables natives d'Odoo 15.
+
+        Version 15.0.2.2.0 :
+        --------------------
+        * Ajout du filtre sur l'état des mouvements (state) dans le Grand Livre
+        * Les écritures annulées (cancel) sont désormais exclues par défaut
+        * Respect de l'option "Toutes les écritures" vs "Écritures validées"
     """,
     'author': 'ADICOPS',
     'website': 'https://adicops-dz.com',

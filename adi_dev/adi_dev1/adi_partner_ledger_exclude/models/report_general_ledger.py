@@ -6,10 +6,12 @@ from odoo import api, models
 class ReportGeneralLedger(models.AbstractModel):
     _inherit = 'report.accounting_pdf_reports.report_general_ledger'
 
-    def _get_account_move_entry(self, accounts, init_balance, sortby, display_account):
+    def _get_account_move_entry(self, accounts, analytic_account_ids, partner_ids,
+                                init_balance, sortby, display_account):
         """
-        Hérite de la méthode _get_account_move_entry pour exclure les factures marquées
-        comme 'exclude_from_partner_ledger'
+        Hérite de la méthode _get_account_move_entry pour :
+        - Exclure les factures marquées comme 'exclude_from_partner_ledger'
+        - Filtrer par état du mouvement (posted uniquement par défaut, ou selon target_move)
         """
         cr = self.env.cr
         MoveLine = self.env['account.move.line']
@@ -18,20 +20,35 @@ class ReportGeneralLedger(models.AbstractModel):
         # Clause d'exclusion pour les factures marquées
         exclude_clause = ' AND (m.exclude_from_partner_ledger IS NULL OR m.exclude_from_partner_ledger = FALSE) '
 
+        # Clause de filtrage par état du mouvement
+        # Par défaut, on n'affiche que les écritures validées (posted)
+        # Sauf si target_move = 'all', auquel cas on inclut aussi les brouillons
+        # Note: target_move est converti en 'state' dans le contexte par _build_contexts()
+        target_move = self.env.context.get('state', 'posted')
+        if target_move == 'posted':
+            state_clause = " AND m.state = 'posted' "
+        else:
+            # 'all' = draft + posted (jamais les cancel)
+            state_clause = " AND m.state IN ('draft', 'posted') "
+
         # Prepare initial sql query and Get the initial move lines
         if init_balance:
-            init_tables, init_where_clause, init_where_params = MoveLine.with_context(
-                date_from=self.env.context.get('date_from'),
-                date_to=False,
-                initial_bal=True
-            )._query_get()
+            context = dict(self.env.context)
+            context['date_from'] = self.env.context.get('date_from')
+            context['date_to'] = False
+            context['initial_bal'] = True
+            if analytic_account_ids:
+                context['analytic_account_ids'] = analytic_account_ids
+            if partner_ids:
+                context['partner_ids'] = partner_ids
+            init_tables, init_where_clause, init_where_params = MoveLine.with_context(context)._query_get()
             init_wheres = [""]
             if init_where_clause.strip():
                 init_wheres.append(init_where_clause.strip())
             init_filters = " AND ".join(init_wheres)
             filters = init_filters.replace('account_move_line__move_id', 'm').replace('account_move_line', 'l')
 
-            # SQL modifié avec clause d'exclusion
+            # SQL modifié avec clause d'exclusion et filtre d'état
             sql = ("""SELECT 0 AS lid, l.account_id AS account_id, '' AS ldate, '' AS lcode,
                    0.0 AS amount_currency, '' AS lref, 'Initial Balance' AS lname,
                    COALESCE(SUM(l.debit),0.0) AS debit, COALESCE(SUM(l.credit),0.0) AS credit,
@@ -44,7 +61,7 @@ class ReportGeneralLedger(models.AbstractModel):
                    LEFT JOIN res_currency c ON (l.currency_id=c.id)
                    LEFT JOIN res_partner p ON (l.partner_id=p.id)
                    JOIN account_journal j ON (l.journal_id=j.id)
-                   WHERE l.account_id IN %s""" + filters + exclude_clause + ' GROUP BY l.account_id')
+                   WHERE l.account_id IN %s""" + filters + exclude_clause + state_clause + ' GROUP BY l.account_id')
 
             params = (tuple(accounts.ids),) + tuple(init_where_params)
             cr.execute(sql, params)
@@ -56,7 +73,12 @@ class ReportGeneralLedger(models.AbstractModel):
             sql_sort = 'j.code, p.name, l.move_id'
 
         # Prepare sql query base on selected parameters from wizard
-        tables, where_clause, where_params = MoveLine._query_get()
+        context = dict(self.env.context)
+        if analytic_account_ids:
+            context['analytic_account_ids'] = analytic_account_ids
+        if partner_ids:
+            context['partner_ids'] = partner_ids
+        tables, where_clause, where_params = MoveLine.with_context(context)._query_get()
         wheres = [""]
         if where_clause.strip():
             wheres.append(where_clause.strip())
@@ -64,7 +86,7 @@ class ReportGeneralLedger(models.AbstractModel):
         filters = filters.replace('account_move_line__move_id', 'm').replace('account_move_line', 'l')
 
         # Get move lines base on sql query and Calculate the total balance of move lines
-        # SQL modifié avec clause d'exclusion
+        # SQL modifié avec clause d'exclusion et filtre d'état
         sql = ('''SELECT l.id AS lid, l.account_id AS account_id, l.date AS ldate,
             j.code AS lcode, l.currency_id, l.amount_currency, l.ref AS lref,
             l.name AS lname, COALESCE(l.debit,0) AS debit, COALESCE(l.credit,0) AS credit,
@@ -76,7 +98,7 @@ class ReportGeneralLedger(models.AbstractModel):
             LEFT JOIN res_partner p ON (l.partner_id=p.id)
             JOIN account_journal j ON (l.journal_id=j.id)
             JOIN account_account acc ON (l.account_id = acc.id)
-            WHERE l.account_id IN %s ''' + filters + exclude_clause +
+            WHERE l.account_id IN %s ''' + filters + exclude_clause + state_clause +
             ''' GROUP BY l.id, l.account_id, l.date, j.code, l.currency_id, l.amount_currency,
             l.ref, l.name, m.name, c.symbol, p.name ORDER BY ''' + sql_sort)
 

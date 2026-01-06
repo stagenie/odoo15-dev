@@ -151,8 +151,8 @@
                 <!-- Totaux en bas: Net à payer seulement (pas de HT ni TVA) -->
                 <div class="clearfix">
                     <div id="total" class="row">
-                        <!-- Colonne gauche: Mode de règlement -->
-                        <div class="col-6">
+                        <!-- Colonne gauche: Mode de règlement (optionnel) -->
+                        <div class="col-6" t-if="o.show_payment_details">
                             <table class="table table-sm">
                                 <tr>
                                     <td><strong>Mode de règlement:</strong></td>

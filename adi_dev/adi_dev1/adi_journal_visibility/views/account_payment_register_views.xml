@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Héritage pour ajouter is_hidden au domain du journal dans le wizard de paiement -->
+    <record id="view_account_payment_register_form_inherit" model="ir.ui.view">
+        <field name="name">account.payment.register.form.inherit.visibility</field>
+        <field name="model">account.payment.register</field>
+        <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='journal_id']" position="attributes">
+                <attribute name="domain">[('company_id', '=', company_id), ('type', 'in', ('bank', 'cash')), ('is_hidden', '=', False)]</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

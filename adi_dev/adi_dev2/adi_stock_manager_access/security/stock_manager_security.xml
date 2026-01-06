@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Menu principal pour la gestion des entrepôts - accessible au stock manager -->
+        <menuitem id="menu_stock_manager_warehouse_config"
+            name="Gestion Entrepôts"
+            parent="stock.menu_stock_root"
+            sequence="98"
+            groups="stock.group_stock_manager"/>
+
+        <!-- Sous-menu pour les entrepôts -->
+        <menuitem id="menu_stock_manager_warehouses"
+            name="Entrepôts"
+            parent="menu_stock_manager_warehouse_config"
+            action="stock.action_warehouse_form"
+            sequence="1"
+            groups="stock.group_stock_manager"/>
+
+        <!-- Sous-menu pour les emplacements -->
+        <record id="action_stock_location_form_manager" model="ir.actions.act_window">
+            <field name="name">Emplacements</field>
+            <field name="res_model">stock.location</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_in_location': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Définir un nouvel emplacement
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_stock_manager_locations"
+            name="Emplacements"
+            parent="menu_stock_manager_warehouse_config"
+            action="action_stock_location_form_manager"
+            sequence="2"
+            groups="stock.group_stock_manager"/>
+
+        <!-- Sous-menu pour les types d'opérations -->
+        <menuitem id="menu_stock_manager_picking_types"
+            name="Types d'opérations"
+            parent="menu_stock_manager_warehouse_config"
+            action="stock.action_picking_type_list"
+            sequence="3"
+            groups="stock.group_stock_manager"/>
+
+        <!-- Menu pour la valeur inventaire - sous Reporting -->
+        <menuitem id="menu_stock_manager_valuation"
+            name="Valeur Inventaire"
+            parent="stock.menu_warehouse_report"
+            action="stock_account.stock_valuation_layer_action"
+            sequence="115"
+            groups="stock.group_stock_manager"/>
+
+    </data>
+</odoo>
