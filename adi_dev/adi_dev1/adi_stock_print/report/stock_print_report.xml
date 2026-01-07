@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Report Action -->
+    <record id="action_report_stock_print" model="ir.actions.report">
+        <field name="name">État du Stock</field>
+        <field name="model">stock.print.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_stock_print.report_stock_print_document</field>
+        <field name="report_file">adi_stock_print.report_stock_print_document</field>
+        <field name="print_report_name">'Etat_Stock_%s' % (object.env.company.name)</field>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Report Template -->
+    <template id="report_stock_print_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <style>
+                            .stock-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                font-size: 13px;
+                                table-layout: fixed;
+                            }
+                            .stock-table th, .stock-table td {
+                                border: 1px solid #dee2e6;
+                                padding: 7px 6px;
+                                word-wrap: break-word;
+                                overflow: hidden;
+                            }
+                            .stock-table th {
+                                background-color: #495057;
+                                color: white;
+                                text-align: left;
+                                font-size: 13px;
+                                font-weight: bold;
+                            }
+                            .stock-table tr:nth-child(even) {
+                                background-color: #f8f9fa;
+                            }
+                            .text-right {
+                                text-align: right;
+                            }
+                            .text-center {
+                                text-align: center;
+                            }
+                            .total-row {
+                                background-color: #343a40 !important;
+                                color: white;
+                                font-weight: bold;
+                            }
+                            .header-info {
+                                margin-bottom: 20px;
+                                font-size: 14px;
+                            }
+                            .header-info table {
+                                width: 100%;
+                            }
+                            .header-info td {
+                                padding: 5px 10px;
+                            }
+                            .summary-section {
+                                margin-top: 20px;
+                                font-size: 14px;
+                            }
+                            .summary-section td {
+                                padding: 6px 10px;
+                            }
+                            h2 {
+                                font-size: 20px;
+                                margin-bottom: 18px;
+                            }
+                            .col-num { width: 4%; }
+                            .col-ref { width: 12%; }
+                            .col-name { width: 28%; }
+                            .col-uom { width: 7%; }
+                            .col-cost { width: 12%; }
+                            .col-price { width: 12%; }
+                            .col-qty { width: 10%; }
+                            .col-value { width: 15%; }
+                        </style>
+
+                        <h2 class="text-center">État du Stock</h2>
+
+                        <div class="header-info">
+                            <table>
+                                <tr>
+                                    <td><strong>Date d'impression:</strong></td>
+                                    <td><t t-esc="data['date']" t-options="{'widget': 'date'}"/></td>
+                                    <td><strong>Type:</strong></td>
+                                    <td><t t-esc="data['print_type']"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Société:</strong></td>
+                                    <td><t t-esc="data['company'].name"/></td>
+                                    <td><strong>Catégories:</strong></td>
+                                    <td><t t-esc="data['categories']"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Nombre de produits:</strong></td>
+                                    <td><t t-esc="data['total_products']"/></td>
+                                    <td><strong>Quantité totale:</strong></td>
+                                    <td><t t-esc="formatLang(data['total_qty'], digits=2)"/></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <table class="stock-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-num text-center">#</th>
+                                    <th class="col-ref">Référence</th>
+                                    <th class="col-name">Désignation</th>
+                                    <th class="col-uom">UdM</th>
+                                    <th class="col-cost text-right">Coût</th>
+                                    <th class="col-price text-right">P. Vente</th>
+                                    <th class="col-qty text-right">Qté</th>
+                                    <th class="col-value text-right">Valeur</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="line_num" t-value="0"/>
+                                <t t-foreach="data['products']" t-as="product">
+                                    <t t-set="line_num" t-value="line_num + 1"/>
+                                    <tr>
+                                        <td class="text-center"><t t-esc="line_num"/></td>
+                                        <td><t t-esc="product['reference']"/></td>
+                                        <td><t t-esc="product['name']"/></td>
+                                        <td><t t-esc="product['uom']"/></td>
+                                        <td class="text-right"><t t-esc="formatLang(product['cost'], digits=2)"/></td>
+                                        <td class="text-right"><t t-esc="formatLang(product['sale_price'], digits=2)"/></td>
+                                        <td class="text-right"><t t-esc="formatLang(product['qty_available'], digits=2)"/></td>
+                                        <td class="text-right"><t t-esc="formatLang(product['value_cost'], digits=2)"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="6" class="text-right"><strong>TOTAUX</strong></td>
+                                    <td class="text-right"><strong><t t-esc="formatLang(data['total_qty'], digits=2)"/></strong></td>
+                                    <td class="text-right"><strong><t t-esc="formatLang(data['total_value_cost'], digits=2)"/></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div class="summary-section">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 50%;">
+                                        <strong>Valeur totale au coût:</strong>
+                                        <t t-esc="formatLang(data['total_value_cost'], currency_obj=data['company'].currency_id)"/>
+                                    </td>
+                                    <td style="width: 50%;">
+                                        <strong>Valeur totale au prix de vente:</strong>
+                                        <t t-esc="formatLang(data['total_value_sale'], currency_obj=data['company'].currency_id)"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

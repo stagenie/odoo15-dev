@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Wizard Form View -->
+    <record id="view_stock_print_wizard_form" model="ir.ui.view">
+        <field name="name">stock.print.wizard.form</field>
+        <field name="model">stock.print.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Impression du Stock">
+                <group>
+                    <group string="Options d'impression">
+                        <field name="print_type" widget="radio"/>
+                    </group>
+                    <group string="Filtrage par catégories">
+                        <field name="include_all_categories"/>
+                        <field name="category_ids" widget="many2many_tags"
+                               attrs="{'invisible': [('include_all_categories', '=', True)]}"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print" string="Imprimer" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_stock_print_wizard" model="ir.actions.act_window">
+        <field name="name">Impression du Stock</field>
+        <field name="res_model">stock.print.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Entry under Stock -->
+    <menuitem id="menu_stock_print"
+              name="Impression du Stock"
+              action="action_stock_print_wizard"
+              parent="stock.menu_stock_root"
+              sequence="99"/>
+
+</odoo>
