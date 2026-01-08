@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Ajouter un filtre dans la recherche des factures             -->
+    <!-- ============================================================ -->
+    <record id="view_account_invoice_filter_inherit_service" model="ir.ui.view">
+        <field name="name">account.move.search.inherit.service.supplier</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='myinvoices']" position="after">
+                <filter string="Factures Service" name="filter_service_invoices"
+                        domain="[('is_service_invoice', '=', True)]"/>
+                <filter string="Fournisseurs de Service" name="filter_service_supplier_invoices"
+                        domain="[('partner_id.is_service_supplier', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Ajouter le champ is_service_invoice dans le formulaire       -->
+    <!-- Position: après partner_bank_id (visible sur factures fourn) -->
+    <!-- ============================================================ -->
+    <record id="view_move_form_inherit_service_invoice" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.service.invoice</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter le champ is_service_invoice après partner_bank_id -->
+            <xpath expr="//field[@name='partner_bank_id']" position="after">
+                <field name="is_service_invoice"
+                       attrs="{'invisible': [('move_type', 'not in', ['in_invoice', 'in_refund'])]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Modifier le domaine du partenaire selon is_service_invoice   -->
+    <!-- ============================================================ -->
+    <record id="view_move_form_service_partner_domain" model="ir.ui.view">
+        <field name="name">account.move.form.service.partner.domain</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <!-- Modifier le contexte du champ partner_id pour filtrer selon is_service_invoice -->
+            <xpath expr="//field[@name='partner_id'][@widget='res_partner_many2one']" position="attributes">
+                <attribute name="context">{
+                    'res_partner_search_mode': (context.get('default_move_type', 'entry') in ('out_invoice', 'out_refund', 'out_receipt') and 'customer') or (context.get('default_move_type', 'entry') in ('in_invoice', 'in_refund', 'in_receipt') and 'supplier') or False,
+                    'show_address': 1,
+                    'default_is_company': True,
+                    'show_vat': True,
+                    'service_supplier_only': is_service_invoice
+                }</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Modifier le domaine des produits dans les lignes de facture  -->
+    <!-- ============================================================ -->
+    <record id="view_move_form_service_product_domain" model="ir.ui.view">
+        <field name="name">account.move.form.service.product.domain</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority">51</field>
+        <field name="arch" type="xml">
+            <!-- Ajouter le domaine sur product_id dans invoice_line_ids tree -->
+            <xpath expr="//field[@name='invoice_line_ids']/tree//field[@name='product_id']" position="attributes">
+                <attribute name="domain">[('type', '=', 'service')] if parent.is_service_invoice else []</attribute>
+                <attribute name="context">{
+                    'partner_id': parent.partner_id,
+                    'quantity': quantity,
+                    'default_type': 'service' if parent.is_service_invoice else False,
+                    'service_products_only': parent.is_service_invoice
+                }</attribute>
+            </xpath>
+
+            <!-- Ajouter le domaine sur product_id dans invoice_line_ids form (kanban) -->
+            <xpath expr="//field[@name='invoice_line_ids']/kanban//field[@name='product_id']" position="attributes">
+                <attribute name="domain">[('type', '=', 'service')] if parent.is_service_invoice else []</attribute>
+                <attribute name="context">{
+                    'partner_id': parent.partner_id,
+                    'quantity': quantity,
+                    'default_type': 'service' if parent.is_service_invoice else False,
+                    'service_products_only': parent.is_service_invoice
+                }</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Action pour Factures Fournisseurs de Service                 -->
+    <!-- ============================================================ -->
+    <record id="action_service_supplier_invoices" model="ir.actions.act_window">
+        <field name="name">Factures Fournisseurs de Service</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[
+            ('move_type', '=', 'in_invoice'),
+            ('is_service_invoice', '=', True)
+        ]</field>
+        <field name="context">{
+            'default_move_type': 'in_invoice',
+            'default_is_service_invoice': True,
+            'search_default_filter_service_invoices': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une facture fournisseur de service
+            </p>
+            <p>
+                Gérez les factures de vos fournisseurs de service (prestataires).
+            </p>
+        </field>
+    </record>
+
+</odoo>

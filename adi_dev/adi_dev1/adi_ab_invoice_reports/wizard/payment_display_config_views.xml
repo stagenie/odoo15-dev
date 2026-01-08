@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire du wizard -->
+    <record id="payment_display_config_view_form" model="ir.ui.view">
+        <field name="name">payment.display.config.form</field>
+        <field name="model">payment.display.config</field>
+        <field name="arch" type="xml">
+            <form string="Configuration Affichage Détails Paiement">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Configuration Affichage Détails Paiement</h1>
+                    </div>
+                    <group>
+                        <group string="Options d'affichage par défaut">
+                            <field name="show_payment_details"/>
+                            <field name="show_payment_journal" attrs="{'invisible': [('show_payment_details', '=', False)]}"/>
+                            <field name="show_payment_amount" attrs="{'invisible': [('show_payment_details', '=', False)]}"/>
+                        </group>
+                        <group string="Information">
+                            <div class="text-muted">
+                                <p><strong>Afficher détails paiement:</strong> Affiche la section des paiements sur la facture imprimée.</p>
+                                <p><strong>Afficher journal:</strong> Affiche la colonne "Journal" dans le tableau des paiements (masqué par défaut).</p>
+                                <p><strong>Afficher montant:</strong> Affiche la colonne "Montant" dans le tableau des paiements.</p>
+                            </div>
+                        </group>
+                    </group>
+                    <separator string="Actions"/>
+                    <group>
+                        <div class="alert alert-info" role="alert">
+                            <strong>Sauvegarder:</strong> Enregistre les paramètres par défaut pour les nouvelles factures.<br/>
+                            <strong>Mettre à jour toutes les factures:</strong> Applique cette configuration à toutes les factures existantes.
+                        </div>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_save_config" string="Sauvegarder" type="object" class="btn-primary"/>
+                    <button name="action_update_all_invoices" string="Mettre à jour toutes les factures" type="object" class="btn-secondary" confirm="Cette action va mettre à jour toutes les factures existantes. Voulez-vous continuer ?"/>
+                    <button name="action_save_and_update_all" string="Sauvegarder et Mettre à jour tout" type="object" class="btn-warning" confirm="Cette action va sauvegarder la configuration et mettre à jour toutes les factures existantes. Voulez-vous continuer ?"/>
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action pour ouvrir le wizard -->
+    <record id="action_payment_display_config" model="ir.actions.act_window">
+        <field name="name">Affichage Détails Paiement</field>
+        <field name="res_model">payment.display.config</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="payment_display_config_view_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu dans Ventes > Configuration -->
+    <menuitem id="menu_payment_display_config"
+              name="Affichage Détails Paiement"
+              parent="sale.menu_sale_config"
+              action="action_payment_display_config"
+              sequence="100"
+              groups="sales_team.group_sale_manager"/>
+</odoo>

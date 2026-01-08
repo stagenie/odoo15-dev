@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payment_display_config_manager,payment.display.config.manager,model_payment_display_config,sales_team.group_sale_manager,1,1,1,1

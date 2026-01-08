@@ -45,6 +45,14 @@ class StockTransferLine(models.Model):
         help="Détail de la disponibilité par emplacement"
     )
 
+    # === Quantité disponible dans le dépôt destination ===
+    dest_available_quantity = fields.Float(
+        compute='_compute_dest_available_quantity',
+        string='Qté Dispo Destination',
+        digits='Product Unit of Measure',
+        help="Quantité disponible de cet article dans l'entrepôt destination"
+    )
+
     @api.depends('source_line_ids', 'source_line_ids.quantity_reserved', 'source_line_ids.location_id')
     def _compute_source_display(self):
         """Calcule l'affichage de la répartition des sources"""
@@ -142,6 +150,41 @@ class StockTransferLine(models.Model):
                     details.append(f"• {loc.complete_name}: {available}")
 
             line.availability_detail = '\n'.join(details) if details else _("Aucun stock disponible")
+
+    @api.depends('product_id', 'transfer_id.dest_location_id', 'transfer_id.dest_warehouse_id')
+    def _compute_dest_available_quantity(self):
+        """
+        Calcule la quantité disponible de l'article dans l'entrepôt destination.
+        Permet de savoir combien de stock existe déjà dans le dépôt destination.
+        """
+        for line in self:
+            if not line.product_id or not line.transfer_id.dest_warehouse_id:
+                line.dest_available_quantity = 0.0
+                continue
+
+            # Utiliser l'emplacement stock principal de l'entrepôt destination
+            dest_location = line.transfer_id.dest_warehouse_id.lot_stock_id
+
+            if not dest_location:
+                line.dest_available_quantity = 0.0
+                continue
+
+            # Chercher dans tous les sous-emplacements du dépôt destination
+            child_locations = self.env['stock.location'].search([
+                ('id', 'child_of', dest_location.id),
+                ('usage', '=', 'internal')
+            ])
+
+            total_available = 0.0
+            for loc in child_locations:
+                quants = self.env['stock.quant']._gather(
+                    line.product_id,
+                    loc,
+                    strict=True
+                )
+                total_available += sum(quants.mapped('available_quantity'))
+
+            line.dest_available_quantity = total_available
 
     def _check_available_quantity(self):
         """

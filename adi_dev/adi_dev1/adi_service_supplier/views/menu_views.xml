@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- MENUS DANS ACHATS                                            -->
+    <!-- ============================================================ -->
+
+    <!-- Menu Fournisseurs de Service dans Achats > Commandes -->
+    <menuitem id="menu_service_supplier"
+              name="Fournisseurs de Service"
+              parent="purchase.menu_procurement_management"
+              action="action_service_supplier"
+              sequence="5"
+              groups="purchase.group_purchase_user"/>
+
+    <!-- ============================================================ -->
+    <!-- MENUS DANS COMPTABILITÉ                                      -->
+    <!-- ============================================================ -->
+
+    <!-- Menu Fournisseurs Service dans Comptabilité > Fournisseurs -->
+    <menuitem id="menu_service_supplier_accounting"
+              name="Fournisseurs Service"
+              parent="account.menu_finance_payables"
+              action="action_service_supplier"
+              sequence="5"
+              groups="account.group_account_invoice"/>
+
+    <!-- Menu Factures Fournisseurs de Service dans Comptabilité > Fournisseurs -->
+    <menuitem id="menu_service_supplier_invoices"
+              name="Factures Fournisseurs de Service"
+              parent="account.menu_finance_payables"
+              action="action_service_supplier_invoices"
+              sequence="10"
+              groups="account.group_account_invoice"/>
+
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Masquer le bouton ADD MULTIPLE PRODUCTS sur factures service -->
+    <!-- ============================================================ -->
+    <record id="view_move_form_hide_multi_product_button" model="ir.ui.view">
+        <field name="name">account.move.form.hide.multi.product.button</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="bi_multi_product_selection.multiple_product_invoice_inherit_view"/>
+        <field name="arch" type="xml">
+            <!-- Supprimer states et ajouter attrs avec les deux conditions -->
+            <xpath expr="//button[@name='invoice_select_prodcut']" position="attributes">
+                <attribute name="states"/>
+                <attribute name="attrs">{
+                    'invisible': ['|',
+                        ('state', '!=', 'draft'),
+                        ('is_service_invoice', '=', True)
+                    ]
+                }</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

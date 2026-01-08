@@ -7,8 +7,10 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@id='other_tab']//group[@id='other_tab_group']" position="inside">
-                <group>
+                <group string="Options d'impression paiement">
                     <field name="show_payment_details"/>
+                    <field name="show_payment_journal" attrs="{'invisible': [('show_payment_details', '=', False)]}"/>
+                    <field name="show_payment_amount" attrs="{'invisible': [('show_payment_details', '=', False)]}"/>
                 </group>
             </xpath>
         </field>

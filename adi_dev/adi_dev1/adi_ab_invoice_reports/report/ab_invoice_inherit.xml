@@ -32,17 +32,17 @@
                         <thead>
                             <tr style="background-color: #f5f5f5;">
                                 <th>Date</th>
-                                <th>Journal</th>
+                                <th t-if="o.show_payment_journal">Journal</th>
                                 <th>Mode de paiement</th>
                                 <th>Référence</th>
-                                <th class="text-end">Montant</th>
+                                <th t-if="o.show_payment_amount" class="text-end">Montant</th>
                             </tr>
                         </thead>
                         <tbody>
                             <t t-foreach="o.payment_ids" t-as="payment">
                                 <tr>
                                     <td><span t-field="payment.date"/></td>
-                                    <td><span t-field="payment.journal_id.name"/></td>
+                                    <td t-if="o.show_payment_journal"><span t-field="payment.journal_id.name"/></td>
                                     <td>
                                         <t t-if="payment.journal_id.type == 'cash'">
                                             Espèces
@@ -70,7 +70,7 @@
                                         </t>
                                         <t t-else="">-</t>
                                     </td>
-                                    <td class="text-end">
+                                    <td t-if="o.show_payment_amount" class="text-end">
                                         <span t-field="payment.amount" t-options="{'widget': 'monetary', 'display_currency': payment.currency_id}"/>
                                     </td>
                                 </tr>

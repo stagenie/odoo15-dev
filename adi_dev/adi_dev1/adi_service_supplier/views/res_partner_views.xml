@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Ajouter le champ is_service_supplier dans le formulaire      -->
+    <!-- ============================================================ -->
+    <record id="view_partner_form_inherit_service_supplier" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.service.supplier</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="is_service_supplier"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Vue Tree pour les Fournisseurs de Service                    -->
+    <!-- ============================================================ -->
+    <record id="view_partner_tree_service_supplier" model="ir.ui.view">
+        <field name="name">res.partner.tree.service.supplier</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Fournisseurs de Service">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="city"/>
+                <field name="country_id"/>
+                <field name="is_service_supplier" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Vue Search pour les Fournisseurs de Service                  -->
+    <!-- ============================================================ -->
+    <record id="view_partner_search_service_supplier" model="ir.ui.view">
+        <field name="name">res.partner.search.service.supplier</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='supplier']" position="after">
+                <filter string="Fournisseurs de Service" name="filter_service_supplier"
+                        domain="[('is_service_supplier', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Action pour Fournisseurs de Service                          -->
+    <!-- ============================================================ -->
+    <record id="action_service_supplier" model="ir.actions.act_window">
+        <field name="name">Fournisseurs de Service</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('is_service_supplier', '=', True)]</field>
+        <field name="context">{
+            'default_is_service_supplier': True,
+            'default_supplier_rank': 1,
+            'default_is_company': True,
+            'search_default_filter_service_supplier': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un nouveau fournisseur de service
+            </p>
+            <p>
+                Les fournisseurs de service sont des prestataires externes qui fournissent des services à votre entreprise.
+            </p>
+        </field>
+    </record>
+
+</odoo>

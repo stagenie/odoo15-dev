@@ -90,6 +90,11 @@
         <field name="priority">20</field>
         <field name="arch" type="xml">
 
+            <!-- Ajouter la colonne quantité disponible destination après available_quantity -->
+            <xpath expr="//field[@name='transfer_line_ids']/tree/field[@name='available_quantity']" position="after">
+                <field name="dest_available_quantity" string="Qté Dest." readonly="1" optional="show"/>
+            </xpath>
+
             <!-- Ajouter les colonnes pour les sources dans les lignes -->
             <xpath expr="//field[@name='transfer_line_ids']/tree/field[@name='line_state']" position="before">
                 <field name="source_count" string="Nb Sources" readonly="1" optional="show"

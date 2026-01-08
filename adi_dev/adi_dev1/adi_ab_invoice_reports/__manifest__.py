@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'AB Invoice Reports - Rapports Factures Personnalisés',
-    'version': '15.0.1.2.0',
+    'version': '15.0.1.3.0',
     'summary': 'Personnalisation des rapports de factures pour AB',
     'description': """
         Personnalisation des rapports de factures (par héritage):
@@ -29,11 +29,14 @@
     'depends': [
         'base',
         'account',
+        'sale',
         'l10n_dz_droit_timbre',
         'adi_bank_payment_mode',
         'adi_invoice_payment_button',
     ],
     'data': [
+        'security/ir.model.access.csv',
+        'wizard/payment_display_config_views.xml',
         'views/account_move_views.xml',
         'report/ab_invoice_inherit.xml',
         'report/ab_vente_inherit.xml',
