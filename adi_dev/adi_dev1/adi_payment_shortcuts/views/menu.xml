@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Tree pour les paiements clients -->
+    <record id="view_payment_customer_tree" model="ir.ui.view">
+        <field name="name">account.payment.customer.tree</field>
+        <field name="model">account.payment</field>
+        <field name="arch" type="xml">
+            <tree string="Paiements Clients" edit="false" sample="1" decoration-info="state == 'draft'" decoration-muted="state == 'cancel'">
+                <field name="date"/>
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="payment_method_line_id"/>
+                <field name="partner_id" string="Client"/>
+                <field name="amount_signed" string="Montant en devise" groups="base.group_multi_currency" optional="hide"/>
+                <field name="currency_id" string="Devise" groups="base.group_multi_currency" optional="hide"/>
+                <field name="amount" string="Montant"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'posted'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Tree pour les paiements fournisseurs -->
+    <record id="view_payment_supplier_tree" model="ir.ui.view">
+        <field name="name">account.payment.supplier.tree</field>
+        <field name="model">account.payment</field>
+        <field name="arch" type="xml">
+            <tree string="Paiements Fournisseurs" edit="false" sample="1" decoration-info="state == 'draft'" decoration-muted="state == 'cancel'">
+                <field name="date"/>
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="payment_method_line_id"/>
+                <field name="partner_id" string="Fournisseur"/>
+                <field name="amount_signed" string="Montant en devise" groups="base.group_multi_currency" optional="hide"/>
+                <field name="currency_id" string="Devise" groups="base.group_multi_currency" optional="hide"/>
+                <field name="amount" string="Montant"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'posted'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action pour les paiements clients -->
+    <record id="action_customer_payments" model="ir.actions.act_window">
+        <field name="name">Paiements Clients</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="domain">[('partner_type', '=', 'customer')]</field>
+        <field name="context">{'default_partner_type': 'customer', 'default_payment_type': 'inbound'}</field>
+        <field name="view_id" ref="view_payment_customer_tree"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un paiement client
+            </p>
+            <p>
+                Enregistrez les paiements reçus de vos clients.
+            </p>
+        </field>
+    </record>
+
+    <!-- Action pour les paiements fournisseurs -->
+    <record id="action_supplier_payments" model="ir.actions.act_window">
+        <field name="name">Paiements Fournisseurs</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="domain">[('partner_type', '=', 'supplier')]</field>
+        <field name="context">{'default_partner_type': 'supplier', 'default_payment_type': 'outbound'}</field>
+        <field name="view_id" ref="view_payment_supplier_tree"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un paiement fournisseur
+            </p>
+            <p>
+                Enregistrez les paiements effectués à vos fournisseurs.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu principal - Paiements Clients -->
+    <menuitem
+        id="menu_customer_payments_root"
+        name="Paiements Clients"
+        action="action_customer_payments"
+        web_icon="adi_payment_shortcuts,static/description/icon_customer.png"
+        sequence="45"/>
+
+    <!-- Menu principal - Paiements Fournisseurs -->
+    <menuitem
+        id="menu_supplier_payments_root"
+        name="Paiements Fournisseurs"
+        action="action_supplier_payments"
+        web_icon="adi_payment_shortcuts,static/description/icon_supplier.png"
+        sequence="46"/>
+
+</odoo>
