@@ -65,6 +65,7 @@ class TreasuryBankOperation(models.Model):
     payment_method = fields.Selection([
         ('transfer', 'Virement'),
         ('check', 'Chèque'),
+        ('cash', 'Espèces'),
         ('card', 'Carte Bancaire'),
         ('direct_debit', 'Prélèvement'),
         ('bank_fees', 'Frais Bancaires'),

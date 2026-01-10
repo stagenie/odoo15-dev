@@ -8,6 +8,26 @@
         <field name="inherit_id" ref="adi_treasury.view_treasury_transfer_form"/>
         <field name="arch" type="xml">
 
+            <!-- Corriger la visibilité du coffre source pour safe_to_bank -->
+            <xpath expr="//field[@name='safe_from_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['safe_to_cash', 'safe_to_safe', 'safe_to_bank'])]}</attribute>
+            </xpath>
+
+            <!-- Corriger la visibilité du solde coffre source (celui qui suit safe_from_id) -->
+            <xpath expr="//field[@name='safe_from_id']/following-sibling::field[@name='balance_before_from'][1]" position="attributes">
+                <attribute name="attrs">{'invisible': [('transfer_type', 'not in', ['safe_to_cash', 'safe_to_safe', 'safe_to_bank'])]}</attribute>
+            </xpath>
+
+            <!-- Corriger la visibilité du coffre destination pour bank_to_safe -->
+            <xpath expr="//field[@name='safe_to_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '!=', 'draft')], 'invisible': [('transfer_type', 'not in', ['cash_to_safe', 'safe_to_safe', 'bank_to_safe'])]}</attribute>
+            </xpath>
+
+            <!-- Corriger la visibilité du solde coffre destination (celui qui suit safe_to_id) -->
+            <xpath expr="//field[@name='safe_to_id']/following-sibling::field[@name='balance_before_to'][1]" position="attributes">
+                <attribute name="attrs">{'invisible': [('transfer_type', 'not in', ['cash_to_safe', 'safe_to_safe', 'bank_to_safe'])]}</attribute>
+            </xpath>
+
             <!-- Ajouter les champs bancaires à la fin du groupe source -->
             <xpath expr="//group[@name='group_source']" position="inside">
                 <!-- Banque source -->

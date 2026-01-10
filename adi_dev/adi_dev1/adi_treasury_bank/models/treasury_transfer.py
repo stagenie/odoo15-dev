@@ -99,6 +99,30 @@ class TreasuryTransfer(models.Model):
             else:
                 transfer.bank_to_balance_current = 0.0
 
+    @api.depends('cash_from_id', 'cash_to_id', 'safe_from_id', 'safe_to_id', 'bank_from_id', 'bank_to_id', 'amount', 'state', 'transfer_type')
+    def _compute_balances(self):
+        """Extension du calcul des soldes pour inclure les transferts bancaires avec coffres"""
+        # Appeler la méthode parente pour les types de base
+        super(TreasuryTransfer, self)._compute_balances()
+
+        # Gérer les types spécifiques aux banques impliquant des coffres
+        for transfer in self:
+            # Coffre → Banque : le coffre est la source
+            if transfer.transfer_type == 'safe_to_bank' and transfer.safe_from_id:
+                transfer.balance_before_from = transfer.safe_from_id.current_balance
+                if transfer.state == 'done':
+                    transfer.balance_after_from = transfer.balance_before_from - transfer.amount
+                else:
+                    transfer.balance_after_from = transfer.balance_before_from
+
+            # Banque → Coffre : le coffre est la destination
+            if transfer.transfer_type == 'bank_to_safe' and transfer.safe_to_id:
+                transfer.balance_before_to = transfer.safe_to_id.current_balance
+                if transfer.state == 'done':
+                    transfer.balance_after_to = transfer.balance_before_to + transfer.amount
+                else:
+                    transfer.balance_after_to = transfer.balance_before_to
+
     # Méthode de transfert
     payment_method = fields.Selection([
         ('transfer', 'Virement'),

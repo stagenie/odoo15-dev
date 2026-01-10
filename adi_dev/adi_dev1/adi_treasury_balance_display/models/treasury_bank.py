@@ -8,19 +8,26 @@ Ce module étend treasury.bank pour afficher les soldes détaillés :
 - Solde Rapproché
 - Solde Non Rapproché
 
-CORRECTION APPORTÉE:
---------------------
-Le module adi_treasury_bank original calcule current_balance uniquement
-avec les opérations state='posted', ignorant celles avec state='reconciled'.
+CORRECTIONS APPORTÉES:
+----------------------
+1. Le module adi_treasury_bank original calcule current_balance uniquement
+   avec les opérations state='posted', ignorant celles avec state='reconciled'.
 
-Bug original (adi_treasury_bank/models/treasury_bank.py ligne 233-236):
-    operations = self.env['treasury.bank.operation'].search([
-        ('bank_id', '=', bank.id),
-        ('state', '=', 'posted')  # ← Ignore 'reconciled' !
-    ])
+   Bug original (adi_treasury_bank/models/treasury_bank.py ligne 233-236):
+       operations = self.env['treasury.bank.operation'].search([
+           ('bank_id', '=', bank.id),
+           ('state', '=', 'posted')  # ← Ignore 'reconciled' !
+       ])
 
-Ce module surcharge _compute_current_balance() pour inclure les deux états:
-    ('state', 'in', ['posted', 'reconciled'])
+   Ce module surcharge _compute_current_balance() pour inclure les deux états:
+       ('state', 'in', ['posted', 'reconciled'])
+
+2. Gestion des opérations "orphelines" : opérations antérieures ou égales à
+   la date de clôture mais non liées à une clôture (closing_id = False).
+   Ces opérations étaient ignorées dans le calcul du solde.
+
+   Exemple : Une opération de solde initial créée avant la première clôture
+   mais non incluse dans celle-ci.
 
 FORMULES:
 ---------
@@ -73,8 +80,9 @@ class TreasuryBankBalanceDisplay(models.Model):
         """
         SURCHARGE: Corrige le calcul du solde actuel.
 
-        CORRECTION: Inclut les opérations 'posted' ET 'reconciled'.
-        Le module original n'incluait que 'posted'.
+        CORRECTIONS:
+        1. Inclut les opérations 'posted' ET 'reconciled' (le module original n'incluait que 'posted')
+        2. Inclut les opérations "orphelines" (antérieures à la clôture mais sans closing_id)
         """
         for bank in self:
             # Chercher la dernière clôture validée
@@ -87,22 +95,32 @@ class TreasuryBankBalanceDisplay(models.Model):
                 # Partir du solde de la dernière clôture
                 balance = last_closing.balance_end_bank
 
-                # CORRECTION: Inclure 'posted' ET 'reconciled'
+                # Opérations postérieures à la clôture (non incluses dans une clôture validée)
                 operations = self.env['treasury.bank.operation'].search([
                     ('bank_id', '=', bank.id),
-                    ('state', 'in', ['posted', 'reconciled']),  # ← CORRIGÉ
+                    ('state', 'in', ['posted', 'reconciled']),
                     ('date', '>', last_closing.closing_date),
                     '|',
                     ('closing_id', '=', False),
                     ('closing_id.state', '!=', 'validated')
                 ])
+
+                # CORRECTION: Ajouter les opérations "orphelines"
+                # (antérieures ou égales à la clôture mais sans closing_id)
+                orphan_operations = self.env['treasury.bank.operation'].search([
+                    ('bank_id', '=', bank.id),
+                    ('state', 'in', ['posted', 'reconciled']),
+                    ('date', '<=', last_closing.closing_date),
+                    ('closing_id', '=', False)
+                ])
+                operations = operations | orphan_operations
             else:
                 # Pas de clôture validée : partir de zéro
                 balance = 0.0
-                # CORRECTION: Inclure 'posted' ET 'reconciled'
+                # Toutes les opérations posted et reconciled
                 operations = self.env['treasury.bank.operation'].search([
                     ('bank_id', '=', bank.id),
-                    ('state', 'in', ['posted', 'reconciled'])  # ← CORRIGÉ
+                    ('state', 'in', ['posted', 'reconciled'])
                 ])
 
             # Calculer le solde
@@ -133,6 +151,9 @@ class TreasuryBankBalanceDisplay(models.Model):
 
         - Solde Rapproché: opérations avec is_reconciled=True ou state='reconciled'
         - Solde Non Rapproché: opérations avec is_reconciled=False et state='posted'
+
+        CORRECTION: Inclut également les opérations "orphelines"
+        (antérieures à la clôture mais sans closing_id)
         """
         for bank in self:
             # Chercher la dernière clôture validée
@@ -145,24 +166,32 @@ class TreasuryBankBalanceDisplay(models.Model):
                 # Le solde de la dernière clôture est considéré comme rapproché
                 base_reconciled_balance = last_closing.balance_end_bank
 
-                # Récupérer les opérations postérieures à la clôture
-                domain = [
+                # Opérations postérieures à la clôture
+                operations = self.env['treasury.bank.operation'].search([
                     ('bank_id', '=', bank.id),
                     ('state', 'in', ['posted', 'reconciled']),
                     ('date', '>', last_closing.closing_date),
                     '|',
                     ('closing_id', '=', False),
                     ('closing_id.state', '!=', 'validated')
-                ]
+                ])
+
+                # CORRECTION: Ajouter les opérations "orphelines"
+                # (antérieures ou égales à la clôture mais sans closing_id)
+                orphan_operations = self.env['treasury.bank.operation'].search([
+                    ('bank_id', '=', bank.id),
+                    ('state', 'in', ['posted', 'reconciled']),
+                    ('date', '<=', last_closing.closing_date),
+                    ('closing_id', '=', False)
+                ])
+                operations = operations | orphan_operations
             else:
                 # Pas de clôture validée : partir de zéro
                 base_reconciled_balance = 0.0
-                domain = [
+                operations = self.env['treasury.bank.operation'].search([
                     ('bank_id', '=', bank.id),
                     ('state', 'in', ['posted', 'reconciled'])
-                ]
-
-            operations = self.env['treasury.bank.operation'].search(domain)
+                ])
 
             # Calculer les soldes séparément
             reconciled_amount = 0.0
