@@ -1,0 +1,528 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sh_all_in_one_views
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.1alpha1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-01 11:59+0000\n"
+"PO-Revision-Date: 2020-10-01 11:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_customer_invoice_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_kanban_view_inherit
+msgid ""
+"<br/>\n"
+"\t\t\t   \t        \t\t\tProduct :"
+msgstr ""
+"<br/>\n"
+"\t\t\t   \t        \t\t\tالمنتج :"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_customer_invoice_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_kanban_view_inherit
+msgid ""
+"<br/>\n"
+"\t\t\t   \t        \t\t\tQty :"
+msgstr ""
+"<br/>\n"
+"\t\t\t   \t        \t\t\tالكمية:"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_kanban_view_inherit
+msgid ""
+"<br/>\n"
+"\t\t\t   \t        \t\t\tVendor :"
+msgstr ""
+"<br/>\n"
+"\t\t\t   \t        \t\t\tبائع :"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_kanban_view_inherit
+msgid ""
+"<br/>\n"
+"\t\t   \t        \t\t\tCustomer :"
+msgstr ""
+"<br/>\n"
+"\t\t   \t        \t\t\tالعملاء:"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_kanban_view_inherit
+msgid ""
+"<br/>\n"
+"\t\t   \t        \t\t\tProduct :"
+msgstr ""
+"<br/>\n"
+"\t\t   \t        \t\t\tالمنتج :"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_kanban_view_inherit
+msgid ""
+"<br/>\n"
+"\t\t   \t        \t\t\tQty :"
+msgstr ""
+"<br/>\n"
+"\t\t   \t        \t\t\tالكمية:"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_customer_invoice_line_form_view_inherit
+msgid "Account"
+msgstr "الحساب"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_action_account_all_lines
+msgid "Account All Lines"
+msgstr "حساب جميع خطوط"
+
+#. module: sh_all_in_one_views
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_account_all_line
+msgid "All Lines"
+msgstr "جميع خطوط"
+
+#. module: sh_all_in_one_views
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_vendor_line
+msgid "Bill Lines"
+msgstr "خطوط بيل"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_action_vendor_lines
+msgid "Bills Line"
+msgstr "فواتير الخط"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_stock_move_calendar
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_stock_move_line_calendar
+msgid "Calendar View"
+msgstr "طريقة عرض التقويم"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,help:sh_all_in_one_views.field_sale_order_line__so_order_date
+msgid ""
+"Creation date of draft/sent orders,\n"
+"Confirmation date of confirmed orders."
+msgstr ""
+"تاريخ إنشاء مشروع / أوامر أرسلت، \ ن"
+"تاريخ تأكيد أوامر المؤكدة."
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_action_customer_credit_lines
+msgid "Credit Note Line"
+msgstr "الائتمان ملاحظة الخط"
+
+#. module: sh_all_in_one_views
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_customer_invoice_credit_line
+msgid "Credit Notes Lines"
+msgstr "الائتمان ملاحظات خطوط"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_search_view_inherit
+msgid "Customer"
+msgstr "زبون"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_customer_line_graph
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_customer_line_pivot
+msgid "Customer Line"
+msgstr "الخط العملاء"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_sale_order_line__so_order_date
+msgid "Date Order"
+msgstr "تاريخ ترتيب"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_search
+msgid "Deliveries"
+msgstr "التسليم"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_tree
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_tree
+msgid "Destination Location"
+msgstr "موقع وجهة"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_pol_picking_order_line_move_line_action
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_pol_picking_order_line_details_ops_menu
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_tree
+msgid "Detailed Operations Line"
+msgstr "الخط عمليات مفصل"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_sale_order_line__display_name
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move__display_name
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move_line__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_search_view_inherit
+msgid "Group By"
+msgstr "مجموعة من"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_account_move_line__id
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_sale_order_line__id
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move__id
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move_line__id
+msgid "ID"
+msgstr "هوية شخصية"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_pol_incoming_order_line_move_action
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_pol_incoming_order_line_ops_menu
+msgid "Incoming Operations Line"
+msgstr "خط العمليات الواردة"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_search
+msgid "Internal"
+msgstr "داخلي"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_customer_invoice_line_kanban_view_inherit
+msgid "Invoice :"
+msgstr "فاتورة :"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_action_customer_lines
+msgid "Invoice Line"
+msgstr "خط الفاتورة"
+
+#. module: sh_all_in_one_views
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_customer_invoice_line
+msgid "Invoice Lines"
+msgstr "خطوط الفاتورة"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_customer_line_calendar
+msgid "Invoices"
+msgstr "الفواتير"
+
+#. module: sh_all_in_one_views
+#: model:ir.model,name:sh_all_in_one_views.model_account_move_line
+msgid "Journal Item"
+msgstr "مجلة البند"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_account_move_line____last_update
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_sale_order_line____last_update
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move____last_update
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move_line____last_update
+msgid "Last Modified on"
+msgstr "آخر تعديل ل"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_search
+msgid "Manufacturing"
+msgstr "تصنيع"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_pol_picking_order_line_move_action
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_pol_picking_order_line_ops_menu
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_tree
+msgid "Operations Line"
+msgstr "خط العمليات"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_customer_invoice_line_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_customer_invoice_line_tree_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_purchase_order_line_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_rfq_order_line_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_tree_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_tree_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_tree_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_tree_view_inherit
+msgid "Order"
+msgstr "طلب"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_kanban_view_inherit
+msgid "Order :"
+msgstr "طلب :"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_search_view_inherit
+msgid "Order Date"
+msgstr "تاريخ الطلب"
+
+#. module: sh_all_in_one_views
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_sol_order_line
+msgid "Order Lines"
+msgstr "خطوط ترتيب"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_purchase_order_line_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_rfq_order_line_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_tree_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_tree_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_tree_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_tree_view_inherit
+msgid "Ordered Qty"
+msgstr "أمر الكمية"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_pol_outgoing_order_line_move_action
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_pol_outgoing_order_line_ops_menu
+msgid "Outgoing Operations Line"
+msgstr "خط العمليات المنتهية ولايته"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move__sh_pol_picking_order_line_picking_type_code
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move_line__sh_pol_picking_order_line_picking_type_code
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_search
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_tree
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_search
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_tree
+msgid "Picking Operation"
+msgstr "اختيار عملية"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move__sh_pol_picking_order_line_picking_type_id
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move_line__sh_pol_picking_order_line_picking_type_id
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_search
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_tree
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_search
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_tree
+msgid "Picking Type"
+msgstr "اختيار نوع"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_search_view_inherit
+msgid "Product"
+msgstr "المنتج"
+
+#. module: sh_all_in_one_views
+#: model:ir.model,name:sh_all_in_one_views.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr "التحركات المنتج (الأسهم نقل الخط)"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_action_purchase_order_lines
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_purchase_order_line_calendar
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_purchase_order_line_graph
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_purchase_order_line_pivot
+msgid "Purchase Order Line"
+msgstr "طلب شراء الخط"
+
+#. module: sh_all_in_one_views
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_purchase_order_line
+msgid "Purchase Order Lines"
+msgstr "ترتيب خطوط شراء"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_customer_invoice_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_kanban_view_inherit
+msgid "Qty"
+msgstr "الكمية"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_tree
+msgid "Quantity Done"
+msgstr "كمية مكتملة"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_action_sale_quotation_lines
+msgid "Quotation Line"
+msgstr "خط الاقتباس"
+
+#. module: sh_all_in_one_views
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_sol_quotation_line
+msgid "Quotation Lines"
+msgstr "خطوط الاقتباس"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_rfq_line_calendar
+msgid "RFQ Line"
+msgstr "الخط RFQ"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_action_rfq_order_lines
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_search_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_rfq_order_line_graph
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_rfq_order_line_pivot
+msgid "RFQ Order Line"
+msgstr "RFQ ترتيب الخط"
+
+#. module: sh_all_in_one_views
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_rfq_order_line
+msgid "RFQ Order Lines"
+msgstr "ترتيب خطوط RFQ"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_search
+msgid "Receptions"
+msgstr "استقبالات"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_tree
+msgid "Reference"
+msgstr "مرجع"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,help:sh_all_in_one_views.field_stock_move_line__sh_pol_picking_order_line_origin
+msgid "Reference of the document"
+msgstr "إشارة الوثيقة"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_action_vendor_credit_lines
+msgid "Refund Line"
+msgstr "الخط استرداد"
+
+#. module: sh_all_in_one_views
+#: model:ir.ui.menu,name:sh_all_in_one_views.sh_vendor_credit_line
+msgid "Refund Lines"
+msgstr "خطوط استرداد"
+
+#. module: sh_all_in_one_views
+#: model:ir.actions.act_window,name:sh_all_in_one_views.sh_action_sale_order_lines
+msgid "Sale Order Line"
+msgstr "بيع رسالة طلب الخط"
+
+#. module: sh_all_in_one_views
+#: model:ir.model,name:sh_all_in_one_views.model_sale_order_line
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_sale_order_line_calendar
+msgid "Sales Order Line"
+msgstr "ترتيب مبيعات الخط"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_sale_order_line_pivot
+msgid "Sales Orders Line"
+msgstr "الخط أوامر البيع"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_sale_order_line_graph
+msgid "Sales Orders Lines"
+msgstr "خطوط أوامر البيع"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_quotation_pivot
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_sale_line_quotation_graph
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_sale_quotation_calendar
+msgid "Sales Quotation"
+msgstr "تسعير المبيعات"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_quotation_line_search_view_inherit
+msgid "Search Quotation Order Line"
+msgstr "بحث تسعيرة ترتيب الخط"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_search_view_inherit
+msgid "Search Sales Order Line"
+msgstr "بحث ترتيب المبيعات لاين"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_stock_move_line__sh_pol_picking_order_line_origin
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_search
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_search
+msgid "Source Document"
+msgstr "مصدر وثائق"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_tree
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_tree
+msgid "Source Location"
+msgstr "مصدر الموقع"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_account_move_line__state
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_sale_order_line__so_state
+msgid "State"
+msgstr "حالة"
+
+#. module: sh_all_in_one_views
+#: model:ir.model,name:sh_all_in_one_views.model_stock_move
+msgid "Stock Move"
+msgstr "الخط الأسهم"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_stock_move_graph
+msgid "Stock Move Line"
+msgstr "الخط الأسهم نقل"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_sh_stock_move_line_pivot
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.view_stock_move_pivot
+msgid "Stock Move Line Analysis"
+msgstr "الأسهم نقل تحليل الخط"
+
+#. module: sh_all_in_one_views
+#: model:ir.model.fields,field_description:sh_all_in_one_views.field_account_move_line__inv_type
+msgid "Type"
+msgstr "نوع"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_form
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_line_tree
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_pol_picking_order_line_move_tree
+msgid "Unit of Measure"
+msgstr "وحدة القياس"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_search_view_inherit
+msgid "Vendor"
+msgstr "بائع"
+
+#. module: sh_all_in_one_views
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_purchase_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_rfq_order_line_kanban_view_inherit
+#: model_terms:ir.ui.view,arch_db:sh_all_in_one_views.sh_sol_sale_order_line_kanban_view_inherit
+msgid "product_id :"
+msgstr "معرف المنتج :"

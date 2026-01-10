@@ -39,6 +39,10 @@ class AccountMove(models.Model):
             if move.move_type not in ('out_invoice', 'out_refund'):
                 continue
 
+            # Si la date de facture n'est pas définie, on ne peut pas contrôler
+            if not move.invoice_date:
+                continue
+
             # Si la date d'application est définie et que la date de la facture
             # est antérieure, on ne contrôle pas
             if application_date and move.invoice_date < application_date:

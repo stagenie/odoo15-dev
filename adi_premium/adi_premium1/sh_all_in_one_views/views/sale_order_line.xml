@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lignes de Devis -->
+    <!-- Vues Formulaire -->
+    <record id="sh_sol_sale_quotation_line_form_view_inherit" model="ir.ui.view">
+        <field name="name">Formulaire Ligne de Devis</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="order_id" string="Commande" />
+                            <field name="product_id" />
+                            <field name="product_uom" />
+                            <field name="product_uom_qty" string="Qté commandée" />
+                            <field name="tax_id" widget="many2many_tags" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="price_subtotal" widget="monetary" />
+                        </group>
+                        <group>
+                            <field name="order_partner_id" />
+                            <field name="name" />
+                            <field name="price_unit" />
+                            <field name="discount" />
+                            <field name="product_uom_category_id" />
+                            <field name="company_id" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue Liste Devis -->
+    <record id="sh_sol_sale_quotation_line_tree_view_inherit" model="ir.ui.view">
+        <field name="name">Liste Lignes de Devis</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="order_id" string="Commande" />
+                <field name="order_partner_id" />
+                <field name="product_id" />
+                <field name="name" />
+                <field name="product_uom" />
+                <field name="product_uom_qty" string="Qté commandée" />
+                <field name="price_unit" />
+                <field name="tax_id" widget="many2many_tags" />
+                <field name="discount" />
+                <field name="currency_id" invisible="1" />
+                <field name="price_subtotal" widget="monetary" />
+                <field name="so_state" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Kanban Devis -->
+    <record id="sh_sol_sale_quotation_line_kanban_view_inherit" model="ir.ui.view">
+        <field name="name">Kanban Lignes de Devis</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="order_partner_id">
+                <field name="product_id" />
+                <field name="product_uom_qty" string="Qté" />
+                <field name="order_id" string="Commande" />
+                <field name="so_state" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_details">
+                                <strong>Commande : <field name="order_id" /> </strong>
+                                <br />
+                                Article : <field name="product_id" />
+                                <br />
+                                Qté : <field name="product_uom_qty" />
+                            </div>
+                            <div class="oe_kanban_bottom_right">
+                                <span class="float-right text-right">
+                                    <field
+                                        name="so_state"
+                                        widget="label_selection"
+                                        options="{'classes': {'draft': 'default', 'cancel': 'default', 'none': 'danger', 'open': 'warning',                                             'paid': 'success'}}"
+                                    />
+                                </span>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Recherche Devis -->
+    <record id="sh_sol_sale_quotation_line_search_view_inherit" model="ir.ui.view">
+        <field name="name">Recherche Lignes de Devis</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher Lignes de Devis">
+                <field name="order_partner_id" filter_domain="['|','|',('order_partner_id','ilike',self),('order_id','ilike',self),('product_id','ilike',self)]" />
+                <field name="order_id" string="Commande" />
+                <field name="product_id" />
+                <field name="so_order_date" />
+                <separator />
+
+                <filter string="Date de commande" name="filter_order_date" date="so_order_date" />
+
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_by_order_partner_id" domain="[]" string="Client" context="{'group_by':'order_partner_id'}" />
+                    <filter name="group_by_order_id" domain="[]" string="Commande" context="{'group_by':'order_id'}" />
+                    <filter name="group_by_product_id" domain="[]" string="Article" context="{'group_by':'product_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Vue Pivot Devis -->
+    <record model="ir.ui.view" id="view_quotation_pivot">
+        <field name="name">Pivot Devis</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Devis">
+                <field name="so_state" type="row" />
+                <field name="order_id" type="row" />
+                <field name="product_id" type="row" />
+                <field name="price_subtotal" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Vue Graphique Devis -->
+    <record model="ir.ui.view" id="view_sale_line_quotation_graph">
+        <field name="name">Graphique Devis</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <graph string="Devis">
+                <field name="product_id" />
+                <field name="order_partner_id" type="measure" />
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_sale_quotation_calendar" model="ir.ui.view">
+        <field name="name">Calendrier Devis</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <calendar string="Devis" date_start="create_date">
+                <field name="order_partner_id" />
+                <field name="currency_id" invisible="1" />
+                <field name="price_subtotal" widget="monetary" />
+            </calendar>
+        </field>
+    </record>
+
+    <record id="sh_action_sale_quotation_lines" model="ir.actions.act_window">
+        <field name="name">Lignes de Devis</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form,kanban,pivot,graph,calendar</field>
+        <field name="domain">[('state','in',('draft','sent'))]</field>
+        <field name="view_id" ref="sh_sol_sale_quotation_line_tree_view_inherit" />
+    </record>
+
+    <!-- Lignes de Bon de Commande -->
+
+    <!-- Vue Formulaire Bon de Commande -->
+    <record id="sh_sol_sale_order_line_form_view_inherit" model="ir.ui.view">
+        <field name="name">Formulaire Ligne de Commande</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="order_id" string="Commande" />
+                            <field name="product_id" />
+                            <field name="product_uom" />
+                            <field name="product_uom_qty" string="Qté commandée" />
+                            <field name="qty_delivered" />
+                            <field name="tax_id" widget="many2many_tags" />
+                            <field name="price_subtotal" />
+                            <field name="invoice_status" widget="badge" />
+                        </group>
+                        <group>
+                            <field name="order_partner_id" />
+                            <field name="name" />
+                            <field name="qty_invoiced" />
+                            <field name="price_unit" />
+                            <field name="discount" />
+                            <field name="product_uom_category_id" />
+                            <field name="company_id" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue Liste Bon de Commande -->
+    <record id="sh_sol_sale_order_line_tree_view_inherit" model="ir.ui.view">
+        <field name="name">Liste Lignes de Commande</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="order_id" string="Commande" />
+                <field name="order_partner_id" />
+                <field name="product_id" />
+                <field name="name" />
+                <field name="product_uom" />
+                <field name="product_uom_qty" string="Qté commandée" />
+                <field name="qty_delivered" />
+                <field name="qty_invoiced" />
+                <field name="price_unit" />
+                <field name="tax_id" widget="many2many_tags" />
+                <field name="discount" />
+                <field name="invoice_status" widget="badge" />
+                <field name="currency_id" invisible="1" />
+                <field name="price_subtotal" widget="monetary" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Kanban Bon de Commande -->
+    <record id="sh_sol_sale_order_line_kanban_view_inherit" model="ir.ui.view">
+        <field name="name">Kanban Lignes de Commande</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="order_partner_id">
+                <field name="product_id" />
+                <field name="product_uom_qty" string="Qté" />
+                <field name="order_id" string="Commande" />
+                <field name="order_partner_id" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="o_kanban_details">
+                            <strong>Commande : <field name="order_id" /> </strong>
+                            <br />
+                            Client : <field name="order_partner_id" string="product_id :" />
+                            <br />
+                            Article : <field name="product_id" />
+                            <br />
+                            Qté : <field name="product_uom_qty" />
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="sh_sol_sale_order_line_search_view_inherit" model="ir.ui.view">
+        <field name="name">Recherche Lignes de Commande</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher Lignes de Commande">
+                <field name="order_partner_id" filter_domain="['|','|',('order_partner_id','ilike',self),('order_id','ilike',self),('product_id','ilike',self)]" />
+                <field name="order_id" string="Commande" />
+                <field name="product_id" />
+                <field name="so_order_date" />
+                <separator />
+
+                <filter string="Date de commande" name="filter_order_date" date="so_order_date" />
+
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_by_order_partner_id" domain="[]" string="Client" context="{'group_by':'order_partner_id'}" />
+                    <filter name="group_by_order_id" domain="[]" string="Commande" context="{'group_by':'order_id'}" />
+                    <filter name="group_by_product_id" domain="[]" string="Article" context="{'group_by':'product_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Vue Pivot Bon de Commande -->
+    <record model="ir.ui.view" id="view_sale_order_line_pivot">
+        <field name="name">Pivot Lignes de Commande</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Lignes de Commande">
+                <field name="so_state" type="row" />
+                <field name="order_id" type="row" />
+                <field name="product_id" type="row" />
+                <field name="price_subtotal" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Vue Graphique Bon de Commande -->
+    <record model="ir.ui.view" id="view_sale_order_line_graph">
+        <field name="name">Graphique Lignes de Commande</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <graph string="Lignes de Commande">
+                <field name="order_partner_id" />
+                <field name="price_subtotal" type="measure" />
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_sale_order_line_calendar" model="ir.ui.view">
+        <field name="name">Calendrier Lignes de Commande</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <calendar string="Lignes de Commande" date_start="create_date">
+                <field name="order_partner_id" />
+                <field name="price_subtotal" widget="monetary" />
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Action Bon de Commande -->
+    <record id="sh_action_sale_order_lines" model="ir.actions.act_window">
+        <field name="name">Lignes de Commande</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form,kanban,pivot,graph,calendar</field>
+        <field name="domain">[('state','in',('sale','done'))]</field>
+        <field name="view_id" ref="sh_sol_sale_order_line_tree_view_inherit" />
+    </record>
+
+    <menuitem id="sh_sol_quotation_line" name="Lignes de Devis" action="sh_action_sale_quotation_lines" groups="sales_team.group_sale_manager" parent="sale.sale_order_menu" />
+
+    <menuitem id="sh_sol_order_line" name="Lignes de Commande" action="sh_action_sale_order_lines" groups="sales_team.group_sale_manager" parent="sale.sale_order_menu" />
+</odoo>

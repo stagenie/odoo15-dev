@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ajout du champ OPP Number dans le rapport de vente -->
+    <template id="report_saleorder_document_opp_number" inherit_id="sale.report_saleorder_document">
+        <!-- Ajouter OPP Number dans la section informations, après client_order_ref -->
+        <xpath expr="//div[@id='informations']" position="inside">
+            <div t-if="doc.opp_number" class="col-auto col-3 mw-100 mb-2">
+                <strong>OPP Number:</strong>
+                <p class="m-0" t-field="doc.opp_number"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
