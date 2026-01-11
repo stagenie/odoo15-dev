@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================== -->
+    <!-- AB FACTURE SANS PAIEMENT                   -->
+    <!-- Même format que AB Facture mais sans les   -->
+    <!-- détails de paiement                        -->
+    <!-- ========================================== -->
+
+    <!-- Template wrapper qui définit no_payment_report=True -->
+    <template id="ab_report_invoice_no_payment">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <!-- Définir la variable pour masquer les paiements -->
+                <t t-set="no_payment_report" t-value="True"/>
+                <t t-call="l10n_dz_droit_timbre.adi_report_invoice_document" t-lang="o.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Action de rapport pour imprimer sans paiement -->
+    <record id="action_report_ab_invoice_no_payment" model="ir.actions.report">
+        <field name="name">AB Facture (Sans Paiement)</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_ab_invoice_reports.ab_report_invoice_no_payment</field>
+        <field name="report_file">adi_ab_invoice_reports.ab_report_invoice_no_payment</field>
+        <field name="print_report_name">'Facture - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

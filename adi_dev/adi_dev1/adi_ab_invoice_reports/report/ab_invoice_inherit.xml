@@ -24,8 +24,9 @@
         </xpath>
 
         <!-- Ajouter les détails des paiements avant le montant en lettres (optionnel) -->
+        <!-- Ne pas afficher si no_payment_report est défini dans le contexte -->
         <xpath expr="//div[@name='montant_en_lettre_timbre']" position="before">
-            <div class="row mt-3 mb-3" t-if="o.show_payment_details and o.payment_ids">
+            <div class="row mt-3 mb-3" t-if="o.show_payment_details and o.payment_ids and not no_payment_report">
                 <div class="col-12">
                     <strong>Détails des paiements:</strong>
                     <table class="table table-sm table-bordered mt-2">
@@ -80,7 +81,7 @@
                 </div>
             </div>
             <!-- Mode de règlement prévu si pas encore de paiements (optionnel) -->
-            <div class="row mt-3 mb-3" t-if="o.show_payment_details and not o.payment_ids and o.payment_state != 'paid'">
+            <div class="row mt-3 mb-3" t-if="o.show_payment_details and not o.payment_ids and o.payment_state != 'paid' and not no_payment_report">
                 <div class="col-6">
                     <table class="table table-sm">
                         <tr>

@@ -37,11 +37,12 @@
     'data': [
         'security/ir.model.access.csv',
         'wizard/payment_display_config_views.xml',
-        'views/account_move_views.xml',
         'report/ab_invoice_inherit.xml',
+        'report/ab_invoice_no_payment.xml',
         'report/ab_vente_inherit.xml',
         'report/ab_vente_ttc_report.xml',
         'report/tax_totals_inherit.xml',
+        'views/account_move_views.xml',
     ],
     'installable': True,
     'auto_install': False,
