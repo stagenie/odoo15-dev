@@ -1,6 +1,6 @@
 {
     'name': 'Adi Partner Credit Limit',
-    'version': '15.0.0.0',
+    'version': '15.0.1.0.0',
     'sequence': 1,
     'category': 'Sales',
     'summary': 'Adi Partner Limit  . ',

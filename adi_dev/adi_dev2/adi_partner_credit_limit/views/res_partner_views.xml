@@ -5,10 +5,15 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Crédit">
+                <page string="Crédit" name="credit_page">
                     <group>
-                        <field name="credit_limit_active"/>
-                        <field name="credit_limit" attrs="{'invisible': [('credit_limit_active', '=', False)]}"/>
+                        <group string="Solde">
+                            <field name="current_balance" widget="monetary"/>
+                        </group>
+                        <group string="Limite de crédit">
+                            <field name="credit_limit_active"/>
+                            <field name="credit_limit" widget="monetary" attrs="{'invisible': [('credit_limit_active', '=', False)]}"/>
+                        </group>
                     </group>
                 </page>
             </xpath>

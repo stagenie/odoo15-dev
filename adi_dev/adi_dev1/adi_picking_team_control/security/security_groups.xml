@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Catégorie pour les groupes de contrôle BL -->
+        <record id="module_category_picking_control" model="ir.module.category">
+            <field name="name">Contrôle des Bons de Livraison</field>
+            <field name="description">Gestion des permissions pour la validation des BL</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- Groupe : Peut valider les BL de tous les dépôts -->
+        <record id="group_validate_all_pickings" model="res.groups">
+            <field name="name">Peut valider les BL de tous les dépôts</field>
+            <field name="category_id" ref="module_category_picking_control"/>
+            <field name="comment">
+                Les utilisateurs de ce groupe peuvent :
+                - Valider les BL de toutes les équipes commerciales
+                - Modifier l'entrepôt de livraison sans restriction
+            </field>
+        </record>
+
+    </data>
+</odoo>

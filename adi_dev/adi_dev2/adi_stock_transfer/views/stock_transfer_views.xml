@@ -99,10 +99,10 @@
                                     <field name="available_quantity" readonly="1" string="Dispo."
                                            decoration-danger="available_quantity == 0"
                                            decoration-warning="available_quantity &lt; quantity"/>
-                                    <!-- Quantité demandée: éditable seulement en brouillon -->
+                                    <!-- Quantité demandée: éditable en brouillon et en demandé (pour le validateur) -->
                                     <field name="quantity" string="Demandé"
                                            decoration-danger="quantity &gt; available_quantity"
-                                           attrs="{'readonly': [('parent_state', '!=', 'draft')]}"/>
+                                           attrs="{'readonly': [('parent_state', 'not in', ['draft', 'requested'])]}"/>
                                     <!-- Quantité envoyée: éditable seulement en état approuvé -->
                                     <field name="qty_sent" string="Envoyé" optional="show"
                                            attrs="{'readonly': [('parent_state', '!=', 'approved')]}"/>

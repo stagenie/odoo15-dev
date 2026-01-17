@@ -143,6 +143,7 @@ class StockTransfer(models.Model):
         readonly=True,
         states={
             'draft': [('readonly', False)],
+            'requested': [('readonly', False)],
             'approved': [('readonly', False)],
             'in_transit': [('readonly', False)]
         }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire du wizard simplifié -->
+    <record id="view_invoice_line_sync_wizard_form" model="ir.ui.view">
+        <field name="name">invoice.line.sync.wizard.form</field>
+        <field name="model">invoice.line.sync.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Ajouter des lignes depuis des factures">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="invoice_id" invisible="1"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="line_count"/>
+                        </group>
+                    </group>
+
+                    <group string="Sélectionner les factures sources">
+                        <field name="source_invoice_ids" nolabel="1" widget="many2many" options="{'no_create': True}">
+                            <tree>
+                                <field name="name"/>
+                                <field name="invoice_date"/>
+                                <field name="amount_total"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </group>
+
+                    <div class="alert alert-info" role="alert" style="margin: 10px;" attrs="{'invisible': [('line_count', '=', 0)]}">
+                        <strong>Info:</strong> <field name="line_count"/> ligne(s) seront ajoutées à votre facture.
+                    </div>
+                </sheet>
+
+                <footer>
+                    <button name="action_add_lines"
+                            string="Ajouter les lignes"
+                            type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': [('line_count', '=', 0)]}"
+                            data-hotkey="q"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

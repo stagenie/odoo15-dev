@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire : ajout du bouton "Ajouter depuis factures" -->
+    <record id="view_move_form_invoice_line_sync" model="ir.ui.view">
+        <field name="name">account.move.form.invoice.line.sync</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter le bouton dans le header -->
+            <xpath expr="//button[@name='action_post']" position="before">
+                <button name="action_open_invoice_sync_wizard"
+                        string="Ajouter depuis Factures"
+                        type="object"
+                        class="btn-secondary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('move_type', 'not in', ['out_invoice', 'out_refund'])]}"/>
+            </xpath>
+
+            <!-- Ajouter une colonne pour afficher l'origine dans les lignes de facture -->
+            <xpath expr="//field[@name='invoice_line_ids']/tree//field[@name='name']" position="after">
+                <field name="source_invoice_id" optional="show" readonly="1"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

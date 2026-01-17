@@ -22,6 +22,23 @@ class AccountMove(models.Model):
         help="Cocher pour afficher la colonne Montant dans les détails de paiement."
     )
 
+    # Champ invoice_report_type pour permettre la condition sur le bouton
+    # Ce champ sera remplacé par le module adi_journal_report_type s'il est installé
+    invoice_report_type = fields.Selection(
+        [('invoice', 'Facture'), ('sale', 'Vente')],
+        string='Type de rapport',
+        compute='_compute_invoice_report_type',
+        store=False,
+    )
+
+    @api.depends('journal_id')
+    def _compute_invoice_report_type(self):
+        """Compute le type de rapport - sera remplacé par adi_journal_report_type si installé"""
+        for move in self:
+            # Par défaut, considérer toutes les factures comme type 'invoice'
+            # Le module adi_journal_report_type redéfinira ce champ avec un related vers le journal
+            move.invoice_report_type = 'invoice'
+
     @api.model
     def _get_default_show_payment_details(self):
         """Récupère la valeur par défaut depuis la configuration."""
