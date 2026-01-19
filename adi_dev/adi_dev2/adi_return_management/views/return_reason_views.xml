@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Tree -->
+    <record id="view_return_reason_tree" model="ir.ui.view">
+        <field name="name">return.reason.tree</field>
+        <field name="model">return.reason</field>
+        <field name="arch" type="xml">
+            <tree string="Raisons de retour" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Form -->
+    <record id="view_return_reason_form" model="ir.ui.view">
+        <field name="name">return.reason.form</field>
+        <field name="model">return.reason</field>
+        <field name="arch" type="xml">
+            <form string="Raison de retour">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Description de la raison..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_return_reason" model="ir.actions.act_window">
+        <field name="name">Raisons de retour</field>
+        <field name="res_model">return.reason</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Creer une raison de retour
+            </p>
+            <p>
+                Les raisons de retour permettent de categoriser les retours clients.
+            </p>
+        </field>
+    </record>
+
+</odoo>

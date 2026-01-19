@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Definition du rapport -->
+    <record id="action_report_return_order" model="ir.actions.report">
+        <field name="name">Bon de Retour</field>
+        <field name="model">return.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_return_management.report_return_order</field>
+        <field name="report_file">adi_return_management.report_return_order</field>
+        <field name="print_report_name">'Bon_Retour_%s' % (object.name).replace('/', '_')</field>
+        <field name="binding_model_id" ref="model_return_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Template du rapport -->
+    <template id="report_return_order">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- En-tete du rapport -->
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <h2>BON DE RETOUR</h2>
+                            </div>
+                        </div>
+
+                        <!-- Informations principales -->
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <strong>Reference:</strong> <span t-field="o.name"/><br/>
+                                <strong>Date:</strong> <span t-field="o.date"/><br/>
+                                <strong>Etat:</strong>
+                                <span t-if="o.state == 'draft'">Brouillon</span>
+                                <span t-if="o.state == 'validated'">Valide</span>
+                                <span t-if="o.state == 'refund_created'">Avoir cree</span>
+                            </div>
+                            <div class="col-6">
+                                <strong>Responsable:</strong> <span t-field="o.user_id.name"/><br/>
+                                <strong>Raison:</strong> <span t-field="o.reason_id.name"/>
+                            </div>
+                        </div>
+
+                        <!-- Client -->
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <h5>Client</h5>
+                                <address t-field="o.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True}'/>
+                            </div>
+                            <div class="col-6">
+                                <h5>Destination du retour</h5>
+                                <strong>Entrepot:</strong> <span t-field="o.warehouse_id.name"/><br/>
+                                <strong>Emplacement:</strong> <span t-field="o.return_location_id.complete_name"/>
+                            </div>
+                        </div>
+
+                        <!-- Origine (si mode strict) -->
+                        <t t-if="o.origin_mode == 'strict' and o.picking_ids">
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>Origine</h5>
+                                    <strong>Commandes:</strong>
+                                    <t t-foreach="o.sale_order_ids" t-as="so">
+                                        <span t-field="so.name"/>
+                                        <t t-if="not so_last">, </t>
+                                    </t>
+                                    <br/>
+                                    <strong>Bons de livraison:</strong>
+                                    <t t-foreach="o.picking_ids" t-as="pick">
+                                        <span t-field="pick.name"/>
+                                        <t t-if="not pick_last">, </t>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Lignes de retour -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5>Articles retournes</h5>
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" style="width: 8%">#</th>
+                                            <th>Produit</th>
+                                            <th class="text-center" style="width: 20%">Quantite</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="line_num" t-value="0"/>
+                                        <t t-foreach="o.line_ids" t-as="line">
+                                            <t t-set="line_num" t-value="line_num + 1"/>
+                                            <tr>
+                                                <td class="text-center"><t t-esc="line_num"/></td>
+                                                <td><span t-field="line.product_id.display_name"/></td>
+                                                <td class="text-center"><span t-field="line.qty_returned"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <t t-if="o.notes">
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>Notes</h5>
+                                    <p t-field="o.notes"/>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Reception et Avoir -->
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <t t-if="o.return_picking_id">
+                                    <strong>Reception:</strong> <span t-field="o.return_picking_id.name"/>
+                                </t>
+                            </div>
+                            <div class="col-6">
+                                <t t-if="o.refund_id">
+                                    <strong>Avoir:</strong> <span t-field="o.refund_id.name"/>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <p>____________________________</p>
+                                <p><strong>Signature Client</strong></p>
+                            </div>
+                            <div class="col-6 text-center">
+                                <p>____________________________</p>
+                                <p><strong>Signature Responsable</strong></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_return" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.return</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="50"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block"
+                     data-string="Gestion des Retours"
+                     data-key="adi_return_management"
+                     groups="adi_return_management.group_return_manager">
+
+                    <h2>Parametres des retours</h2>
+
+                    <div class="row mt16 o_settings_container" id="return_settings">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="return_origin_mode"/>
+                                <div class="text-muted">
+                                    Definit comment les produits peuvent etre selectionnes lors d'un retour
+                                </div>
+                                <field name="return_origin_mode" class="mt-2"/>
+                                <div class="mt-2">
+                                    <ul class="text-muted small">
+                                        <li><strong>Libre :</strong> Tous les produits stockables peuvent etre retournes</li>
+                                        <li><strong>Souple :</strong> Seuls les produits deja livres au client peuvent etre retournes</li>
+                                        <li><strong>Strict :</strong> L'utilisateur doit selectionner les commandes/BL d'origine</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action pour ouvrir les parametres -->
+    <record id="action_return_config_settings" model="ir.actions.act_window">
+        <field name="name">Parametres</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'adi_return_management', 'bin_size': False}</field>
+    </record>
+
+</odoo>

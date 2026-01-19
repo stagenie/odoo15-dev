@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu principal de l'application (niveau racine) -->
+    <menuitem
+        id="menu_return_main"
+        name="Retours"
+        sequence="45"
+        web_icon="adi_return_management,static/description/icon.png"
+        groups="adi_return_management.group_return_user"/>
+
+    <!-- ====================== -->
+    <!-- Menu Operations        -->
+    <!-- ====================== -->
+    <menuitem
+        id="menu_return_operations"
+        name="Operations"
+        parent="menu_return_main"
+        sequence="10"/>
+
+    <!-- Ordres de retour -->
+    <menuitem
+        id="menu_return_order"
+        name="Ordres de retour"
+        parent="menu_return_operations"
+        action="action_return_order"
+        sequence="10"/>
+
+    <!-- ====================== -->
+    <!-- Menu Reporting         -->
+    <!-- ====================== -->
+    <menuitem
+        id="menu_return_reporting"
+        name="Analyse"
+        parent="menu_return_main"
+        sequence="50"
+        />
+
+    <!-- ====================== -->
+    <!-- Menu Configuration     -->
+    <!-- ====================== -->
+    <menuitem
+        id="menu_return_config"
+        name="Configuration"
+        parent="menu_return_main"
+        sequence="100"
+        groups="adi_return_management.group_return_manager"/>
+
+    <!-- Raisons de retour -->
+    <menuitem
+        id="menu_return_reason"
+        name="Raisons de retour"
+        parent="menu_return_config"
+        action="action_return_reason"
+        sequence="10"/>
+
+    <!-- Parametres -->
+    <menuitem
+        id="menu_return_settings"
+        name="Parametres"
+        parent="menu_return_config"
+        action="action_return_config_settings"
+        sequence="99"/>
+
+</odoo>

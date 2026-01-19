@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequence pour les ordres de retour -->
+        <record id="sequence_return_order" model="ir.sequence">
+            <field name="name">Ordre de retour</field>
+            <field name="code">return.order</field>
+            <field name="prefix">RET/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Raisons de retour par defaut -->
+        <record id="reason_defective" model="return.reason">
+            <field name="name">Produit defectueux</field>
+            <field name="code">DEFECT</field>
+            <field name="sequence">10</field>
+            <field name="description">Le produit presente un defaut de fabrication ou de fonctionnement.</field>
+        </record>
+
+        <record id="reason_wrong_product" model="return.reason">
+            <field name="name">Mauvais produit livre</field>
+            <field name="code">WRONG</field>
+            <field name="sequence">20</field>
+            <field name="description">Le produit livre ne correspond pas a la commande.</field>
+        </record>
+
+        <record id="reason_damaged" model="return.reason">
+            <field name="name">Produit endommage</field>
+            <field name="code">DAMAGED</field>
+            <field name="sequence">30</field>
+            <field name="description">Le produit a ete endommage pendant le transport ou la manipulation.</field>
+        </record>
+
+        <record id="reason_not_satisfied" model="return.reason">
+            <field name="name">Client non satisfait</field>
+            <field name="code">UNSATISFIED</field>
+            <field name="sequence">40</field>
+            <field name="description">Le client n'est pas satisfait du produit pour une raison personnelle.</field>
+        </record>
+
+        <record id="reason_order_cancelled" model="return.reason">
+            <field name="name">Commande annulee</field>
+            <field name="code">CANCELLED</field>
+            <field name="sequence">50</field>
+            <field name="description">La commande a ete annulee apres livraison.</field>
+        </record>
+
+        <record id="reason_expired" model="return.reason">
+            <field name="name">Produit expire</field>
+            <field name="code">EXPIRED</field>
+            <field name="sequence">60</field>
+            <field name="description">Le produit a depasse sa date de peremption.</field>
+        </record>
+
+        <record id="reason_other" model="return.reason">
+            <field name="name">Autre</field>
+            <field name="code">OTHER</field>
+            <field name="sequence">99</field>
+            <field name="description">Autre raison de retour non listee.</field>
+        </record>
+
+    </data>
+</odoo>

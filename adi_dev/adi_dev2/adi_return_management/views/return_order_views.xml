@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Form -->
+    <record id="view_return_order_form" model="ir.ui.view">
+        <field name="name">return.order.form</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <form string="Ordre de retour">
+                <header>
+                    <button name="action_validate"
+                            string="Valider"
+                            type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_create_refund"
+                            string="Creer Avoir"
+                            type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'validated')]}"
+                            confirm="Etes-vous sur de vouloir creer l'avoir ?"/>
+                    <button name="%(adi_return_management.action_report_return_order)d"
+                            string="Imprimer"
+                            type="action"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="action_draft"
+                            string="Remettre en brouillon"
+                            type="object"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'validated'), ('refund_id', '!=', False), ('return_picking_id', '!=', False)]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,validated,refund_created"/>
+                </header>
+                <sheet>
+                    <!-- Boutons stat -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_picking"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-truck"
+                                attrs="{'invisible': [('picking_count', '=', 0)]}">
+                            <field name="picking_count" widget="statinfo" string="Reception"/>
+                        </button>
+                        <button name="action_view_refund"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-text-o"
+                                attrs="{'invisible': [('refund_count', '=', 0)]}">
+                            <field name="refund_count" widget="statinfo" string="Avoir"/>
+                        </button>
+                    </div>
+
+                    <!-- Titre -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Informations generales">
+                            <field name="partner_id" options="{'no_create': True}"/>
+                            <field name="date"/>
+                            <field name="reason_id" options="{'no_create': True}"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="refund_id" invisible="1"/>
+                            <field name="return_picking_id" invisible="1"/>
+                        </group>
+                        <group string="Destination du retour">
+                            <field name="warehouse_id" options="{'no_create': True}"/>
+                            <field name="return_location_id" options="{'no_create': True}"
+                                   attrs="{'invisible': [('warehouse_id', '=', False)]}"/>
+                            <field name="allowed_warehouse_ids" invisible="1"/>
+                            <field name="allowed_location_ids" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Section Origine (visible en mode strict) -->
+                    <group string="Origine" attrs="{'invisible': [('origin_mode', '!=', 'strict')]}">
+                        <group>
+                            <field name="origin_mode" invisible="1"/>
+                            <field name="sale_order_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="picking_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+
+                    <!-- Info mode flexible -->
+                    <div class="alert alert-info" role="alert"
+                         attrs="{'invisible': [('origin_mode', '!=', 'flexible')]}">
+                        <strong>Mode souple active :</strong> Seuls les produits deja livres a ce client peuvent etre retournes.
+                    </div>
+
+                    <notebook>
+                        <page string="Lignes de retour" name="lines">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="available_product_ids" invisible="1"/>
+                                    <field name="picking_line_id"
+                                           attrs="{'column_invisible': [('parent.origin_mode', '!=', 'strict')]}"
+                                           options="{'no_create': True}"
+                                           optional="hide"/>
+                                    <field name="picking_id" optional="hide"/>
+                                    <field name="qty_returned"/>
+                                    <field name="qty_available" optional="show"/>
+                                    <field name="price_unit"/>
+                                    <field name="subtotal"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="origin_mode" invisible="1"/>
+                                    <field name="order_picking_ids" invisible="1"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="amount_total" class="oe_subtotal_footer_separator"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Notes internes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue Tree -->
+    <record id="view_return_order_tree" model="ir.ui.view">
+        <field name="name">return.order.tree</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <tree string="Ordres de retour"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'validated'"
+                  decoration-success="state == 'refund_created'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="reason_id"/>
+                <field name="warehouse_id"/>
+                <field name="return_location_id" optional="hide"/>
+                <field name="amount_total" sum="Total" widget="monetary"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'validated'"
+                       decoration-success="state == 'refund_created'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Kanban -->
+    <record id="view_return_order_kanban" model="ir.ui.view">
+        <field name="name">return.order.kanban</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_mobile" quick_create="false">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="amount_total"/>
+                <field name="currency_id"/>
+                <field name="state"/>
+                <field name="reason_id"/>
+                <field name="warehouse_id"/>
+                <progressbar field="state" colors='{"refund_created": "success", "validated": "warning"}'/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb16">
+                                <div class="o_kanban_record_headings mt4">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                                <strong>
+                                    <field name="amount_total" widget="monetary"/>
+                                </strong>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div><field name="partner_id"/></div>
+                                <div class="text-muted"><field name="reason_id"/></div>
+                                <div class="text-muted"><i class="fa fa-warehouse"/> <field name="warehouse_id"/></div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="date" widget="date"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="state" widget="label_selection"
+                                           options="{'classes': {'draft': 'info', 'validated': 'warning', 'refund_created': 'success'}}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Search -->
+    <record id="view_return_order_search" model="ir.ui.view">
+        <field name="name">return.order.search</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher un retour">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="reason_id"/>
+                <field name="warehouse_id"/>
+                <field name="return_location_id"/>
+                <separator/>
+                <filter string="Brouillon" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Valide" name="validated" domain="[('state', '=', 'validated')]"/>
+                <filter string="Avoir cree" name="refund_created" domain="[('state', '=', 'refund_created')]"/>
+                <separator/>
+                <filter string="Aujourd'hui" name="today" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Ce mois" name="month" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <separator/>
+                <filter string="Mes retours" name="my_returns" domain="[('user_id', '=', uid)]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Etat" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Client" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Raison" name="group_reason" context="{'group_by': 'reason_id'}"/>
+                    <filter string="Entrepot" name="group_warehouse" context="{'group_by': 'warehouse_id'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_return_order" model="ir.actions.act_window">
+        <field name="name">Ordres de retour</field>
+        <field name="res_model">return.order</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="search_view_id" ref="view_return_order_search"/>
+        <field name="context">{'search_default_draft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Creer votre premier ordre de retour
+            </p>
+            <p>
+                Gerez les retours produits de vos clients et generez automatiquement les avoirs.
+            </p>
+        </field>
+    </record>
+
+</odoo>
