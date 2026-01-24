@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====== VUE FORM WIZARD ====== -->
+    <record id="view_project_costing_wizard_form" model="ir.ui.view">
+        <field name="name">project.costing.wizard.form</field>
+        <field name="model">project.costing.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Saisie Costing Projet">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="order_id" readonly="1"/>
+                            <field name="order_state" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="auto_create_sale_lines"/>
+                        </group>
+                    </group>
+
+                    <group string="Marges par défaut (optionnel)">
+                        <group>
+                            <field name="default_equipment_margin" string="% Équipement"/>
+                            <field name="default_labor_margin" string="% M.O."/>
+                        </group>
+                        <group>
+                            <button name="action_apply_default_margins"
+                                    string="Appliquer aux lignes"
+                                    type="object"
+                                    class="btn-secondary oe_inline"
+                                    icon="fa-check"/>
+                            <button name="action_add_from_sale_lines"
+                                    string="Importer du devis"
+                                    type="object"
+                                    class="btn-secondary oe_inline"
+                                    icon="fa-download"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Lignes de calcul" name="lines">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="product_uom_id" string="Unité" readonly="1"/>
+                                    <field name="quantity"/>
+                                    <field name="purchase_price" string="Coût Unit."/>
+                                    <field name="equipment_margin_percent" string="% Équip."/>
+                                    <field name="labor_margin_percent" string="% M.O."/>
+                                    <field name="sale_price_unit" string="PV Unit." readonly="1"/>
+                                    <field name="subtotal_cost" string="Total Coût" sum="Total Coût"/>
+                                    <field name="subtotal_sale" string="Total Vente" sum="Total Vente"/>
+                                    <field name="sale_line_id" optional="hide" string="Ligne existante"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="total_cost" widget="monetary"/>
+                                <field name="total_sale" widget="monetary" class="oe_subtotal_footer_separator"/>
+                                <field name="total_margin" widget="monetary"/>
+                            </group>
+                            <div class="oe_clear"/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <footer>
+                    <button name="action_confirm"
+                            string="Valider et Créer"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ====== ACTION WIZARD ====== -->
+    <record id="action_project_costing_wizard" model="ir.actions.act_window">
+        <field name="name">Saisie Costing Projet</field>
+        <field name="res_model">project.costing.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====== EXTENSION VUE FORM SALE.ORDER ====== -->
+    <record id="view_sale_order_form_costing" model="ir.ui.view">
+        <field name="name">sale.order.form.costing</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- Smart Button dans la button_box -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_costing_lines"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-calculator"
+                        attrs="{'invisible': [('costing_line_count', '=', 0)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="costing_line_count"/>
+                        </span>
+                        <span class="o_stat_text">Costing</span>
+                    </div>
+                </button>
+            </xpath>
+
+            <!-- Bouton pour ouvrir le wizard (visible uniquement en draft/sent) -->
+            <xpath expr="//button[@name='action_quotation_send']" position="before">
+                <button name="action_open_costing_wizard"
+                        string="Calcul Costing"
+                        type="object"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
+            </xpath>
+
+            <!-- Section récapitulative costing (avant les notes) -->
+            <xpath expr="//field[@name='note']" position="before">
+                <group string="Récapitulatif Costing Projet"
+                       attrs="{'invisible': [('costing_line_count', '=', 0)]}">
+                    <group>
+                        <field name="costing_total_cost" string="Total Coût"/>
+                        <field name="costing_total_equipment_margin" string="Total Marge Équipement"/>
+                        <field name="costing_total_labor_margin" string="Total Main d'Oeuvre"/>
+                    </group>
+                    <group>
+                        <field name="costing_total_sale" string="Total Vente"/>
+                        <field name="costing_total_margin" string="Marge Totale"/>
+                        <field name="costing_margin_percent" string="% Marge"/>
+                    </group>
+                </group>
+
+                <!-- Indicateur de synchronisation et bouton -->
+                <group attrs="{'invisible': [('costing_line_count', '=', 0)]}">
+                    <group>
+                        <field name="costing_unsynced_count"
+                               string="Lignes non synchronisées"
+                               attrs="{'invisible': [('costing_all_synced', '=', True)]}"/>
+                        <field name="costing_all_synced" invisible="1"/>
+                    </group>
+                    <group>
+                        <button name="action_sync_all_costing"
+                                string="Synchroniser tout le costing"
+                                type="object"
+                                class="btn-warning"
+                                attrs="{'invisible': ['|',
+                                                      ('costing_all_synced', '=', True),
+                                                      ('state', 'not in', ['draft', 'sent'])]}"/>
+                    </group>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ====== EXTENSION VUE TREE SALE.ORDER ====== -->
+    <record id="view_sale_order_tree_costing" model="ir.ui.view">
+        <field name="name">sale.order.tree.costing</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <field name="amount_total" position="after">
+                <field name="costing_total_margin" string="Marge" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

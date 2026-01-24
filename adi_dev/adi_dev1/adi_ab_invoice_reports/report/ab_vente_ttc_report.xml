@@ -8,6 +8,7 @@
     <!-- - Sans colonne TVA                         -->
     <!-- - Net à payer seulement en bas             -->
     <!-- - Préserve le timbre si espèce             -->
+    <!-- - Affiche le Solde Actuel du client        -->
     <!-- ========================================== -->
 
     <template id="ab_vente_ttc_document">
@@ -210,6 +211,21 @@
                                 </t>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Solde Actuel du client -->
+                <div class="row mt-3 mb-3" name="solde_actuel">
+                    <div class="col-12">
+                        <table class="table table-sm" style="width: auto;">
+                            <tr>
+                                <td><strong>Solde Actuel:</strong></td>
+                                <td class="text-end">
+                                    <span t-esc="o.partner_id.credit"
+                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
 

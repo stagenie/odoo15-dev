@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Hériter de la vue formulaire du journal pour ajouter le champ is_service_journal -->
+        <record id="view_account_journal_form_inherit_service" model="ir.ui.view">
+            <field name="name">account.journal.form.inherit.service</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form"/>
+            <field name="arch" type="xml">
+                <!-- Ajouter le champ is_service_journal après le champ type, visible uniquement pour les journaux d'achat -->
+                <field name="type" position="after">
+                    <field name="is_service_journal"
+                           attrs="{'invisible': [('type', '!=', 'purchase')]}"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Hériter de la vue liste du journal pour ajouter le champ is_service_journal -->
+        <record id="view_account_journal_tree_inherit_service" model="ir.ui.view">
+            <field name="name">account.journal.tree.inherit.service</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_tree"/>
+            <field name="arch" type="xml">
+                <field name="type" position="after">
+                    <field name="is_service_journal" optional="hide"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>

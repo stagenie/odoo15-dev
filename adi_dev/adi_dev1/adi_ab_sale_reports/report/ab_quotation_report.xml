@@ -3,9 +3,9 @@
     <!-- ========================================== -->
     <!-- RAPPORT DEVIS PERSONNALISÉ AB             -->
     <!-- - Sans échéance                           -->
-    <!-- - Colonnes: Description, Qté, Prix U, Montant -->
-    <!-- - Sans TVA ni remise                      -->
-    <!-- - En bas: Net à payer seulement           -->
+    <!-- - Colonnes: Description, Qté, Prix U, Remise %, Montant -->
+    <!-- - Sans TVA                                -->
+    <!-- - En bas: Total remise + Net à payer      -->
     <!-- - Offre valable jusqu'à...                -->
     <!-- ========================================== -->
 
@@ -73,8 +73,13 @@
                     </div>
                 </div>
 
-                <!-- Table des lignes: N°, Description, Quantité, Prix U, Montant -->
-                <!-- SANS colonne TVA, SANS colonne Remise -->
+                <!-- Vérifier s'il y a des remises -->
+                <t t-set="display_discount" t-value="any(l.discount for l in doc.order_line)"/>
+                <!-- Calculer le total des remises -->
+                <t t-set="total_discount" t-value="sum((l.price_unit * l.product_uom_qty * l.discount / 100) for l in doc.order_line if not l.display_type and l.discount)"/>
+
+                <!-- Table des lignes: N°, Description, Quantité, Prix U, Remise %, Montant -->
+                <!-- SANS colonne TVA -->
                 <t t-set="line_num" t-value="0"/>
                 <table class="table table-sm o_main_table">
                     <thead style="display: table-row-group">
@@ -83,6 +88,7 @@
                             <th name="th_description" class="text-start">Description</th>
                             <th name="th_quantity" class="text-end">Quantité</th>
                             <th name="th_priceunit" class="text-end">Prix U</th>
+                            <th name="th_discount" t-if="display_discount" class="text-end">Remise %</th>
                             <th name="th_subtotal" class="text-end">Montant</th>
                         </tr>
                     </thead>
@@ -104,6 +110,10 @@
                                         <t t-set="price_unit_ttc" t-value="line.price_unit * (1 + sum(line.tax_id.mapped('amount')) / 100) if line.tax_id else line.price_unit"/>
                                         <span t-esc="price_unit_ttc"
                                               t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                    <td t-if="display_discount" class="text-end">
+                                        <!-- Remise avec 2 décimales -->
+                                        <span t-if="line.discount > 0" t-esc="'%.2f' % line.discount"/>
                                     </td>
                                     <td name="td_subtotal" class="text-end o_price_total">
                                         <span t-field="line.price_total"
@@ -142,9 +152,18 @@
                                 </table>
                             </t>
                         </div>
-                        <!-- Colonne droite: Net à payer seulement (pas de Total HT, pas de TVA) -->
+                        <!-- Colonne droite: Total remise + Net à payer (pas de Total HT, pas de TVA) -->
                         <div class="col-6">
                             <table class="table table-sm">
+                                <!-- Total remise si présent -->
+                                <tr t-if="display_discount and total_discount > 0" groups="product.group_discount_per_so_line">
+                                    <td>Total remise</td>
+                                    <td class="text-end">
+                                        <span t-esc="total_discount"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <!-- Net à payer (Total TTC) -->
                                 <tr class="border-black o_total">
                                     <td><strong>Net à payer</strong></td>
                                     <td class="text-end">

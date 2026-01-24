@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_costing_line_user,project.costing.line user,model_project_costing_line,group_project_costing_user,1,1,1,0
+access_project_costing_line_manager,project.costing.line manager,model_project_costing_line,group_project_costing_manager,1,1,1,1
+access_project_costing_wizard_user,project.costing.wizard user,model_project_costing_wizard,group_project_costing_user,1,1,1,1
+access_project_costing_wizard_line_user,project.costing.wizard.line user,model_project_costing_wizard_line,group_project_costing_user,1,1,1,1

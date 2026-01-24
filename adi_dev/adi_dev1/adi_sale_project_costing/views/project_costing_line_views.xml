@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====== VUE TREE ====== -->
+    <record id="view_project_costing_line_tree" model="ir.ui.view">
+        <field name="name">project.costing.line.tree</field>
+        <field name="model">project.costing.line</field>
+        <field name="arch" type="xml">
+            <tree string="Lignes Costing"
+                  editable="bottom"
+                  decoration-warning="not is_synced"
+                  decoration-success="is_synced">
+                <field name="sequence" widget="handle"/>
+                <field name="product_id"/>
+                <field name="product_uom_id" string="Unité" optional="show"/>
+                <field name="quantity"/>
+                <field name="purchase_price" string="Coût Unit."/>
+                <field name="equipment_margin_percent" string="% Équip."/>
+                <field name="labor_margin_percent" string="% M.O."/>
+                <field name="total_margin_percent" string="% Total" readonly="1" optional="hide"/>
+                <field name="sale_price_unit" string="PV Unit." readonly="1"/>
+                <field name="subtotal_cost" string="Total Coût" sum="Total Coût"/>
+                <field name="subtotal_sale" string="Total Vente" sum="Total Vente"/>
+                <field name="margin_total" string="Marge" sum="Marge Totale"/>
+                <field name="is_synced" widget="boolean_toggle" readonly="1" optional="show"/>
+                <field name="sale_line_id" optional="hide"/>
+                <field name="order_id" invisible="1"/>
+                <field name="order_state" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <button name="action_sync_to_sale_line"
+                        type="object"
+                        icon="fa-refresh"
+                        title="Synchroniser vers devis"
+                        attrs="{'invisible': ['|',
+                                              ('sale_line_id', '=', False),
+                                              ('order_state', 'not in', ['draft', 'sent'])]}"/>
+                <button name="action_create_sale_line"
+                        type="object"
+                        icon="fa-plus"
+                        title="Créer ligne devis"
+                        attrs="{'invisible': ['|',
+                                              ('sale_line_id', '!=', False),
+                                              ('order_state', 'not in', ['draft', 'sent'])]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ====== VUE FORM ====== -->
+    <record id="view_project_costing_line_form" model="ir.ui.view">
+        <field name="name">project.costing.line.form</field>
+        <field name="model">project.costing.line</field>
+        <field name="arch" type="xml">
+            <form string="Ligne Costing">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_sync_to_sale_line"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-refresh"
+                                string="Synchroniser"
+                                attrs="{'invisible': ['|',
+                                                      ('sale_line_id', '=', False),
+                                                      ('order_state', 'not in', ['draft', 'sent'])]}"/>
+                        <button name="action_create_sale_line"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-plus"
+                                string="Créer ligne"
+                                attrs="{'invisible': ['|',
+                                                      ('sale_line_id', '!=', False),
+                                                      ('order_state', 'not in', ['draft', 'sent'])]}"/>
+                    </div>
+
+                    <widget name="web_ribbon"
+                            title="Synchronisé"
+                            bg_color="bg-success"
+                            attrs="{'invisible': [('is_synced', '=', False)]}"/>
+                    <widget name="web_ribbon"
+                            title="Non synchronisé"
+                            bg_color="bg-warning"
+                            attrs="{'invisible': [('is_synced', '=', True)]}"/>
+
+                    <group>
+                        <group string="Produit">
+                            <field name="order_id" readonly="1"/>
+                            <field name="product_id"
+                                   attrs="{'readonly': [('order_state', 'not in', ['draft', 'sent'])]}"/>
+                            <field name="quantity"
+                                   attrs="{'readonly': [('order_state', 'not in', ['draft', 'sent'])]}"/>
+                            <field name="product_uom_id"/>
+                        </group>
+                        <group string="Coût">
+                            <field name="purchase_price"
+                                   attrs="{'readonly': [('order_state', 'not in', ['draft', 'sent'])]}"/>
+                            <field name="subtotal_cost"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Marges">
+                            <field name="equipment_margin_percent"
+                                   attrs="{'readonly': [('order_state', 'not in', ['draft', 'sent'])]}"/>
+                            <field name="equipment_margin_amount"/>
+                            <field name="labor_margin_percent"
+                                   attrs="{'readonly': [('order_state', 'not in', ['draft', 'sent'])]}"/>
+                            <field name="labor_margin_amount"/>
+                            <field name="total_margin_percent"/>
+                        </group>
+                        <group string="Prix de Vente">
+                            <field name="sale_price_unit"/>
+                            <field name="subtotal_sale"/>
+                            <field name="margin_total"/>
+                        </group>
+                    </group>
+
+                    <group string="Synchronisation" col="4">
+                        <field name="sale_line_id" readonly="1"/>
+                        <field name="is_synced" readonly="1"/>
+                        <field name="last_sync_date" readonly="1"/>
+                    </group>
+
+                    <field name="order_state" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ====== VUE SEARCH ====== -->
+    <record id="view_project_costing_line_search" model="ir.ui.view">
+        <field name="name">project.costing.line.search</field>
+        <field name="model">project.costing.line</field>
+        <field name="arch" type="xml">
+            <search string="Recherche Costing">
+                <field name="product_id"/>
+                <field name="order_id"/>
+                <filter name="not_synced" string="Non synchronisé"
+                        domain="[('is_synced', '=', False)]"/>
+                <filter name="synced" string="Synchronisé"
+                        domain="[('is_synced', '=', True)]"/>
+                <separator/>
+                <filter name="group_order" string="Par Devis"
+                        context="{'group_by': 'order_id'}"/>
+                <filter name="group_product" string="Par Produit"
+                        context="{'group_by': 'product_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ====== ACTION ====== -->
+    <record id="action_project_costing_line" model="ir.actions.act_window">
+        <field name="name">Lignes de Costing</field>
+        <field name="res_model">project.costing.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_project_costing_line_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune ligne de costing
+            </p>
+            <p>
+                Les lignes de costing permettent de calculer le prix de vente
+                à partir du coût avec des marges équipement et main d'oeuvre.
+            </p>
+        </field>
+    </record>
+
+    <!-- ====== MENU (optionnel - sous Ventes) ====== -->
+    <menuitem id="menu_project_costing_root"
+              name="Costing Projet"
+              parent="sale.sale_order_menu"
+              sequence="20"/>
+
+    <menuitem id="menu_project_costing_lines"
+              name="Lignes de Costing"
+              parent="menu_project_costing_root"
+              action="action_project_costing_line"
+              sequence="10"/>
+
+</odoo>
