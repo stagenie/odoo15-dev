@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Lot List Report Action -->
+        <record id="action_report_lot_list" model="ir.actions.report">
+            <field name="name">Liste des Lots</field>
+            <field name="model">stock.production.lot</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">adi_magimed.report_lot_list</field>
+            <field name="report_file">adi_magimed.report_lot_list</field>
+            <field name="print_report_name">'Liste_Lots_%s' % time.strftime('%Y%m%d')</field>
+            <field name="binding_model_id" ref="stock.model_stock_production_lot"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_magimed_landscape"/>
+        </record>
+
+        <!-- Lot List Report Template -->
+        <template id="report_lot_list">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="text-center">
+                            <h2>LISTE DES LOTS</h2>
+                            <p class="small">
+                                Edite le: <span t-esc="time.strftime('%d/%m/%Y %H:%M')"/>
+                            </p>
+                        </div>
+
+                        <table class="table table-sm table-bordered mt-4">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>N Lot</th>
+                                    <th>Produit</th>
+                                    <th>Reference</th>
+                                    <th class="text-center">Quantite</th>
+                                    <th>Unite</th>
+                                    <th>Date Creation</th>
+                                    <th>Date Expiration</th>
+                                    <th class="text-center">Jours Rest.</th>
+                                    <th>Statut</th>
+                                    <th>Emplacements</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="docs" t-as="lot">
+                                    <tr t-attf-class="#{lot.expiration_status == 'expired' and 'table-danger' or lot.expiration_status == 'danger' and 'table-warning' or lot.expiration_status == 'warning' and 'table-info' or ''}">
+                                        <td><strong t-field="lot.name"/></td>
+                                        <td><span t-field="lot.product_id.name"/></td>
+                                        <td><span t-field="lot.product_id.default_code"/></td>
+                                        <td class="text-center"><span t-field="lot.total_qty"/></td>
+                                        <td><span t-field="lot.product_uom_id.name"/></td>
+                                        <td><span t-field="lot.create_date" t-options="{'widget': 'date'}"/></td>
+                                        <td>
+                                            <t t-if="lot.expiration_date">
+                                                <span t-field="lot.expiration_date" t-options="{'widget': 'date'}"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-if="lot.expiration_date">
+                                                <span t-esc="lot.days_to_expiration"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                        <td>
+                                            <t t-if="lot.expiration_status == 'ok'">
+                                                <span class="badge badge-success">OK</span>
+                                            </t>
+                                            <t t-elif="lot.expiration_status == 'warning'">
+                                                <span class="badge badge-warning">Attention</span>
+                                            </t>
+                                            <t t-elif="lot.expiration_status == 'danger'">
+                                                <span class="badge badge-danger">Urgent</span>
+                                            </t>
+                                            <t t-elif="lot.expiration_status == 'expired'">
+                                                <span class="badge badge-dark">Expire</span>
+                                            </t>
+                                        </td>
+                                        <td class="small">
+                                            <t t-foreach="lot.location_ids" t-as="loc">
+                                                <span t-esc="loc.name"/>
+                                                <t t-if="not loc_last">, </t>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <p class="small">
+                                    <strong>Total lots:</strong> <span t-esc="len(docs)"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Stock History Report Action -->
+        <record id="action_report_stock_history" model="ir.actions.report">
+            <field name="name">Historique Mouvements Stock</field>
+            <field name="model">stock.move.history</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">adi_magimed.report_stock_history</field>
+            <field name="report_file">adi_magimed.report_stock_history</field>
+            <field name="print_report_name">'Historique_Stock_%s' % time.strftime('%Y%m%d')</field>
+            <field name="binding_model_id" ref="model_stock_move_history"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_magimed_landscape"/>
+        </record>
+
+        <!-- Stock History Report Template -->
+        <template id="report_stock_history">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="text-center">
+                            <h2>HISTORIQUE DES MOUVEMENTS DE STOCK</h2>
+                            <p class="small">
+                                Edite le: <span t-esc="time.strftime('%d/%m/%Y %H:%M')"/>
+                            </p>
+                        </div>
+
+                        <!-- Filters applied (if data available) -->
+                        <t t-if="data and data.get('filters')">
+                            <div class="row mt-2 mb-3">
+                                <div class="col-12">
+                                    <div class="card bg-light">
+                                        <div class="card-body p-2">
+                                            <strong>Filtres appliques:</strong>
+                                            <t t-if="data.get('date_from')">
+                                                Du <span t-esc="data.get('date_from')"/>
+                                            </t>
+                                            <t t-if="data.get('date_to')">
+                                                au <span t-esc="data.get('date_to')"/>
+                                            </t>
+                                            <t t-if="data.get('filters', {}).get('products')">
+                                                | Produits: <span t-esc="', '.join(data['filters']['products'])"/>
+                                            </t>
+                                            <t t-if="data.get('filters', {}).get('warehouses')">
+                                                | Entrepots: <span t-esc="', '.join(data['filters']['warehouses'])"/>
+                                            </t>
+                                            <t t-if="data.get('filters', {}).get('move_type')">
+                                                | Type: <span t-esc="data['filters']['move_type']"/>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+
+                        <table class="table table-sm table-bordered" style="font-size: 0.85em;">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="width: 10%;">Date</th>
+                                    <th style="width: 10%;">Reference</th>
+                                    <th style="width: 18%;">Produit</th>
+                                    <th style="width: 10%;">N Lot</th>
+                                    <th style="width: 8%;">Expiration</th>
+                                    <th style="width: 7%;" class="text-center">Qte</th>
+                                    <th style="width: 5%;">Type</th>
+                                    <th style="width: 16%;">De</th>
+                                    <th style="width: 16%;">Vers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="docs" t-as="move">
+                                    <tr>
+                                        <td>
+                                            <span t-field="move.date" t-options="{'widget': 'date'}"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="move.reference"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="move.product_id.name"/>
+                                            <br/>
+                                            <small class="text-muted" t-field="move.product_id.default_code"/>
+                                        </td>
+                                        <td>
+                                            <t t-if="move.lot_name">
+                                                <span t-field="move.lot_name"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                        <td>
+                                            <t t-if="move.expiration_date">
+                                                <span t-field="move.expiration_date" t-options="{'widget': 'date'}"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                        <td class="text-center">
+                                            <strong t-field="move.qty_done"/>
+                                            <br/>
+                                            <small t-field="move.product_uom_id.name"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-if="move.move_type == 'in'">
+                                                <span class="badge badge-success">E</span>
+                                            </t>
+                                            <t t-elif="move.move_type == 'out'">
+                                                <span class="badge badge-danger">S</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge badge-info">T</span>
+                                            </t>
+                                        </td>
+                                        <td class="small">
+                                            <span t-field="move.location_id.complete_name"/>
+                                        </td>
+                                        <td class="small">
+                                            <span t-field="move.location_dest_id.complete_name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <p class="small">
+                                    <strong>Total mouvements:</strong> <span t-esc="len(docs)"/>
+                                </p>
+                                <p class="small"><strong>Legende:</strong></p>
+                                <ul class="small">
+                                    <li><span class="badge badge-success">E</span> - Entree</li>
+                                    <li><span class="badge badge-danger">S</span> - Sortie</li>
+                                    <li><span class="badge badge-info">T</span> - Transfert Interne</li>
+                                </ul>
+                            </div>
+                            <div class="col-6 text-right">
+                                <p class="small">
+                                    <strong>Edite par:</strong> ________________________
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

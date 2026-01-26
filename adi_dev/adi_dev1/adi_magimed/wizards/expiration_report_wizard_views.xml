@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Expiration Report Wizard Form -->
+        <record id="view_expiration_report_wizard_form" model="ir.ui.view">
+            <field name="name">expiration.report.wizard.form</field>
+            <field name="model">expiration.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Rapport Alertes Expiration">
+                    <group>
+                        <group string="Criteres">
+                            <field name="days_before_expiration"/>
+                            <field name="include_expired"/>
+                            <field name="min_qty"/>
+                        </group>
+                        <group string="Filtres Produits">
+                            <field name="product_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="categ_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Filtres Emplacements">
+                            <field name="warehouse_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="location_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_view_expiring_lots" type="object"
+                                string="Voir les Lots" class="btn-primary"/>
+                        <button name="action_print_expiration_report" type="object"
+                                string="Imprimer" class="btn-secondary"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Expiration Wizard -->
+        <record id="action_expiration_report_wizard" model="ir.actions.act_window">
+            <field name="name">Rapport Expiration</field>
+            <field name="res_model">expiration.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Action for Lot List Report Wizard (redirect to expiration wizard) -->
+        <record id="action_report_lot_list_wizard" model="ir.actions.act_window">
+            <field name="name">Liste des Lots</field>
+            <field name="res_model">stock.production.lot</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="domain">[('product_qty', '>', 0)]</field>
+            <field name="context">{'search_default_has_stock': 1}</field>
+        </record>
+
+    </data>
+</odoo>

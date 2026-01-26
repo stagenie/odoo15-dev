@@ -1,0 +1,118 @@
+/* MAGIMED Dashboard Styles */
+
+.o_magimed_dashboard {
+    background-color: #f8f9fa;
+}
+
+.o_magimed_dashboard .o_dashboard_card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.o_magimed_dashboard .o_dashboard_stat {
+    text-align: center;
+    padding: 15px;
+}
+
+.o_magimed_dashboard .o_dashboard_stat .o_stat_value {
+    font-size: 2.5em;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.o_magimed_dashboard .o_dashboard_stat .o_stat_label {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+.o_magimed_dashboard .o_stat_danger .o_stat_value {
+    color: #dc3545;
+}
+
+.o_magimed_dashboard .o_stat_warning .o_stat_value {
+    color: #ffc107;
+}
+
+.o_magimed_dashboard .o_stat_success .o_stat_value {
+    color: #28a745;
+}
+
+.o_magimed_dashboard .o_stat_info .o_stat_value {
+    color: #17a2b8;
+}
+
+/* Expiration Alert Colors */
+.o_magimed_lot_expired {
+    background-color: #f8d7da !important;
+}
+
+.o_magimed_lot_danger {
+    background-color: #fff3cd !important;
+}
+
+.o_magimed_lot_warning {
+    background-color: #d1ecf1 !important;
+}
+
+/* Kanban Cards */
+.o_kanban_view .o_magimed_kanban_card {
+    border-left: 4px solid #dee2e6;
+}
+
+.o_kanban_view .o_magimed_kanban_card.expired {
+    border-left-color: #dc3545;
+}
+
+.o_kanban_view .o_magimed_kanban_card.danger {
+    border-left-color: #ffc107;
+}
+
+.o_kanban_view .o_magimed_kanban_card.warning {
+    border-left-color: #17a2b8;
+}
+
+/* Badge Styles */
+.badge-expiration-ok {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-expiration-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-expiration-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.badge-expiration-expired {
+    background-color: #343a40;
+    color: white;
+}
+
+/* Caution Status Colors */
+.badge-caution-pending {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.badge-caution-alert {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-caution-due {
+    background-color: #dc3545;
+    color: white;
+}
+
+.badge-caution-refunded {
+    background-color: #28a745;
+    color: white;
+}

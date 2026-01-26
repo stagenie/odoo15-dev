@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Bon de Sortie Report Action -->
+        <record id="action_report_bon_sortie" model="ir.actions.report">
+            <field name="name">Bon de Sortie</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">adi_magimed.report_bon_sortie</field>
+            <field name="report_file">adi_magimed.report_bon_sortie</field>
+            <field name="print_report_name">'Bon_Sortie_%s' % object.name.replace('/', '_')</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_magimed"/>
+        </record>
+
+        <!-- Bon de Sortie Report Template -->
+        <template id="report_bon_sortie">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="text-center">
+                                <h2>BON DE SORTIE STOCK</h2>
+                                <h3 t-field="doc.name"/>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-6">
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td><strong>Date:</strong></td>
+                                            <td><span t-field="doc.scheduled_date" t-options="{'widget': 'date'}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Motif:</strong></td>
+                                            <td>
+                                                <t t-if="doc.exit_reason == 'consumption'">Consommation</t>
+                                                <t t-elif="doc.exit_reason == 'scrap'">Rebut</t>
+                                                <t t-elif="doc.exit_reason == 'adjustment'">Ajustement</t>
+                                                <t t-else="">Autre</t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Origine:</strong></td>
+                                            <td><span t-field="doc.origin"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td><strong>Emplacement Source:</strong></td>
+                                            <td><span t-field="doc.location_id.complete_name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Emplacement Destination:</strong></td>
+                                            <td><span t-field="doc.location_dest_id.complete_name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Responsable:</strong></td>
+                                            <td><span t-field="doc.user_id.name"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <h4 class="mt-4">Produits</h4>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Designation</th>
+                                        <th class="text-center">Quantite</th>
+                                        <th>Unite</th>
+                                        <th>N Lot</th>
+                                        <th>Date Expiration</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.move_line_ids_without_package" t-as="line">
+                                        <tr>
+                                            <td><span t-field="line.product_id.default_code"/></td>
+                                            <td><span t-field="line.product_id.name"/></td>
+                                            <td class="text-center"><span t-field="line.qty_done"/></td>
+                                            <td><span t-field="line.product_uom_id.name"/></td>
+                                            <td><span t-field="line.lot_id.name"/></td>
+                                            <td>
+                                                <t t-if="line.lot_id.expiration_date">
+                                                    <span t-field="line.lot_id.expiration_date" t-options="{'widget': 'date'}"/>
+                                                </t>
+                                                <t t-else="">-</t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                            <t t-if="doc.transfer_notes">
+                                <h5 class="mt-4">Notes</h5>
+                                <p t-field="doc.transfer_notes"/>
+                            </t>
+
+                            <div class="row mt-5">
+                                <div class="col-4 text-center">
+                                    <p><strong>Demandeur:</strong></p>
+                                    <br/><br/>
+                                    <p>________________________</p>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <p><strong>Responsable Stock:</strong></p>
+                                    <br/><br/>
+                                    <p>________________________</p>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <p><strong>Livre par:</strong></p>
+                                    <br/><br/>
+                                    <p>________________________</p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

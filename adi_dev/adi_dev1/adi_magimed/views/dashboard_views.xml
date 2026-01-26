@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Dashboard Action -->
+        <record id="action_magimed_dashboard" model="ir.actions.client">
+            <field name="name">Tableau de Bord MAGIMED</field>
+            <field name="tag">magimed_dashboard</field>
+        </record>
+
+        <!-- Dashboard Template (using Qweb for simplicity) -->
+        <!-- Alternative: Simple redirect to main views -->
+        <record id="action_magimed_dashboard_redirect" model="ir.actions.act_window">
+            <field name="name">Tableau de Bord</field>
+            <field name="res_model">stock.production.lot</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[
+                ('expiration_date', '!=', False),
+                ('product_qty', '>', 0)
+            ]</field>
+            <field name="context">{'search_default_expiring_30_days': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Tableau de Bord MAGIMED
+                </p>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <h3>Bienvenue sur MAGIMED Interne</h3>
+                            <p>Utilisez les menus ci-dessous pour acceder aux fonctionnalites:</p>
+                        </div>
+                    </div>
+                </div>
+            </field>
+        </record>
+
+        <!-- Override dashboard action to use redirect for now -->
+        <record id="action_magimed_dashboard" model="ir.actions.act_window">
+            <field name="name">Tableau de Bord</field>
+            <field name="res_model">stock.production.lot</field>
+            <field name="view_mode">kanban,tree,form,calendar</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_expiration_alert_kanban')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_expiration_alert_tree')}),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('view_expiration_alert_calendar')})]"/>
+            <field name="domain">[
+                ('expiration_date', '!=', False),
+                ('product_qty', '>', 0),
+                ('is_expiring_soon', '=', True)
+            ]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune alerte d'expiration
+                </p>
+                <p>
+                    Tous vos lots sont en bon etat. Les alertes d'expiration
+                    apparaitront ici lorsque des lots approcheront de leur date limite.
+                </p>
+            </field>
+        </record>
+
+        <!-- Dashboard Stats View (SQL View for statistics) -->
+        <record id="view_magimed_dashboard_stats" model="ir.ui.view">
+            <field name="name">magimed.dashboard.stats</field>
+            <field name="model">stock.production.lot</field>
+            <field name="priority">100</field>
+            <field name="arch" type="xml">
+                <pivot string="Statistiques Lots">
+                    <field name="expiration_status" type="row"/>
+                    <field name="product_id" type="row"/>
+                    <field name="total_qty" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+    </data>
+</odoo>

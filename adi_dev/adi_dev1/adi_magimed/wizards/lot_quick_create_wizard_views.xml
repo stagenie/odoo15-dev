@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Lot Quick Create Wizard Form -->
+        <record id="view_lot_quick_create_wizard_form" model="ir.ui.view">
+            <field name="name">lot.quick.create.wizard.form</field>
+            <field name="model">lot.quick.create.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Creation Rapide de Lot">
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="auto_generate_name"/>
+                            <field name="lot_name"
+                                   attrs="{'readonly': [('auto_generate_name', '=', True)]}"/>
+                            <field name="ref"/>
+                        </group>
+                        <group>
+                            <field name="expiration_date"/>
+                            <field name="use_date"/>
+                            <field name="removal_date"/>
+                            <field name="alert_date"/>
+                        </group>
+                    </group>
+                    <field name="move_line_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <footer>
+                        <button name="action_create_and_close" type="object"
+                                string="Creer et Fermer" class="btn-primary"/>
+                        <button name="action_create_lot" type="object"
+                                string="Creer et Voir"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Lot Quick Create -->
+        <record id="action_lot_quick_create_wizard" model="ir.actions.act_window">
+            <field name="name">Creation Rapide de Lot</field>
+            <field name="res_model">lot.quick.create.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Email Template for Expiration Alert -->
+        <record id="mail_template_expiration_alert" model="mail.template">
+            <field name="name">MAGIMED: Alerte Expiration Lots</field>
+            <field name="model_id" ref="stock.model_stock_production_lot"/>
+            <field name="subject">Alerte: Lot ${object.name} expire bientot</field>
+            <field name="email_from">${(object.company_id.email or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.company_id.partner_id.email}</field>
+            <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; padding: 20px;">
+    <h2 style="color: #e74c3c;">Alerte Expiration de Lot</h2>
+    <p>Bonjour,</p>
+    <p>Le lot suivant arrive a expiration:</p>
+    <table style="border-collapse: collapse; width: 100%; margin: 20px 0;">
+        <tr style="background-color: #f8f9fa;">
+            <td style="padding: 10px; border: 1px solid #dee2e6;"><strong>Numero de Lot</strong></td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${object.name}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #dee2e6;"><strong>Produit</strong></td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${object.product_id.display_name}</td>
+        </tr>
+        <tr style="background-color: #f8f9fa;">
+            <td style="padding: 10px; border: 1px solid #dee2e6;"><strong>Date d'Expiration</strong></td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${object.expiration_date or 'Non definie'}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #dee2e6;"><strong>Quantite en Stock</strong></td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${object.product_qty} ${object.product_uom_id.name}</td>
+        </tr>
+    </table>
+    <p>Merci de prendre les mesures necessaires.</p>
+    <p>Cordialement,<br/>Systeme MAGIMED</p>
+</div>
+            ]]></field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- Email Template for Caution Alert -->
+        <record id="mail_template_caution_alert" model="mail.template">
+            <field name="name">MAGIMED: Alerte Caution a Rembourser</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">Alerte: Caution facture ${object.name} a rembourser</field>
+            <field name="email_from">${(object.company_id.email or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.company_id.partner_id.email}</field>
+            <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; padding: 20px;">
+    <h2 style="color: #f39c12;">Alerte Caution a Rembourser</h2>
+    <p>Bonjour,</p>
+    <p>La caution suivante arrive a echeance:</p>
+    <table style="border-collapse: collapse; width: 100%; margin: 20px 0;">
+        <tr style="background-color: #f8f9fa;">
+            <td style="padding: 10px; border: 1px solid #dee2e6;"><strong>Numero de Facture</strong></td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${object.name}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #dee2e6;"><strong>Client</strong></td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${object.partner_id.display_name}</td>
+        </tr>
+        <tr style="background-color: #f8f9fa;">
+            <td style="padding: 10px; border: 1px solid #dee2e6;"><strong>Date Remboursement</strong></td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${object.caution_refund_date or 'Non definie'}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #dee2e6;"><strong>Montant Facture</strong></td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${object.amount_total} ${object.currency_id.symbol}</td>
+        </tr>
+    </table>
+    <p>Merci de contacter le client pour le remboursement.</p>
+    <p>Cordialement,<br/>Systeme MAGIMED</p>
+</div>
+            ]]></field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

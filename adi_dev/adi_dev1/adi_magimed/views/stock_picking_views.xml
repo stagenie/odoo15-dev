@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Stock Picking Form Extension -->
+        <record id="view_picking_form_magimed" model="ir.ui.view">
+            <field name="name">stock.picking.form.magimed</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <!-- Add warehouse info -->
+                <xpath expr="//field[@name='location_id']" position="after">
+                    <field name="source_warehouse_id" readonly="1"
+                           attrs="{'invisible': [('is_magimed_transfer', '=', False)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='location_dest_id']" position="after">
+                    <field name="dest_warehouse_id" readonly="1"
+                           attrs="{'invisible': [('is_magimed_transfer', '=', False)]}"/>
+                </xpath>
+
+                <!-- Add entry/exit reason -->
+                <xpath expr="//field[@name='scheduled_date']" position="after">
+                    <field name="entry_reason"
+                           attrs="{'invisible': [('is_magimed_entry', '=', False)]}"/>
+                    <field name="exit_reason"
+                           attrs="{'invisible': [('is_magimed_exit', '=', False)]}"/>
+                </xpath>
+
+                <!-- Add transfer notes -->
+                <xpath expr="//page[@name='extra']" position="inside">
+                    <group string="Notes MAGIMED" attrs="{'invisible': [
+                        ('is_magimed_entry', '=', False),
+                        ('is_magimed_exit', '=', False),
+                        ('is_magimed_transfer', '=', False)
+                    ]}">
+                        <field name="transfer_notes" nolabel="1"/>
+                    </group>
+                </xpath>
+
+                <!-- Add print buttons -->
+                <xpath expr="//header/button[@name='action_assign']" position="before">
+                    <button name="action_print_bon_entree" type="object"
+                            string="Imprimer Bon Entree" class="btn-secondary"
+                            attrs="{'invisible': [('is_magimed_entry', '=', False)]}"/>
+                    <button name="action_print_bon_sortie" type="object"
+                            string="Imprimer Bon Sortie" class="btn-secondary"
+                            attrs="{'invisible': [('is_magimed_exit', '=', False)]}"/>
+                    <button name="action_print_bon_transfert" type="object"
+                            string="Imprimer Bon Transfert" class="btn-secondary"
+                            attrs="{'invisible': [('is_magimed_transfer', '=', False)]}"/>
+                </xpath>
+
+                <!-- Hidden fields -->
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="is_magimed_entry" invisible="1"/>
+                    <field name="is_magimed_exit" invisible="1"/>
+                    <field name="is_magimed_transfer" invisible="1"/>
+                    <field name="has_lots" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Stock Picking Tree Extension -->
+        <record id="view_picking_tree_magimed" model="ir.ui.view">
+            <field name="name">stock.picking.tree.magimed</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location_id']" position="after">
+                    <field name="source_warehouse_id" optional="hide"/>
+                </xpath>
+                <xpath expr="//field[@name='location_dest_id']" position="after">
+                    <field name="dest_warehouse_id" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Stock Move Line Form Extension (for lot display) -->
+        <record id="view_stock_move_line_detailed_magimed" model="ir.ui.view">
+            <field name="name">stock.move.line.detailed.magimed</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='lot_id']" position="after">
+                    <field name="lot_expiration_date" readonly="1" optional="show"/>
+                    <field name="lot_days_to_expiration" readonly="1" optional="hide"/>
+                    <field name="lot_expiration_status" widget="badge" readonly="1"
+                           decoration-success="lot_expiration_status == 'ok'"
+                           decoration-warning="lot_expiration_status == 'warning'"
+                           decoration-danger="lot_expiration_status in ('danger', 'expired')"
+                           optional="show"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Stock Move Line Operations Form Extension -->
+        <record id="view_stock_move_line_operation_magimed" model="ir.ui.view">
+            <field name="name">stock.move.line.operation.magimed</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.stock_move_line_view_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='todo']" position="after">
+                    <separator/>
+                    <filter name="with_lot" string="Avec Lot"
+                            domain="[('lot_id', '!=', False)]"/>
+                    <filter name="expiring_lot" string="Lot Expirant"
+                            domain="[('lot_id.is_expiring_soon', '=', True)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Stock Move Extension -->
+        <record id="view_stock_move_form_magimed" model="ir.ui.view">
+            <field name="name">stock.move.form.magimed</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_uom']" position="after">
+                    <field name="lot_names_display" readonly="1" string="Lots"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

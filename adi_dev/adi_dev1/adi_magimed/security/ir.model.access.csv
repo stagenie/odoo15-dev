@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_move_history_user,stock.move.history.user,model_stock_move_history,group_magimed_user,1,0,0,0
+access_stock_move_history_manager,stock.move.history.manager,model_stock_move_history,group_magimed_stock_manager,1,1,1,1
+access_lot_quick_create_wizard_user,lot.quick.create.wizard.user,model_lot_quick_create_wizard,group_magimed_user,1,1,1,1
+access_stock_move_history_wizard_user,stock.move.history.wizard.user,model_stock_move_history_wizard,group_magimed_user,1,1,1,1
+access_expiration_report_wizard_user,expiration.report.wizard.user,model_expiration_report_wizard,group_magimed_user,1,1,1,1

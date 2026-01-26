@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Stock Move History Tree View -->
+        <record id="view_stock_move_history_tree" model="ir.ui.view">
+            <field name="name">stock.move.history.tree</field>
+            <field name="model">stock.move.history</field>
+            <field name="arch" type="xml">
+                <tree string="Historique Mouvements" default_order="date desc">
+                    <field name="date"/>
+                    <field name="reference"/>
+                    <field name="product_id"/>
+                    <field name="lot_name"/>
+                    <field name="expiration_date" optional="show"/>
+                    <field name="qty_done"/>
+                    <field name="product_uom_id"/>
+                    <field name="move_type" widget="badge"
+                           decoration-success="move_type == 'in'"
+                           decoration-danger="move_type == 'out'"
+                           decoration-info="move_type == 'internal'"/>
+                    <field name="location_id"/>
+                    <field name="location_dest_id"/>
+                    <field name="warehouse_id" optional="hide"/>
+                    <field name="picking_id" optional="hide"/>
+                    <field name="picking_type_id" optional="show"/>
+                    <field name="origin" optional="hide"/>
+                    <field name="user_id" optional="hide"/>
+                    <field name="categ_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Stock Move History Search View -->
+        <record id="view_stock_move_history_search" model="ir.ui.view">
+            <field name="name">stock.move.history.search</field>
+            <field name="model">stock.move.history</field>
+            <field name="arch" type="xml">
+                <search string="Recherche Mouvements">
+                    <field name="reference"/>
+                    <field name="product_id"/>
+                    <field name="lot_name"/>
+                    <field name="lot_id"/>
+                    <field name="location_id"/>
+                    <field name="location_dest_id"/>
+                    <field name="warehouse_id"/>
+                    <field name="picking_id"/>
+                    <field name="origin"/>
+                    <separator/>
+                    <filter name="today" string="Aujourd'hui"
+                            domain="[('date', '>=', context_today().strftime('%Y-%m-%d')),
+                                    ('date', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+                    <filter name="this_week" string="Cette Semaine"
+                            domain="[('date', '>=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+                    <filter name="this_month" string="Ce Mois"
+                            domain="[('date', '>=', (context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
+                    <separator/>
+                    <filter name="in" string="Entrees"
+                            domain="[('move_type', '=', 'in')]"/>
+                    <filter name="out" string="Sorties"
+                            domain="[('move_type', '=', 'out')]"/>
+                    <filter name="internal" string="Transferts"
+                            domain="[('move_type', '=', 'internal')]"/>
+                    <separator/>
+                    <filter name="with_lot" string="Avec Lot"
+                            domain="[('lot_id', '!=', False)]"/>
+                    <filter name="expiring" string="Lot Expirant"
+                            domain="[('expiration_date', '!=', False),
+                                    ('expiration_date', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                    <separator/>
+                    <group expand="0" string="Grouper par">
+                        <filter name="group_by_date" string="Date"
+                                context="{'group_by': 'date:day'}"/>
+                        <filter name="group_by_product" string="Produit"
+                                context="{'group_by': 'product_id'}"/>
+                        <filter name="group_by_lot" string="Lot"
+                                context="{'group_by': 'lot_id'}"/>
+                        <filter name="group_by_category" string="Categorie"
+                                context="{'group_by': 'categ_id'}"/>
+                        <filter name="group_by_location" string="Emplacement Source"
+                                context="{'group_by': 'location_id'}"/>
+                        <filter name="group_by_location_dest" string="Emplacement Dest."
+                                context="{'group_by': 'location_dest_id'}"/>
+                        <filter name="group_by_warehouse" string="Entrepot"
+                                context="{'group_by': 'warehouse_id'}"/>
+                        <filter name="group_by_type" string="Type Operation"
+                                context="{'group_by': 'picking_type_id'}"/>
+                        <filter name="group_by_move_type" string="Type Mouvement"
+                                context="{'group_by': 'move_type'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Stock Move History Pivot View -->
+        <record id="view_stock_move_history_pivot" model="ir.ui.view">
+            <field name="name">stock.move.history.pivot</field>
+            <field name="model">stock.move.history</field>
+            <field name="arch" type="xml">
+                <pivot string="Analyse Mouvements">
+                    <field name="product_id" type="row"/>
+                    <field name="move_type" type="col"/>
+                    <field name="qty_done" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Stock Move History Graph View -->
+        <record id="view_stock_move_history_graph" model="ir.ui.view">
+            <field name="name">stock.move.history.graph</field>
+            <field name="model">stock.move.history</field>
+            <field name="arch" type="xml">
+                <graph string="Graphique Mouvements" type="bar">
+                    <field name="date" interval="day"/>
+                    <field name="qty_done" type="measure"/>
+                    <field name="move_type"/>
+                </graph>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequence for Stock Entry (Bon d'Entree) -->
+        <record id="seq_stock_entry" model="ir.sequence">
+            <field name="name">Bon d'Entree Stock</field>
+            <field name="code">stock.picking.entry</field>
+            <field name="prefix">BE/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sequence for Stock Exit (Bon de Sortie) -->
+        <record id="seq_stock_exit" model="ir.sequence">
+            <field name="name">Bon de Sortie Stock</field>
+            <field name="code">stock.picking.exit</field>
+            <field name="prefix">BS/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sequence for Internal Transfer (Bon de Transfert) -->
+        <record id="seq_stock_transfer" model="ir.sequence">
+            <field name="name">Bon de Transfert Stock</field>
+            <field name="code">stock.picking.transfer</field>
+            <field name="prefix">BT/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sequence for Lot Numbers -->
+        <record id="seq_lot_number" model="ir.sequence">
+            <field name="name">Numero de Lot MAGIMED</field>
+            <field name="code">stock.production.lot.magimed</field>
+            <field name="prefix">LOT%(year)s%(month)s-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

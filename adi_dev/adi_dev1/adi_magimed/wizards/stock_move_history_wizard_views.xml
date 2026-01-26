@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Stock Move History Wizard Form -->
+        <record id="view_stock_move_history_wizard_form" model="ir.ui.view">
+            <field name="name">stock.move.history.wizard.form</field>
+            <field name="model">stock.move.history.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Filtres Historique Mouvements">
+                    <group>
+                        <group string="Periode">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group string="Type">
+                            <field name="move_type"/>
+                            <field name="with_lot_only"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Produits">
+                            <field name="product_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="lot_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="categ_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Emplacements">
+                            <field name="warehouse_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="location_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_view_history" type="object"
+                                string="Voir Historique" class="btn-primary"/>
+                        <button name="action_print_history" type="object"
+                                string="Imprimer" class="btn-secondary"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for History Wizard -->
+        <record id="action_stock_history_wizard" model="ir.actions.act_window">
+            <field name="name">Rapport Mouvements</field>
+            <field name="res_model">stock.move.history.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

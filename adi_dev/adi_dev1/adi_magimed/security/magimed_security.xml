@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Module Category -->
+        <record id="module_category_magimed" model="ir.module.category">
+            <field name="name">MAGIMED</field>
+            <field name="description">Gestion MAGIMED - Tracabilite ISO</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- User Groups -->
+        <record id="group_magimed_user" model="res.groups">
+            <field name="name">Utilisateur MAGIMED</field>
+            <field name="category_id" ref="module_category_magimed"/>
+            <field name="implied_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+            <field name="comment">Acces de base aux fonctionnalites MAGIMED</field>
+        </record>
+
+        <record id="group_magimed_stock_manager" model="res.groups">
+            <field name="name">Responsable Stock MAGIMED</field>
+            <field name="category_id" ref="module_category_magimed"/>
+            <field name="implied_ids" eval="[(4, ref('group_magimed_user')), (4, ref('stock.group_stock_manager'))]"/>
+            <field name="comment">Gestion complete du stock et des lots</field>
+        </record>
+
+        <record id="group_magimed_accountant" model="res.groups">
+            <field name="name">Comptable MAGIMED</field>
+            <field name="category_id" ref="module_category_magimed"/>
+            <field name="implied_ids" eval="[(4, ref('group_magimed_user')), (4, ref('account.group_account_user'))]"/>
+            <field name="comment">Gestion des cautions et facturation</field>
+        </record>
+
+        <record id="group_magimed_manager" model="res.groups">
+            <field name="name">Directeur MAGIMED</field>
+            <field name="category_id" ref="module_category_magimed"/>
+            <field name="implied_ids" eval="[(4, ref('group_magimed_stock_manager')), (4, ref('group_magimed_accountant'))]"/>
+            <field name="comment">Acces complet a toutes les fonctionnalites</field>
+        </record>
+
+        <!-- Record Rules -->
+        <record id="rule_magimed_stock_picking_user" model="ir.rule">
+            <field name="name">MAGIMED: User can see own company pickings</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_magimed_user'))]"/>
+        </record>
+
+    </data>
+</odoo>

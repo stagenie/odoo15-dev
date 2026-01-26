@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Expiration Alert Tree View -->
+        <record id="view_expiration_alert_tree" model="ir.ui.view">
+            <field name="name">stock.production.lot.expiration.tree</field>
+            <field name="model">stock.production.lot</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <tree string="Alertes Expiration"
+                      decoration-danger="days_to_expiration &lt;= 7"
+                      decoration-warning="days_to_expiration &gt; 7 and days_to_expiration &lt;= 30"
+                      default_order="days_to_expiration asc">
+                    <field name="name" string="N Lot"/>
+                    <field name="product_id"/>
+                    <field name="expiration_date"/>
+                    <field name="days_to_expiration" string="Jours Restants"/>
+                    <field name="expiration_status" widget="badge"
+                           decoration-success="expiration_status == 'ok'"
+                           decoration-warning="expiration_status == 'warning'"
+                           decoration-danger="expiration_status in ('danger', 'expired')"/>
+                    <field name="total_qty" string="Qte en Stock"/>
+                    <field name="product_uom_id" string="Unite"/>
+                    <field name="location_qty_info" string="Emplacements"/>
+                    <button name="action_send_expiration_alert" type="object"
+                            string="Envoyer Alerte" icon="fa-envelope"
+                            class="btn-link"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Expiration Alert Kanban View -->
+        <record id="view_expiration_alert_kanban" model="ir.ui.view">
+            <field name="name">stock.production.lot.expiration.kanban</field>
+            <field name="model">stock.production.lot</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" default_group_by="expiration_status">
+                    <field name="name"/>
+                    <field name="product_id"/>
+                    <field name="expiration_date"/>
+                    <field name="days_to_expiration"/>
+                    <field name="expiration_status"/>
+                    <field name="total_qty"/>
+                    <field name="product_uom_id"/>
+                    <progressbar field="expiration_status" colors='{"ok": "success", "warning": "warning", "danger": "danger", "expired": "danger"}'/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click #{record.days_to_expiration.raw_value &lt;= 7 ? 'oe_kanban_color_9' : record.days_to_expiration.raw_value &lt;= 30 ? 'oe_kanban_color_3' : ''}">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <span t-if="record.days_to_expiration.raw_value &lt;= 7" class="fa fa-exclamation-triangle text-danger"/>
+                                            <span t-elif="record.days_to_expiration.raw_value &lt;= 30" class="fa fa-exclamation-circle text-warning"/>
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <span t-attf-class="badge #{record.expiration_status.raw_value == 'ok' ? 'badge-success' : record.expiration_status.raw_value == 'warning' ? 'badge-warning' : 'badge-danger'}">
+                                        <t t-if="record.expiration_status.raw_value == 'expired'">EXPIRE</t>
+                                        <t t-elif="record.expiration_status.raw_value == 'danger'">URGENT</t>
+                                        <t t-elif="record.expiration_status.raw_value == 'warning'">ATTENTION</t>
+                                        <t t-else="">OK</t>
+                                    </span>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <field name="product_id"/>
+                                    <div class="mt-2">
+                                        <strong>Expiration:</strong>
+                                        <field name="expiration_date"/>
+                                    </div>
+                                    <div>
+                                        <strong>Dans:</strong>
+                                        <span t-attf-class="#{record.days_to_expiration.raw_value &lt;= 7 ? 'text-danger font-weight-bold' : record.days_to_expiration.raw_value &lt;= 30 ? 'text-warning' : ''}">
+                                            <field name="days_to_expiration"/> jours
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>Stock:</strong>
+                                        <field name="total_qty"/>
+                                        <field name="product_uom_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Expiration Alert Calendar View -->
+        <record id="view_expiration_alert_calendar" model="ir.ui.view">
+            <field name="name">stock.production.lot.expiration.calendar</field>
+            <field name="model">stock.production.lot</field>
+            <field name="arch" type="xml">
+                <calendar string="Calendrier Expiration" date_start="expiration_date"
+                          color="expiration_status" mode="month" event_open_popup="true">
+                    <field name="name"/>
+                    <field name="product_id"/>
+                    <field name="total_qty"/>
+                </calendar>
+            </field>
+        </record>
+
+    </data>
+</odoo>
