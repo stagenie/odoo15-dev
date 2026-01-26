@@ -54,20 +54,19 @@ class ResPartner(models.Model):
 
     @api.depends('invoice_ids', 'invoice_ids.state', 'invoice_ids.invoice_date', 'invoice_ids.invoice_date_due')
     def _compute_amount(self):
-        account_move_line_obj = self.env['account.move.line']
-        for record in self:                
+        for record in self:
             current_date = fields.Date.today()
             total_overdue_amount = 0.0
             total_balance_due = 0.0
             previous_balance = 0.0
-            current_balance = 0.0
 
-            # Récupérer toutes les factures impayées du partenaire
+            # Récupérer toutes les factures impayées du partenaire (non exclues du solde)
             invoices = self.env['account.move'].search([
                 ('partner_id', '=', record.id),
                 ('state', '=', 'posted'),
                 ('move_type', '=', 'out_invoice'),
-                ('payment_state', '!=', 'paid')
+                ('payment_state', '!=', 'paid'),
+                ('exclude_from_partner_ledger', '!=', True),
             ], order='invoice_date asc, id asc')
 
             if invoices:
@@ -81,18 +80,21 @@ class ResPartner(models.Model):
                 overdue_invoices = invoices.filtered(lambda inv: inv.invoice_date_due and inv.invoice_date_due < current_date)
                 total_overdue_amount = sum(overdue_invoices.mapped('amount_residual'))
 
-
-            # Récupérer toutes les lignes comptables pour le solde total
-            all_move_lines = account_move_line_obj.search([
-                ('partner_id', '=', record.id),
-                ('account_id.internal_type', '=', 'receivable'),
-                ('move_id.state', '=', 'posted'),
-            ])
-
-            # Calculer le solde total et le montant échu
-            for line in all_move_lines:
-                total_balance_due += line.balance                           
-           
+            # Calculer le solde total via SQL pour gérer correctement les valeurs NULL
+            # Exclut les factures marquées exclude_from_partner_ledger = True
+            if record.id:
+                self.env.cr.execute("""
+                    SELECT COALESCE(SUM(aml.balance), 0)
+                    FROM account_move_line aml
+                    JOIN account_move m ON m.id = aml.move_id
+                    JOIN account_account aa ON aa.id = aml.account_id
+                    WHERE aml.partner_id = %s
+                        AND m.state = 'posted'
+                        AND aa.internal_type = 'receivable'
+                        AND (m.exclude_from_partner_ledger IS NULL OR m.exclude_from_partner_ledger = FALSE)
+                """, (record.id,))
+                result = self.env.cr.fetchone()
+                total_balance_due = result[0] if result else 0.0
 
             # Affectation des valeurs aux champs
             record.previous_balance = previous_balance
