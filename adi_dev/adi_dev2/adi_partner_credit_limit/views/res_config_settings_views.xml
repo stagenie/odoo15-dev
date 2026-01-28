@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_credit_limit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.credit.limit</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='pay_invoice_online_setting_container']" position="after">
+                <h2>Limite de Cr&#233;dit Partenaire</h2>
+                <div class="row mt16 o_settings_container" id="partner_credit_limit_settings">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="partner_balance_mode"/>
+                            <div class="text-muted">
+                                Choisissez comment calculer le solde affich&#233; dans le formulaire contact (volet Cr&#233;dit)
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="partner_balance_mode" widget="radio"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
