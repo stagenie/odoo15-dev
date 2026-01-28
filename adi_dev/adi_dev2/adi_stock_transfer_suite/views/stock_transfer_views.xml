@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================================================================== -->
+    <!-- EXTENSION DU FORMULAIRE PRINCIPAL                                  -->
+    <!-- ================================================================== -->
+
+    <record id="view_stock_transfer_form_suite" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.form.suite</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les champs invisibles pour le contrôle des attrs -->
+            <field name="is_inter_company" position="after">
+                <field name="is_resend" invisible="1"/>
+                <field name="is_closed_without_resend" invisible="1"/>
+                <field name="has_pending_resend" invisible="1"/>
+                <field name="can_create_resend" invisible="1"/>
+                <field name="can_close_without_resend" invisible="1"/>
+                <field name="origin_transfer_id" invisible="1"/>
+                <field name="resend_transfer_id" invisible="1"/>
+                <field name="qty_not_sent_total" invisible="1"/>
+            </field>
+
+            <!-- Ajouter les boutons de gestion des renvois après le bouton "Terminer" -->
+            <button name="action_done" position="after">
+                <button name="action_create_resend"
+                        string="Renvoyer le Reste"
+                        type="object"
+                        class="btn-warning"
+                        icon="fa-share"
+                        attrs="{'invisible': [('can_create_resend', '=', False)]}"
+                        confirm="Voulez-vous créer une nouvelle demande de transfert pour les quantités non envoyées ?"/>
+                <button name="action_close_without_resend"
+                        string="Clôturer sans Renvoi"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-times-circle"
+                        attrs="{'invisible': [('can_close_without_resend', '=', False)]}"/>
+            </button>
+
+            <!-- Ajouter les smart buttons dans la button_box -->
+            <div name="button_box" position="inside">
+                <!-- Bouton vers le transfert de renvoi -->
+                <button name="action_view_resend_transfer"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-share"
+                        attrs="{'invisible': [('resend_transfer_id', '=', False)]}">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Renvoi Créé</span>
+                    </div>
+                </button>
+                <!-- Bouton vers le transfert d'origine -->
+                <button name="action_view_origin_transfer"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-history"
+                        attrs="{'invisible': [('origin_transfer_id', '=', False)]}">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Origine</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Ajouter une alerte si c'est un transfert de renvoi -->
+            <div class="oe_title" position="before">
+                <div class="alert alert-info"
+                     attrs="{'invisible': [('is_resend', '=', False)]}"
+                     role="alert">
+                    <i class="fa fa-info-circle"/>
+                    <strong> Transfert de Renvoi</strong> -
+                    Ce transfert a été créé pour renvoyer les quantités non envoyées d'un transfert précédent.
+                </div>
+            </div>
+
+            <!-- Ajouter une alerte si le transfert a des quantités non envoyées -->
+            <div class="oe_title" position="before">
+                <div class="alert alert-warning"
+                     attrs="{'invisible': ['|', ('can_create_resend', '=', False), ('state', '!=', 'done')]}"
+                     role="alert">
+                    <i class="fa fa-exclamation-triangle"/>
+                    <strong> Envoi Partiel</strong> -
+                    Des quantités n'ont pas été envoyées. Vous pouvez créer une demande de renvoi ou clôturer sans renvoi.
+                </div>
+            </div>
+
+            <!-- Ajouter une alerte si clôturé sans renvoi -->
+            <div class="oe_title" position="before">
+                <div class="alert alert-secondary"
+                     attrs="{'invisible': [('is_closed_without_resend', '=', False)]}"
+                     role="alert">
+                    <i class="fa fa-check-circle"/>
+                    <strong> Clôturé</strong> -
+                    Ce transfert a été clôturé volontairement sans créer de renvoi pour le reste.
+                </div>
+            </div>
+
+            <!-- Ajouter le total non envoyé dans les statistiques -->
+            <field name="total_qty_received" position="after">
+                <field name="qty_not_sent_total" string="Qté Non Envoyée"
+                       attrs="{'invisible': [('state', 'not in', ['in_transit', 'done'])]}"
+                       decoration-danger="qty_not_sent_total > 0"/>
+            </field>
+
+            <!-- Ajouter la colonne qty_not_sent dans la tree des lignes -->
+            <xpath expr="//field[@name='transfer_line_ids']/tree/field[@name='line_state']" position="before">
+                <field name="qty_not_sent" string="Non Envoyé"
+                       readonly="1" optional="show"
+                       decoration-danger="qty_not_sent > 0"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- EXTENSION DE LA VUE TREE PRINCIPALE                                -->
+    <!-- ================================================================== -->
+
+    <record id="view_stock_transfer_tree_suite" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.tree.suite</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_tree"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les colonnes pour les renvois -->
+            <field name="state" position="after">
+                <field name="is_resend" string="Renvoi" optional="hide"/>
+                <field name="origin_transfer_id" string="Origine" optional="hide"/>
+                <field name="qty_not_sent_total" string="Non Envoyé" optional="hide"
+                       decoration-danger="qty_not_sent_total > 0"/>
+            </field>
+
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- EXTENSION DE LA VUE SEARCH                                         -->
+    <!-- ================================================================== -->
+
+    <record id="view_stock_transfer_search_suite" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.search.suite</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_search"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les filtres pour les renvois -->
+            <filter name="filter_done" position="after">
+                <separator/>
+                <filter string="Renvoi en Attente"
+                        name="filter_pending_resend"
+                        domain="[('has_pending_resend', '=', True), ('resend_transfer_id', '=', False), ('is_closed_without_resend', '=', False)]"/>
+                <filter string="Transferts de Renvoi"
+                        name="filter_is_resend"
+                        domain="[('is_resend', '=', True)]"/>
+                <filter string="Clôturés sans Renvoi"
+                        name="filter_closed_without_resend"
+                        domain="[('is_closed_without_resend', '=', True)]"/>
+            </filter>
+
+            <!-- Ajouter les champs de recherche -->
+            <field name="dest_warehouse_id" position="after">
+                <field name="origin_transfer_id"/>
+            </field>
+
+            <!-- Ajouter les groupes -->
+            <filter name="group_date" position="after">
+                <filter string="Type (Normal/Renvoi)"
+                        name="group_is_resend"
+                        context="{'group_by': 'is_resend'}"/>
+            </filter>
+
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- WIZARD DE CONFIRMATION DE CLÔTURE                                  -->
+    <!-- ================================================================== -->
+
+    <record id="view_stock_transfer_close_wizard_form" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.close.wizard.form</field>
+        <field name="model">adi.stock.transfer.close.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="transfer_id" readonly="1"/>
+                    </group>
+                </group>
+                <separator string="Quantités Non Envoyées"/>
+                <p class="text-muted">
+                    Les quantités suivantes n'ont pas été envoyées et ne feront
+                    <strong>pas</strong> l'objet d'un renvoi si vous confirmez la clôture:
+                </p>
+                <field name="lines_summary" nolabel="1" readonly="1"/>
+                <separator/>
+                <p class="text-warning">
+                    <i class="fa fa-exclamation-triangle"/>
+                    <strong>Attention:</strong> Cette action est irréversible.
+                    Vous ne pourrez plus créer de renvoi pour ces quantités.
+                </p>
+                <footer>
+                    <button name="action_confirm" string="Confirmer la Clôture"
+                            type="object" class="btn-warning"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action pour ouvrir le wizard -->
+    <record id="action_stock_transfer_close_wizard" model="ir.actions.act_window">
+        <field name="name">Confirmer la Clôture</field>
+        <field name="res_model">adi.stock.transfer.close.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

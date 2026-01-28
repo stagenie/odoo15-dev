@@ -22,6 +22,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-12 col-lg-6 o_setting_box" id="transfer_disable_backorder">
+                    <div class="o_setting_left_pane">
+                        <field name="transfer_disable_backorder"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="transfer_disable_backorder"/>
+                        <div class="text-muted">
+                            Désactiver les reliquats : les quantités approuvées sont envoyées et reçues en totalité.
+                            En cas d'écart physique, les deux parties procèdent à un ajustement manuel d'inventaire.
+                        </div>
+                        <div class="text-warning mt-2" attrs="{'invisible': [('transfer_disable_backorder', '=', False)]}">
+                            <i class="fa fa-exclamation-triangle"/> Ce paramètre n'affecte que les nouvelles opérations.
+                            Les transferts existants ne sont pas modifiés.
+                        </div>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>

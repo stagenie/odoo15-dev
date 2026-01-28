@@ -18,3 +18,12 @@ class ResConfigSettings(models.TransientModel):
         help="Si activé, les champs équipe source et destination sont obligatoires.",
         config_parameter='adi_stock_transfer_enhanced.team_required'
     )
+
+    # === Configuration Désactivation des Reliquats ===
+    transfer_disable_backorder = fields.Boolean(
+        string="Désactiver les reliquats",
+        help="Si activé, les transferts n'autorisent plus les réceptions partielles. "
+             "Les quantités approuvées sont envoyées et reçues en totalité. "
+             "En cas d'écart, les deux parties font un ajustement manuel.",
+        config_parameter='adi_stock_transfer_enhanced.disable_backorder'
+    )

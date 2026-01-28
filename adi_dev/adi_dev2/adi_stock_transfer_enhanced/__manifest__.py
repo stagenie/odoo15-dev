@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ADI Stock Transfer Enhanced',
-    'version': '15.0.2.0.0',
+    'version': '15.0.3.0.0',
     'category': 'Inventory/Inventory',
-    'summary': 'Réservation multi-emplacement et restriction par équipe pour les transferts',
+    'summary': 'Réservation multi-emplacement, restriction par équipe et désactivation des reliquats',
     'description': """
 ADI Stock Transfer Enhanced
 ===========================
 
 Ce module étend adi_stock_transfer pour ajouter la réservation automatique
-multi-emplacement et la restriction des opérations par équipe commerciale.
+multi-emplacement, la restriction des opérations par équipe commerciale,
+et la possibilité de désactiver les reliquats.
 
 Fonctionnalités:
 ----------------
@@ -26,10 +27,18 @@ Restriction par Équipe (configurable):
 * Les Managers de Transfert peuvent effectuer toutes les opérations
 * Liaison automatique équipe-entrepôt
 
+Désactivation des Reliquats (configurable):
+-------------------------------------------
+* Option pour désactiver complètement les reliquats
+* Quantités approuvées envoyées et reçues en totalité automatiquement
+* Champs qty_sent et qty_received en lecture seule si activé
+* N'affecte pas les opérations historiques existantes
+* En cas d'écart physique, ajustement manuel d'inventaire
+
 Configuration:
 --------------
 Menu Configuration dans l'app Transfert:
-* Paramètres: activer/désactiver la restriction par équipe
+* Paramètres: restriction par équipe, désactivation des reliquats
 * Équipes: gérer les équipes commerciales
 * Utilisateurs: gérer les utilisateurs de transfert
     """,

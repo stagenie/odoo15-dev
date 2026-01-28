@@ -24,6 +24,20 @@ class StockTransfer(models.Model):
              "(emplacement strict uniquement)."
     )
 
+    # === Champ calculé pour la configuration "désactiver les reliquats" ===
+    is_backorder_disabled = fields.Boolean(
+        compute='_compute_is_backorder_disabled',
+        string='Reliquats désactivés',
+        help="Indique si les reliquats sont désactivés dans la configuration système"
+    )
+
+    @api.depends_context('uid')
+    def _compute_is_backorder_disabled(self):
+        """Expose le paramètre système pour utilisation dans les vues (attrs)"""
+        disabled = self._is_backorder_disabled()
+        for record in self:
+            record.is_backorder_disabled = disabled
+
     # === Champs Équipe (si pas déjà définis dans le parent) ===
     source_team_id = fields.Many2one(
         'crm.team',
@@ -243,6 +257,19 @@ class StockTransfer(models.Model):
             'adi_stock_transfer_enhanced.restrict_by_team', 'False'
         ).lower() == 'true'
 
+    def _is_backorder_disabled(self):
+        """
+        Vérifie si les reliquats sont désactivés dans la configuration.
+
+        Si activé:
+        - qty_sent = quantity (automatique, non modifiable)
+        - qty_received = qty_sent (automatique, non modifiable)
+        - Pas de réception partielle possible
+        """
+        return self.env['ir.config_parameter'].sudo().get_param(
+            'adi_stock_transfer_enhanced.disable_backorder', 'False'
+        ).lower() == 'true'
+
     def _get_team_members(self, team):
         """Retourne les utilisateurs membres d'une équipe"""
         if not team:
@@ -355,11 +382,60 @@ class StockTransfer(models.Model):
     def action_done(self):
         """
         Surcharge pour ajouter la vérification d'équipe avant la réception.
+        Si les reliquats sont désactivés, termine directement sans wizard.
         """
         self.ensure_one()
 
         # Vérifier si l'utilisateur est membre de l'équipe destination
         self._check_user_in_team(self.dest_team_id, _("Confirmer la réception"))
 
-        # Appeler la méthode parente (ouvre le wizard de confirmation)
+        # Si les reliquats sont désactivés, terminer directement (réception complète)
+        if self._is_backorder_disabled():
+            return self.action_done_confirmed()
+
+        # Sinon, appeler la méthode parente (ouvre le wizard de confirmation)
         return super(StockTransfer, self).action_done()
+
+    def action_done_confirmed(self):
+        """
+        Surcharge pour forcer la réception complète si les reliquats sont désactivés.
+
+        Comportement:
+        - Si reliquats désactivés: qty_received = qty_sent (automatique)
+        - Sinon: comportement normal (méthode parente)
+
+        Note: Cette méthode ne modifie PAS les données historiques.
+        Elle n'affecte que les transferts en cours de traitement.
+        """
+        self.ensure_one()
+
+        # Forcer qty_received = qty_sent pour chaque ligne
+        # (Ceci est déjà fait par la méthode parente, mais on le fait ici
+        # pour être explicite et s'assurer que c'est bien appliqué)
+        for line in self.transfer_line_ids:
+            if line.qty_sent == 0:
+                line.qty_sent = line.quantity
+            line.qty_received = line.qty_sent
+
+        # Valider le picking d'entrée
+        if self.dest_picking_id and self.dest_picking_id.state not in ('done', 'cancel'):
+            for move in self.dest_picking_id.move_lines:
+                transfer_line = self.transfer_line_ids.filtered(
+                    lambda l: l.product_id.id == move.product_id.id
+                )
+                if transfer_line:
+                    move.quantity_done = transfer_line[0].qty_received
+
+            # IMPORTANT: skip_backorder=True pour éviter la création de reliquats Odoo
+            self.dest_picking_id.with_context(skip_backorder=True).button_validate()
+
+        self.state = 'done'
+
+        # Message adapté selon la configuration
+        if self._is_backorder_disabled():
+            self.message_post(body=_(
+                "Réception complète automatique - Transfert terminé. "
+                "(Mode sans reliquats activé)"
+            ))
+        else:
+            self.message_post(body=_("Réception complète - Transfert terminé"))

@@ -22,6 +22,23 @@ class StockTransferLine(models.Model):
         help="Détail des emplacements sources utilisés pour cette ligne"
     )
 
+    # === Champ calculé pour la configuration "désactiver les reliquats" ===
+    is_backorder_disabled = fields.Boolean(
+        compute='_compute_is_backorder_disabled',
+        string='Reliquats désactivés',
+        help="Indique si les reliquats sont désactivés dans la configuration système"
+    )
+
+    @api.depends_context('uid')
+    def _compute_is_backorder_disabled(self):
+        """Vérifie si les reliquats sont désactivés dans la configuration système"""
+        disabled = self.env['ir.config_parameter'].sudo().get_param(
+            'adi_stock_transfer_enhanced.disable_backorder', 'False'
+        ).lower() == 'true'
+        for line in self:
+            line.is_backorder_disabled = disabled
+
+
     # === Champs calculés pour affichage ===
     source_locations_display = fields.Char(
         compute='_compute_source_display',

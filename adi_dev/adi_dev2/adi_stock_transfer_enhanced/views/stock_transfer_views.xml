@@ -33,6 +33,7 @@
             <!-- Ajouter les champs invisibles nécessaires -->
             <xpath expr="//field[@name='transit_location_id']" position="after">
                 <field name="has_child_locations" invisible="1"/>
+                <field name="is_backorder_disabled" invisible="1"/>
             </xpath>
 
             <!-- Ajouter les options multi-source dans le groupe Source -->
@@ -95,6 +96,11 @@
                 <field name="dest_available_quantity" string="Qté Dest." readonly="1" optional="show"/>
             </xpath>
 
+            <!-- Ajouter le champ invisible pour le contrôle des reliquats désactivés -->
+            <xpath expr="//field[@name='transfer_line_ids']/tree/field[@name='parent_state']" position="after">
+                <field name="is_backorder_disabled" invisible="1"/>
+            </xpath>
+
             <!-- Ajouter les colonnes pour les sources dans les lignes -->
             <xpath expr="//field[@name='transfer_line_ids']/tree/field[@name='line_state']" position="before">
                 <field name="source_count" string="Nb Sources" readonly="1" optional="show"
@@ -108,6 +114,31 @@
                 <button name="action_view_source_detail" type="object"
                         icon="fa-list-alt" title="Voir détail des sources"
                         attrs="{'invisible': [('source_count', '=', 0)]}"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- MODIFICATION DES CHAMPS QTY_RECEIVED ET QTY_REMAINING        -->
+    <!-- Cacher reliquat et verrouiller qty_received si désactivé     -->
+    <!-- ============================================================ -->
+
+    <record id="view_stock_transfer_form_backorder_disabled" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.form.backorder.disabled</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_form"/>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+
+            <!-- Modifier qty_received: readonly si reliquats désactivés OU si pas en transit -->
+            <xpath expr="//field[@name='transfer_line_ids']/tree/field[@name='qty_received']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('is_backorder_disabled', '=', True), ('parent_state', '!=', 'in_transit')]}</attribute>
+            </xpath>
+
+            <!-- Cacher la colonne Reliquat par défaut -->
+            <xpath expr="//field[@name='transfer_line_ids']/tree/field[@name='qty_remaining']" position="replace">
+                <!-- Champ remplacé et caché -->
             </xpath>
 
         </field>
@@ -172,5 +203,6 @@
 
         </field>
     </record>
+
 
 </odoo>
