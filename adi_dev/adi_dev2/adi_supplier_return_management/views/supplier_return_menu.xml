@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================== -->
+    <!-- Integration dans l'application Retours        -->
+    <!-- ============================================== -->
+
+    <!-- Retours Fournisseurs (dans Operations de l'app Retours) -->
+    <menuitem
+        id="menu_supplier_return_order"
+        name="Retours Fournisseurs"
+        parent="adi_return_management.menu_return_operations"
+        action="action_supplier_return_order"
+        sequence="20"/>
+
+    <!-- ====================== -->
+    <!-- Menu Analyse           -->
+    <!-- ====================== -->
+
+    <!-- Tableau croise dynamique Fournisseurs -->
+    <menuitem
+        id="menu_supplier_return_pivot"
+        name="Analyse Retours Fournisseurs"
+        parent="adi_return_management.menu_return_reporting"
+        action="action_supplier_return_order_pivot"
+        sequence="60"/>
+
+    <!-- Evolution des retours fournisseurs -->
+    <menuitem
+        id="menu_supplier_return_evolution"
+        name="Evolution Retours Fournisseurs"
+        parent="adi_return_management.menu_return_reporting"
+        action="action_supplier_return_order_evolution"
+        sequence="70"/>
+
+    <!-- Retours par raison (fournisseurs) -->
+    <menuitem
+        id="menu_supplier_return_by_reason"
+        name="Fournisseurs par raison"
+        parent="adi_return_management.menu_return_reporting"
+        action="action_supplier_return_order_by_reason"
+        sequence="80"/>
+
+    <!-- Retours par fournisseur -->
+    <menuitem
+        id="menu_supplier_return_by_partner"
+        name="Retours par fournisseur"
+        parent="adi_return_management.menu_return_reporting"
+        action="action_supplier_return_order_by_partner"
+        sequence="90"/>
+
+    <!-- Retours par entrepot (fournisseurs) -->
+    <menuitem
+        id="menu_supplier_return_by_warehouse"
+        name="Fournisseurs par entrepot"
+        parent="adi_return_management.menu_return_reporting"
+        action="action_supplier_return_order_by_warehouse"
+        sequence="100"/>
+
+    <!-- ====================== -->
+    <!-- Menu Configuration     -->
+    <!-- ====================== -->
+
+    <!-- Raisons de retour fournisseurs -->
+    <menuitem
+        id="menu_supplier_return_reason"
+        name="Raisons Retours Fournisseurs"
+        parent="adi_return_management.menu_return_config"
+        action="action_supplier_return_reason"
+        sequence="20"
+        groups="adi_return_management.group_return_manager"/>
+
+    <!-- Parametres retours fournisseurs -->
+    <menuitem
+        id="menu_supplier_return_settings"
+        name="Parametres Fournisseurs"
+        parent="adi_return_management.menu_return_config"
+        action="action_supplier_return_config_settings"
+        sequence="98"
+        groups="adi_return_management.group_return_manager"/>
+
+</odoo>

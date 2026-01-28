@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Template du rapport -->
+    <template id="report_supplier_return_order_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
+            <div class="page">
+                <h2 class="text-center">
+                    <span>Bon de Retour Fournisseur</span>
+                </h2>
+
+                <div class="row mt-4 mb-4">
+                    <div class="col-6">
+                        <strong>Reference:</strong> <span t-field="o.name"/><br/>
+                        <strong>Date:</strong> <span t-field="o.date"/><br/>
+                        <strong>Etat:</strong>
+                        <span t-if="o.state == 'draft'">Brouillon</span>
+                        <span t-if="o.state == 'validated'">Valide</span>
+                        <span t-if="o.state == 'refund_created'">Avoir cree</span>
+                    </div>
+                    <div class="col-6">
+                        <strong>Fournisseur:</strong><br/>
+                        <div t-field="o.partner_id"
+                             t-options='{"widget": "contact", "fields": ["address", "name", "phone", "email"], "no_marker": True}'/>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <strong>Raison du retour:</strong> <span t-field="o.reason_id.name"/><br/>
+                        <strong>Entrepot:</strong> <span t-field="o.warehouse_id.name"/><br/>
+                        <strong>Emplacement source:</strong> <span t-field="o.source_location_id.display_name"/>
+                    </div>
+                    <div class="col-6">
+                        <strong>Responsable:</strong> <span t-field="o.user_id.name"/><br/>
+                        <t t-if="o.return_picking_id">
+                            <strong>Expedition:</strong> <span t-field="o.return_picking_id.name"/><br/>
+                        </t>
+                        <t t-if="o.refund_id">
+                            <strong>Avoir:</strong> <span t-field="o.refund_id.name"/>
+                        </t>
+                    </div>
+                </div>
+
+                <table class="table table-sm o_main_table">
+                    <thead>
+                        <tr>
+                            <th class="text-start">Produit</th>
+                            <th class="text-center">Quantite</th>
+                            <th class="text-end">Prix unitaire</th>
+                            <th class="text-end">Sous-total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.line_ids" t-as="line">
+                            <tr>
+                                <td class="text-start">
+                                    <span t-field="line.product_id.display_name"/>
+                                    <t t-if="line.effective_picking_id">
+                                        <br/>
+                                        <small class="text-muted">
+                                            BR origine: <span t-field="line.effective_picking_id.name"/>
+                                        </small>
+                                    </t>
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="line.qty_returned"/>
+                                    <span t-field="line.product_id.uom_id.name"/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.price_unit"
+                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.subtotal"
+                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="col-6"/>
+                    <div class="col-6">
+                        <table class="table table-sm">
+                            <tr class="border-black o_total">
+                                <td><strong>Montant Total</strong></td>
+                                <td class="text-end">
+                                    <strong>
+                                        <span t-field="o.amount_total"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <t t-if="o.notes">
+                    <div class="mt-4">
+                        <strong>Notes:</strong>
+                        <p t-field="o.notes"/>
+                    </div>
+                </t>
+
+                <div class="row mt-5">
+                    <div class="col-6 text-center">
+                        <p>_________________________</p>
+                        <p><strong>Signature Responsable</strong></p>
+                    </div>
+                    <div class="col-6 text-center">
+                        <p>_________________________</p>
+                        <p><strong>Signature Fournisseur</strong></p>
+                    </div>
+                </div>
+
+            </div>
+        </t>
+    </template>
+
+    <!-- Wrapper du rapport -->
+    <template id="report_supplier_return_order">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="adi_supplier_return_management.report_supplier_return_order_document"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Action du rapport -->
+    <record id="action_report_supplier_return_order" model="ir.actions.report">
+        <field name="name">Bon de Retour Fournisseur</field>
+        <field name="model">supplier.return.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_supplier_return_management.report_supplier_return_order</field>
+        <field name="report_file">adi_supplier_return_management.report_supplier_return_order</field>
+        <field name="binding_model_id" ref="model_supplier_return_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

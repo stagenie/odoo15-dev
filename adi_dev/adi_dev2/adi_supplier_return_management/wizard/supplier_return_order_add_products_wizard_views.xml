@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Form du Wizard -->
+    <record id="view_supplier_return_order_add_products_wizard_form" model="ir.ui.view">
+        <field name="name">supplier.return.order.add.products.wizard.form</field>
+        <field name="model">supplier.return.order.add.products.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Ajouter des produits">
+                <group>
+                    <group>
+                        <field name="return_order_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="origin_mode" readonly="1"/>
+                    </group>
+                </group>
+
+                <!-- Message informatif selon le mode -->
+                <div class="alert alert-info" role="alert"
+                     attrs="{'invisible': [('origin_mode', '!=', 'flexible')]}">
+                    <i class="fa fa-info-circle"/> Liste des produits deja recus de ce fournisseur.
+                </div>
+                <div class="alert alert-info" role="alert"
+                     attrs="{'invisible': [('origin_mode', '!=', 'strict')]}">
+                    <i class="fa fa-info-circle"/> Liste des produits des bons de reception selectionnes.
+                </div>
+                <div class="alert alert-warning" role="alert"
+                     attrs="{'invisible': [('origin_mode', '!=', 'none')]}">
+                    <i class="fa fa-exclamation-triangle"/> Mode libre: tous les produits stockables sont disponibles.
+                </div>
+
+                <!-- Zone de recherche -->
+                <group>
+                    <group>
+                        <label for="search_filter" string="Rechercher un article"/>
+                        <div class="o_row">
+                            <field name="search_filter" nolabel="1"
+                                   placeholder="Saisir reference ou nom du produit..."/>
+                            <button name="action_apply_filter" type="object"
+                                    string="Filtrer" class="btn-primary oe_highlight"
+                                    icon="fa-search"/>
+                            <button name="action_clear_filter" type="object"
+                                    string="Effacer" class="btn-link"
+                                    attrs="{'invisible': [('search_filter', '=', False)]}"/>
+                        </div>
+                    </group>
+                    <group>
+                        <field name="filter_count" string="Articles trouves" readonly="1"/>
+                    </group>
+                </group>
+
+                <!-- Boutons de selection rapide -->
+                <div class="mb-3">
+                    <button name="action_select_all" type="object"
+                            string="Tout selectionner" class="btn-secondary me-2"/>
+                    <button name="action_deselect_all" type="object"
+                            string="Tout deselectionner" class="btn-secondary"/>
+                </div>
+
+                <!-- Liste des produits -->
+                <field name="line_ids" nolabel="1">
+                    <tree string="Produits disponibles" editable="bottom"
+                          decoration-success="selected == True"
+                          decoration-warning="match_filter == True and selected == False"
+                          decoration-muted="match_filter == False"
+                          create="false" delete="false">
+                        <field name="match_filter" invisible="1" force_save="1"/>
+                        <field name="selected" widget="boolean_toggle"/>
+                        <field name="default_code" string="Ref."/>
+                        <field name="product_id" readonly="1" force_save="1"/>
+                        <field name="qty_received" string="Qte recue" readonly="1" force_save="1"/>
+                        <field name="qty_to_return" string="Qte retour"
+                               attrs="{'readonly': [('selected', '=', False)]}"/>
+                        <field name="price_unit" readonly="1" force_save="1"/>
+                        <field name="picking_id" string="BR" optional="hide" readonly="1" force_save="1"/>
+                        <field name="purchase_line_id" invisible="1" force_save="1"/>
+                    </tree>
+                </field>
+
+                <footer>
+                    <button name="action_add_products" type="object"
+                            string="Ajouter les produits selectionnes"
+                            class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action pour ouvrir le wizard -->
+    <record id="action_supplier_return_order_add_products_wizard" model="ir.actions.act_window">
+        <field name="name">Ajouter des produits</field>
+        <field name="res_model">supplier.return.order.add.products.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="adi_supplier_return_management.model_supplier_return_order"/>
+        <field name="binding_view_types">form</field>
+    </record>
+
+</odoo>

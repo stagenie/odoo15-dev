@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Form -->
+    <record id="view_supplier_return_reason_form" model="ir.ui.view">
+        <field name="name">supplier.return.reason.form</field>
+        <field name="model">supplier.return.reason</field>
+        <field name="arch" type="xml">
+            <form string="Raison de retour fournisseur">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue Tree -->
+    <record id="view_supplier_return_reason_tree" model="ir.ui.view">
+        <field name="name">supplier.return.reason.tree</field>
+        <field name="model">supplier.return.reason</field>
+        <field name="arch" type="xml">
+            <tree string="Raisons de retour fournisseur">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Search -->
+    <record id="view_supplier_return_reason_search" model="ir.ui.view">
+        <field name="name">supplier.return.reason.search</field>
+        <field name="model">supplier.return.reason</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher une raison">
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Actif" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archive" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_supplier_return_reason" model="ir.actions.act_window">
+        <field name="name">Raisons de retour</field>
+        <field name="res_model">supplier.return.reason</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_supplier_return_reason_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Creer une nouvelle raison de retour
+            </p>
+        </field>
+    </record>
+
+</odoo>

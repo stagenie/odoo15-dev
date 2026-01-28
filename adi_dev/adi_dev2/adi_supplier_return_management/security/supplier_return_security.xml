@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ============================================ -->
+        <!-- GROUPES RETOURS FOURNISSEURS                 -->
+        <!-- Utilise la meme categorie que retours clients -->
+        <!-- ============================================ -->
+
+        <!-- Groupe Utilisateur Retours Fournisseurs (herite du groupe utilisateur retours) -->
+        <record id="group_supplier_return_user" model="res.groups">
+            <field name="name">Utilisateur Retours Fournisseurs</field>
+            <field name="category_id" ref="adi_return_management.module_category_return"/>
+            <field name="implied_ids" eval="[(4, ref('adi_return_management.group_return_user'))]"/>
+            <field name="comment">Peut creer et gerer ses ordres de retour fournisseur</field>
+        </record>
+
+        <!-- Groupe Responsable Retours Fournisseurs (herite du groupe manager retours) -->
+        <record id="group_supplier_return_manager" model="res.groups">
+            <field name="name">Responsable Retours Fournisseurs</field>
+            <field name="category_id" ref="adi_return_management.module_category_return"/>
+            <field name="implied_ids" eval="[(4, ref('group_supplier_return_user')), (4, ref('adi_return_management.group_return_manager'))]"/>
+            <field name="comment">Tous les droits sur les retours fournisseurs</field>
+        </record>
+
+        <!-- Attribuer automatiquement le groupe Utilisateur Retours Fournisseurs a tous les utilisateurs internes -->
+        <record id="base.group_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_supplier_return_user'))]"/>
+        </record>
+
+    </data>
+
+    <data noupdate="1">
+
+        <!-- ============================================ -->
+        <!-- REGLES POUR LES ORDRES DE RETOUR FOURNISSEUR -->
+        <!-- ============================================ -->
+
+        <!-- Regle utilisateur : voir ses propres retours -->
+        <record id="supplier_return_order_rule_user" model="ir.rule">
+            <field name="name">Ordres retour fournisseur : utilisateurs (propres retours)</field>
+            <field name="model_id" ref="model_supplier_return_order"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_supplier_return_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Regle manager : acces total -->
+        <record id="supplier_return_order_rule_manager" model="ir.rule">
+            <field name="name">Ordres retour fournisseur : acces total managers</field>
+            <field name="model_id" ref="model_supplier_return_order"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_supplier_return_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- REGLES POUR LES LIGNES DE RETOUR             -->
+        <!-- ============================================ -->
+
+        <record id="supplier_return_order_line_rule_user" model="ir.rule">
+            <field name="name">Lignes retour fournisseur : utilisateurs</field>
+            <field name="model_id" ref="model_supplier_return_order_line"/>
+            <field name="domain_force">[('return_order_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_supplier_return_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="supplier_return_order_line_rule_manager" model="ir.rule">
+            <field name="name">Lignes retour fournisseur : acces total managers</field>
+            <field name="model_id" ref="model_supplier_return_order_line"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_supplier_return_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- REGLES POUR LES RAISONS DE RETOUR            -->
+        <!-- ============================================ -->
+
+        <record id="supplier_return_reason_rule_read_all" model="ir.rule">
+            <field name="name">Raisons retour fournisseur : lecture pour tous</field>
+            <field name="model_id" ref="model_supplier_return_reason"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_supplier_return_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="supplier_return_reason_rule_manager" model="ir.rule">
+            <field name="name">Raisons retour fournisseur : acces total managers</field>
+            <field name="model_id" ref="model_supplier_return_reason"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_supplier_return_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
