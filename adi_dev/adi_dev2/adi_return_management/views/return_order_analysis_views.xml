@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================== -->
+    <!-- VUE PIVOT - Analyse des retours                    -->
+    <!-- ================================================== -->
+    <record id="view_return_order_pivot" model="ir.ui.view">
+        <field name="name">return.order.pivot</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <pivot string="Analyse des retours" disable_linking="True">
+                <!-- Lignes par defaut -->
+                <field name="date" type="row" interval="month"/>
+                <!-- Colonnes par defaut -->
+                <field name="reason_id" type="col"/>
+                <!-- Mesures -->
+                <field name="amount_total" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ================================================== -->
+    <!-- VUE GRAPH - Evolution des retours (ligne)          -->
+    <!-- ================================================== -->
+    <record id="view_return_order_graph_line" model="ir.ui.view">
+        <field name="name">return.order.graph.line</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <graph string="Evolution des retours" type="line">
+                <field name="date" type="row" interval="month"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ================================================== -->
+    <!-- VUE GRAPH - Repartition par raison (camembert)     -->
+    <!-- ================================================== -->
+    <record id="view_return_order_graph_pie_reason" model="ir.ui.view">
+        <field name="name">return.order.graph.pie.reason</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <graph string="Retours par raison" type="pie">
+                <field name="reason_id" type="row"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ================================================== -->
+    <!-- VUE GRAPH - Top clients (barres)                   -->
+    <!-- ================================================== -->
+    <record id="view_return_order_graph_bar_partner" model="ir.ui.view">
+        <field name="name">return.order.graph.bar.partner</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <graph string="Top clients - Retours" type="bar">
+                <field name="partner_id" type="row"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ================================================== -->
+    <!-- VUE GRAPH - Retours par entrepot (barres)          -->
+    <!-- ================================================== -->
+    <record id="view_return_order_graph_bar_warehouse" model="ir.ui.view">
+        <field name="name">return.order.graph.bar.warehouse</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <graph string="Retours par entrepot" type="bar">
+                <field name="warehouse_id" type="row"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ================================================== -->
+    <!-- VUE SEARCH pour l'analyse                          -->
+    <!-- ================================================== -->
+    <record id="view_return_order_analysis_search" model="ir.ui.view">
+        <field name="name">return.order.analysis.search</field>
+        <field name="model">return.order</field>
+        <field name="arch" type="xml">
+            <search string="Analyse des retours">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="reason_id"/>
+                <field name="warehouse_id"/>
+                <separator/>
+                <filter string="Brouillon" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Valide" name="validated" domain="[('state', '=', 'validated')]"/>
+                <filter string="Avoir cree" name="refund_created" domain="[('state', '=', 'refund_created')]"/>
+                <separator/>
+                <filter string="Ce mois" name="this_month"
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                 ('date', '&lt;=', (context_today() + relativedelta(day=31)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Mois dernier" name="last_month"
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(months=1, day=1)).strftime('%Y-%m-%d')),
+                                 ('date', '&lt;=', (context_today() - relativedelta(months=1, day=31)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Ce trimestre" name="this_quarter"
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(day=1, month=(((context_today().month - 1) // 3) * 3 + 1))).strftime('%Y-%m-%d'))]"/>
+                <filter string="Cette annee" name="this_year"
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-01-01'))]"/>
+                <separator/>
+                <filter string="Mes retours" name="my_returns" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <group expand="1" string="Grouper par">
+                    <filter string="Client" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Raison" name="group_reason" context="{'group_by': 'reason_id'}"/>
+                    <filter string="Entrepot" name="group_warehouse" context="{'group_by': 'warehouse_id'}"/>
+                    <filter string="Etat" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Mois" name="group_month" context="{'group_by': 'date:month'}"/>
+                    <filter string="Trimestre" name="group_quarter" context="{'group_by': 'date:quarter'}"/>
+                    <filter string="Annee" name="group_year" context="{'group_by': 'date:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ================================================== -->
+    <!-- ACTIONS                                            -->
+    <!-- ================================================== -->
+
+    <!-- Action principale - Tableau croise dynamique (Pivot) -->
+    <record id="action_return_order_pivot" model="ir.actions.act_window">
+        <field name="name">Tableau croise dynamique</field>
+        <field name="res_model">return.order</field>
+        <field name="view_mode">pivot,graph,tree,form</field>
+        <field name="view_id" ref="view_return_order_pivot"/>
+        <field name="search_view_id" ref="view_return_order_analysis_search"/>
+        <field name="context">{'search_default_this_year': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune donnee a analyser
+            </p>
+            <p>
+                Creez des ordres de retour pour voir les statistiques.
+            </p>
+        </field>
+    </record>
+
+    <!-- Action - Evolution des retours (graphique ligne) -->
+    <record id="action_return_order_evolution" model="ir.actions.act_window">
+        <field name="name">Evolution des retours</field>
+        <field name="res_model">return.order</field>
+        <field name="view_mode">graph,pivot,tree,form</field>
+        <field name="view_id" ref="view_return_order_graph_line"/>
+        <field name="search_view_id" ref="view_return_order_analysis_search"/>
+        <field name="context">{'search_default_this_year': 1}</field>
+    </record>
+
+    <!-- Action - Repartition par raison (camembert) -->
+    <record id="action_return_order_by_reason" model="ir.actions.act_window">
+        <field name="name">Retours par raison</field>
+        <field name="res_model">return.order</field>
+        <field name="view_mode">graph,pivot,tree,form</field>
+        <field name="view_id" ref="view_return_order_graph_pie_reason"/>
+        <field name="search_view_id" ref="view_return_order_analysis_search"/>
+        <field name="context">{'search_default_this_year': 1}</field>
+    </record>
+
+    <!-- Action - Top clients -->
+    <record id="action_return_order_by_partner" model="ir.actions.act_window">
+        <field name="name">Retours par client</field>
+        <field name="res_model">return.order</field>
+        <field name="view_mode">graph,pivot,tree,form</field>
+        <field name="view_id" ref="view_return_order_graph_bar_partner"/>
+        <field name="search_view_id" ref="view_return_order_analysis_search"/>
+        <field name="context">{'search_default_this_year': 1}</field>
+    </record>
+
+    <!-- Action - Par entrepot -->
+    <record id="action_return_order_by_warehouse" model="ir.actions.act_window">
+        <field name="name">Retours par entrepot</field>
+        <field name="res_model">return.order</field>
+        <field name="view_mode">graph,pivot,tree,form</field>
+        <field name="view_id" ref="view_return_order_graph_bar_warehouse"/>
+        <field name="search_view_id" ref="view_return_order_analysis_search"/>
+        <field name="context">{'search_default_this_year': 1}</field>
+    </record>
+
+</odoo>

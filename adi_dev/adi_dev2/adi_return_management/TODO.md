@@ -2,104 +2,105 @@
 
 ## Ameliorations a venir
 
-### 1. Prix de vente original
-**Priorite:** Haute
+### 1. ~~Prix de vente original~~ ✅ TERMINE (v15.0.2.1.0)
+**Priorite:** ~~Haute~~ Terminé
 
-Actuellement, le prix unitaire est recupere depuis `product.lst_price` (prix catalogue).
+~~Actuellement, le prix unitaire est recupere depuis `product.lst_price` (prix catalogue).~~
 
-**Amelioration souhaitee:**
-Recuperer le **prix de vente original** depuis la commande client associee au BL.
+**Implementation realisee:**
+Le prix de vente est maintenant recupere depuis la commande client d'origine.
 
-**Important:** Cette amelioration concerne **TOUS les modes** (strict ET souple) car:
-- En mode **strict**: l'utilisateur selectionne des BL specifiques → on connait directement les commandes
-- En mode **souple**: les produits viennent de TOUS les BL du client → on peut quand meme retrouver la commande d'origine
+**Champs ajoutes sur `return.order.line`:**
+- `sale_line_id`: Lien vers la ligne de commande d'origine (pour tracer le prix)
+- `origin_picking_id`: BL d'origine en mode souple
+- `effective_picking_id`: Champ compute affichant le BL effectif (strict ou souple)
 
-**Logique a implementer:**
+**Logique implementee:**
 
 ```
 Mode STRICT:
-  Ligne retour → picking_line_id → picking_id → sale_id → sale.order.line (meme produit) → price_unit
+  picking_line_id → picking_id → sale_id → sale.order.line → price_unit ✅
 
 Mode SOUPLE:
-  Ligne retour → product_id + partner_id
-  → Rechercher stock.picking (partner_id, state=done, outgoing)
-  → picking.sale_id → sale.order.line (meme produit)
-  → Prendre le prix de la derniere vente (ou proposer choix si plusieurs prix)
+  Recherche automatique dans les BL livres (order by date_done desc)
+  → picking.sale_id → sale.order.line → price_unit ✅
+  → Stockage du BL d'origine dans origin_picking_id
+
+Mode LIBRE:
+  Prix catalogue (lst_price) par defaut ✅
 ```
 
-**Cas particuliers a gerer:**
-- Produit vendu a **plusieurs prix differents** au meme client → proposer le dernier prix ou laisser l'utilisateur choisir
-- Produit **jamais vendu** (mode libre) → utiliser le prix catalogue par defaut
-- **Remises** → le prix dans `sale.order.line.price_unit` inclut deja la remise
-
-**Fichiers concernes:**
-- `models/return_order_line.py` - Modifier `_compute_price_unit()`
-- Ajouter un champ `sale_line_id` (optionnel) pour tracer la ligne de commande d'origine
-- Eventuellement ajouter un champ `origin_picking_id` sur la ligne pour tracer le BL d'origine en mode souple
+**Cas particuliers geres:**
+- ✅ Produit vendu a plusieurs prix → prend le prix de la derniere vente
+- ✅ Produit jamais vendu (mode libre) → prix catalogue par defaut
+- ✅ Remises incluses dans le prix
 
 ---
 
-### 2. Amelioration des vues retour
-**Priorite:** Moyenne
+### 2. ~~Amelioration des vues retour~~ ✅ TERMINE (v15.0.3.0.0)
+**Priorite:** ~~Moyenne~~ Termine
 
-**Ameliorations prevues:**
-- [ ] Ameliorer la vue Kanban avec plus d'informations
-- [ ] Ajouter des filtres supplementaires (par periode, par montant, etc.)
-- [ ] Ajouter des groupements supplementaires
-- [ ] Ameliorer la vue formulaire (disposition, champs optionnels)
-- [ ] Ajouter des indicateurs visuels (couleurs selon etat, anciennete, etc.)
+**Ameliorations realisees:**
+
+**Vue Kanban amelioree:**
+- [x] Affichage du montant total en evidence
+- [x] Badge avec nombre de produits
+- [x] Badge raison de retour
+- [x] Indicateurs visuels (picking/avoir cree)
+- [x] Avatar utilisateur responsable
+- [x] Widget activites
+
+**Vue Tree amelioree:**
+- [x] Colonne "Nb lignes" (nombre de produits)
+- [x] Colonne "Jours" (anciennete)
+- [x] Decoration rouge pour retours en retard
+- [x] Widget activites
+- [x] Sample data pour preview
+
+**Vue Search amelioree (filtres):**
+- [x] Filtres par periode: aujourd'hui, semaine, mois, mois dernier, trimestre, annee
+- [x] Filtres par montant: petits (<10K), moyens (10K-50K), gros (>50K)
+- [x] Filtres speciaux: en attente d'avoir, avec activites, activites en retard
+- [x] Groupements: jour, semaine, mois, trimestre, annee, responsable
+
+**Vue Formulaire amelioree:**
+- [x] Nouvel onglet "Informations" avec statistiques
+- [x] Affichage de l'anciennete et indicateur retard
+- [x] Liens vers documents lies (picking, avoir)
+- [x] Infos systeme (creation/modification) pour admins
+
+**Champs ajoutes sur `return.order`:**
+- `line_count`: Nombre de lignes (computed, stored)
+- `days_since_creation`: Anciennete en jours (computed)
+- `is_late`: Indicateur de retard (computed)
 
 ---
 
-### 3. Menu Analyse des retours
-**Priorite:** Moyenne
+### 3. ~~Menu Analyse des retours~~ ✅ TERMINE (v15.0.2.2.0)
+**Priorite:** ~~Moyenne~~ Termine
 
-**Fonctionnalites a ajouter:**
-- [ ] **Vue Pivot (TCD)** pour analyser:
-  - Retours par client
-  - Retours par raison
-  - Retours par produit
-  - Retours par periode (mois/trimestre/annee)
-  - Retours par entrepot
-  - Montants totaux des retours
+**Implementation realisee:**
 
-- [ ] **Vue Graphique** avec:
-  - Evolution des retours dans le temps (ligne)
-  - Repartition par raison (camembert)
-  - Top clients avec le plus de retours (barres)
-  - Top produits retournes (barres)
+**Vues creees dans `views/return_order_analysis_views.xml`:**
+- [x] **Vue Pivot (TCD)** - Tableau croise dynamique
+- [x] **Vue Graph ligne** - Evolution des retours dans le temps
+- [x] **Vue Graph camembert** - Repartition par raison
+- [x] **Vue Graph barres** - Top clients
+- [x] **Vue Graph barres** - Retours par entrepot
+- [x] **Vue Search** - Filtres par periode (mois, trimestre, annee)
 
-**Fichiers a creer:**
-- `views/return_order_analysis_views.xml` - Vues pivot et graph
-- Mettre a jour `views/return_menu.xml` - Ajouter menu Analyse
+**Menus ajoutes dans `views/return_menu.xml`:**
+- [x] Tableau croise dynamique
+- [x] Evolution des retours
+- [x] Retours par raison
+- [x] Retours par client
+- [x] Retours par entrepot
 
-**Modele:**
-```xml
-<!-- Vue Pivot -->
-<record id="view_return_order_pivot" model="ir.ui.view">
-    <field name="name">return.order.pivot</field>
-    <field name="model">return.order</field>
-    <field name="arch" type="xml">
-        <pivot string="Analyse des retours">
-            <field name="date" type="row" interval="month"/>
-            <field name="reason_id" type="col"/>
-            <field name="amount_total" type="measure"/>
-        </pivot>
-    </field>
-</record>
-
-<!-- Vue Graph -->
-<record id="view_return_order_graph" model="ir.ui.view">
-    <field name="name">return.order.graph</field>
-    <field name="model">return.order</field>
-    <field name="arch" type="xml">
-        <graph string="Analyse des retours">
-            <field name="date" type="row" interval="month"/>
-            <field name="amount_total" type="measure"/>
-        </graph>
-    </field>
-</record>
-```
+**Filtres disponibles:**
+- Ce mois / Mois dernier / Ce trimestre / Cette annee
+- Par etat (brouillon, valide, avoir cree)
+- Mes retours
+- Groupement par client, raison, entrepot, etat, periode
 
 ---
 
@@ -158,6 +159,7 @@ adi_return_management/
 │   └── res_config_settings.py
 ├── views/
 │   ├── return_order_views.xml
+│   ├── return_order_analysis_views.xml  # NEW - Vues Pivot/Graph
 │   ├── return_reason_views.xml
 │   ├── res_config_settings_views.xml
 │   └── return_menu.xml
@@ -178,18 +180,37 @@ adi_return_management/
 
 ## Historique des versions
 
-### v15.0.2.0.0 (actuelle)
+### v15.0.3.0.0 (actuelle)
+- **Ameliorations des vues** ✅
+  - Vue Kanban enrichie (montant, badges, indicateurs, avatar)
+  - Vue Tree avec colonnes supplementaires (lignes, anciennete)
+  - Decoration rouge pour retours en retard
+  - Filtres par periode, montant, activites
+  - Nouvel onglet "Informations" dans le formulaire
+  - Champs `line_count`, `days_since_creation`, `is_late`
+
+### v15.0.2.2.0
+- **Menu Analyse des retours** ✅
+  - Vue Pivot (tableau croise dynamique)
+  - Vue Graph ligne (evolution dans le temps)
+  - Vue Graph camembert (repartition par raison)
+  - Vue Graph barres (top clients, par entrepot)
+  - Filtres par periode (mois, trimestre, annee)
+
+### v15.0.2.1.0
+- **Prix de vente original depuis commande** ✅
+  - Champ `sale_line_id` pour tracer la ligne de commande
+  - Champ `origin_picking_id` pour le BL d'origine (mode souple)
+  - Champ `effective_picking_id` (compute) pour le BL effectif
+  - Recherche automatique du dernier prix de vente
+
+### v15.0.2.0.0
 - Module de base fonctionnel
 - 3 modes d'origine (libre, souple, strict)
 - Creation automatique picking + avoir
 - Rapport bon de retour (non valorise)
 - Filtrage entrepot par equipe commerciale
 - Filtrage emplacement par entrepot
-
-### v15.0.3.0.0 (prevue)
-- Prix de vente original depuis commande
-- Menu Analyse (pivot + graph)
-- Ameliorations vues
 
 ### v15.0.4.0.0 (future)
 - Retours fournisseurs (a confirmer)

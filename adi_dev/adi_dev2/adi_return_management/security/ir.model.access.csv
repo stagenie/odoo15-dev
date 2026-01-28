@@ -5,3 +5,5 @@ access_return_order_line_user,return.order.line user,model_return_order_line,gro
 access_return_order_line_manager,return.order.line manager,model_return_order_line,group_return_manager,1,1,1,1
 access_return_reason_user,return.reason user,model_return_reason,group_return_user,1,0,0,0
 access_return_reason_manager,return.reason manager,model_return_reason,group_return_manager,1,1,1,1
+access_return_order_add_products_wizard_user,return.order.add.products.wizard user,model_return_order_add_products_wizard,group_return_user,1,1,1,1
+access_return_order_add_products_line_user,return.order.add.products.line user,model_return_order_add_products_line,group_return_user,1,1,1,1

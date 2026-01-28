@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Gestion des Retours',
-    'version': '15.0.2.0.0',
+    'version': '15.0.3.0.0',
     'category': 'Sales',
     'sequence': 15,
     'summary': 'Gestion des retours clients avec creation automatique d\'avoirs',
@@ -20,6 +20,12 @@
         - Filtrage des entrepots par equipe commerciale
         - Creation automatique des avoirs clients
         - Tracabilite complete via chatter
+        - Prix de vente original depuis la commande client
+        - Menu Analyse avec vues Pivot et Graphiques :
+          * Tableau croise dynamique (TCD)
+          * Evolution des retours dans le temps
+          * Repartition par raison (camembert)
+          * Top clients / entrepots
     """,
     'author': 'ADICOPS',
     'website': 'https://adicops-dz.com',
@@ -42,9 +48,12 @@
         'data/return_data.xml',
         # Rapport
         'report/return_order_report.xml',
+        # Wizard
+        'wizard/return_order_add_products_wizard_views.xml',
         # Vues
         'views/return_reason_views.xml',
         'views/return_order_views.xml',
+        'views/return_order_analysis_views.xml',
         'views/res_config_settings_views.xml',
         'views/return_menu.xml',
     ],

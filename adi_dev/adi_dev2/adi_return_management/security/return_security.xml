@@ -25,6 +25,11 @@
             <field name="comment">Peut gerer tous les ordres de retour et la configuration</field>
         </record>
 
+        <!-- Attribuer automatiquement le groupe Utilisateur Retours a tous les utilisateurs internes -->
+        <record id="base.group_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_return_user'))]"/>
+        </record>
+
     </data>
 
     <data noupdate="1">

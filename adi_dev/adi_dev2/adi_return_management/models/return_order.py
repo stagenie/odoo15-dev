@@ -200,6 +200,26 @@ class ReturnOrder(models.Model):
         compute='_compute_picking_count'
     )
 
+    # Champs pour les vues ameliorees
+    line_count = fields.Integer(
+        string='Nb lignes',
+        compute='_compute_line_count',
+        store=True,
+        help="Nombre de lignes de retour"
+    )
+
+    days_since_creation = fields.Integer(
+        string='Anciennete (jours)',
+        compute='_compute_days_since_creation',
+        help="Nombre de jours depuis la creation du retour"
+    )
+
+    is_late = fields.Boolean(
+        string='En retard',
+        compute='_compute_is_late',
+        help="Retour en attente depuis plus de 7 jours"
+    )
+
     @api.model
     def _default_warehouse_id(self):
         """Retourne l'entrepot par defaut selon l'equipe de l'utilisateur"""
@@ -242,6 +262,35 @@ class ReturnOrder(models.Model):
     def _compute_picking_count(self):
         for order in self:
             order.picking_count = 1 if order.return_picking_id else 0
+
+    @api.depends('line_ids')
+    def _compute_line_count(self):
+        for order in self:
+            order.line_count = len(order.line_ids)
+
+    def _compute_days_since_creation(self):
+        """Calcule le nombre de jours depuis la date du retour"""
+        today = fields.Date.context_today(self)
+        for order in self:
+            if order.date:
+                delta = today - order.date
+                order.days_since_creation = delta.days
+            else:
+                order.days_since_creation = 0
+
+    def _compute_is_late(self):
+        """
+        Determine si le retour est en retard:
+        - Plus de 7 jours en brouillon
+        - Plus de 3 jours en valide sans avoir
+        """
+        for order in self:
+            if order.state == 'draft' and order.days_since_creation > 7:
+                order.is_late = True
+            elif order.state == 'validated' and not order.refund_id and order.days_since_creation > 3:
+                order.is_late = True
+            else:
+                order.is_late = False
 
     def _compute_origin_mode(self):
         """Recupere le mode d'origine depuis la configuration"""
