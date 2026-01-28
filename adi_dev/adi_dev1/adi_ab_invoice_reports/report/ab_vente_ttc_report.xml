@@ -214,14 +214,14 @@
                     </div>
                 </div>
 
-                <!-- Solde Actuel du client (utilise balance_due qui exclut les factures marquées) -->
+                <!-- Solde Actuel du client (utilise current_balance qui suit la configuration globale) -->
                 <div class="row mt-3 mb-3" name="solde_actuel">
                     <div class="col-12">
                         <table class="table table-sm" style="width: auto;">
                             <tr>
                                 <td><strong>Solde Actuel:</strong></td>
                                 <td class="text-end">
-                                    <span t-esc="o.partner_id.balance_due"
+                                    <span t-esc="o.partner_id.current_balance"
                                           t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                 </td>
                             </tr>

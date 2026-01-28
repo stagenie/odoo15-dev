@@ -65,7 +65,7 @@
 
 
              <div class="col-4" t-if="o.company_id.show_total_balance">
-              <strong>Solde Total:</strong> <span t-field="o.partner_id.balance_due" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/> </div> 
+              <strong>Solde Total:</strong> <span t-field="o.partner_id.current_balance" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/> </div> 
           </div>
          </xpath>
     </template>
@@ -86,7 +86,7 @@
 
 
              <div class="col-4" t-if="o.company_id.show_total_balance">
-              <strong>Solde Total:</strong> <span t-field="o.partner_id.balance_due" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/> </div> 
+              <strong>Solde Total:</strong> <span t-field="o.partner_id.current_balance" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/> </div> 
           </div>
          </xpath>
           
@@ -108,7 +108,7 @@
 
 
              <div class="col-4" t-if="o.company_id.show_total_balance">
-              <strong>Solde Total:</strong> <span t-field="o.partner_id.balance_due" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/> </div> 
+              <strong>Solde Total:</strong> <span t-field="o.partner_id.current_balance" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/> </div> 
           </div>
          </xpath>
 
