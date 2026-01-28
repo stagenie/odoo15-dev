@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================== -->
+    <!-- Configuration WhatsApp par type de document   -->
+    <!-- ============================================== -->
+
+    <!-- Vue formulaire -->
+    <record id="whatsapp_document_config_view_form" model="ir.ui.view">
+        <field name="name">whatsapp.document.config.form</field>
+        <field name="model">whatsapp.document.config</field>
+        <field name="arch" type="xml">
+            <form string="Configuration WhatsApp">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="get_available_reports" type="object"
+                                class="oe_stat_button" icon="fa-file-pdf-o">
+                            <span>Voir tous les rapports</span>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Ex: Devis Client"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Configuration">
+                            <field name="document_type" required="1"/>
+                            <field name="model_name" readonly="1"/>
+                            <field name="phone_field"/>
+                            <field name="sequence"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Société">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Rapports PDF" name="reports">
+                            <group>
+                                <field name="report_ids" widget="many2many_tags"
+                                       domain="[('model', '=', model_name)]"
+                                       options="{'no_create': True, 'no_create_edit': True}">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="report_name"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <p class="text-muted">
+                                Sélectionnez les rapports PDF qui seront proposés par défaut
+                                lors de l'envoi via WhatsApp pour ce type de document.
+                            </p>
+                        </page>
+                        <page string="Template Message" name="template">
+                            <group>
+                                <field name="template_id"
+                                       domain="[('document_type', 'in', [document_type, 'all'])]"/>
+                            </group>
+                            <p class="text-muted" attrs="{'invisible': [('template_id', '!=', False)]}">
+                                Sélectionnez un template de message par défaut.
+                                Si aucun template n'est sélectionné, un message générique sera utilisé.
+                            </p>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste -->
+    <record id="whatsapp_document_config_view_tree" model="ir.ui.view">
+        <field name="name">whatsapp.document.config.tree</field>
+        <field name="model">whatsapp.document.config</field>
+        <field name="arch" type="xml">
+            <tree string="Configurations WhatsApp">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="document_type"/>
+                <field name="report_ids" widget="many2many_tags"/>
+                <field name="template_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="whatsapp_document_config_view_search" model="ir.ui.view">
+        <field name="name">whatsapp.document.config.search</field>
+        <field name="model">whatsapp.document.config</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher Configuration">
+                <field name="name"/>
+                <field name="document_type"/>
+                <filter name="filter_active" string="Actifs" domain="[('active', '=', True)]"/>
+                <filter name="filter_archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="filter_sale" string="Ventes" domain="[('document_type', 'in', ['sale_quotation', 'sale_order'])]"/>
+                <filter name="filter_invoice" string="Factures" domain="[('document_type', 'in', ['invoice', 'credit_note'])]"/>
+                <filter name="filter_purchase" string="Achats" domain="[('document_type', 'in', ['purchase_rfq', 'purchase_order'])]"/>
+                <group expand="0" string="Grouper par">
+                    <filter name="group_type" string="Type" context="{'group_by': 'document_type'}"/>
+                    <filter name="group_company" string="Société" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="whatsapp_document_config_action" model="ir.actions.act_window">
+        <field name="name">Configuration Documents</field>
+        <field name="res_model">whatsapp.document.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="whatsapp_document_config_view_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une configuration WhatsApp
+            </p>
+            <p>
+                Configurez les rapports PDF et templates de messages
+                par type de document (Devis, Facture, etc.)
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================== -->
+    <!-- Menu Configuration WhatsApp                   -->
+    <!-- ============================================== -->
+
+    <!-- Menu principal dans Configuration > Technique -->
+    <menuitem id="menu_whatsapp_root"
+              name="WhatsApp"
+              parent="base.menu_custom"
+              sequence="100"/>
+
+    <!-- Sous-menu Configuration Documents -->
+    <menuitem id="menu_whatsapp_document_config"
+              name="Configuration Documents"
+              parent="menu_whatsapp_root"
+              action="whatsapp_document_config_action"
+              sequence="10"/>
+
+    <!-- Sous-menu Templates Messages -->
+    <menuitem id="menu_whatsapp_message_template"
+              name="Templates de Messages"
+              parent="menu_whatsapp_root"
+              action="whatsapp_message_template_action"
+              sequence="20"/>
+
+</odoo>

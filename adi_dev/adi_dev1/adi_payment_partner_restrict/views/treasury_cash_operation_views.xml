@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Désactiver la création rapide de partenaires dans les opérations de caisse
+    -->
+
+    <!-- Vue formulaire des opérations de caisse -->
+    <record id="view_treasury_cash_operation_form_restrict_partner" model="ir.ui.view">
+        <field name="name">treasury.cash.operation.form.restrict.partner</field>
+        <field name="model">treasury.cash.operation</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_operation_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}</attribute>
+            </field>
+        </field>
+    </record>
+
+    <!-- Vue liste des opérations de caisse -->
+    <record id="view_treasury_cash_operation_tree_restrict_partner" model="ir.ui.view">
+        <field name="name">treasury.cash.operation.tree.restrict.partner</field>
+        <field name="model">treasury.cash.operation</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_cash_operation_tree"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}</attribute>
+            </field>
+        </field>
+    </record>
+
+</odoo>

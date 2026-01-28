@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================== -->
+    <!-- Templates de messages WhatsApp                -->
+    <!-- ============================================== -->
+
+    <!-- Vue formulaire -->
+    <record id="whatsapp_message_template_view_form" model="ir.ui.view">
+        <field name="name">whatsapp.message.template.form</field>
+        <field name="model">whatsapp.message.template</field>
+        <field name="arch" type="xml">
+            <form string="Template de Message">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Ex: Message Devis Standard"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="document_type"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Message" name="message">
+                            <group>
+                                <field name="body" placeholder="Saisissez votre message ici..."/>
+                            </group>
+                            <div class="alert alert-info" role="alert">
+                                <strong>Placeholders disponibles:</strong>
+                                <ul class="mb-0">
+                                    <li><code>{{partner_name}}</code> - Nom du partenaire</li>
+                                    <li><code>{{document_name}}</code> - Référence du document</li>
+                                    <li><code>{{document_date}}</code> - Date du document</li>
+                                    <li><code>{{amount_total}}</code> - Montant total</li>
+                                    <li><code>{{currency}}</code> - Devise</li>
+                                    <li><code>{{company_name}}</code> - Nom de la société</li>
+                                    <li><code>{{user_name}}</code> - Nom de l'utilisateur</li>
+                                </ul>
+                            </div>
+                        </page>
+                        <page string="Aperçu" name="preview">
+                            <group>
+                                <field name="preview" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste -->
+    <record id="whatsapp_message_template_view_tree" model="ir.ui.view">
+        <field name="name">whatsapp.message.template.tree</field>
+        <field name="model">whatsapp.message.template</field>
+        <field name="arch" type="xml">
+            <tree string="Templates de Messages">
+                <field name="name"/>
+                <field name="document_type"/>
+                <field name="body" widget="text"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="whatsapp_message_template_view_search" model="ir.ui.view">
+        <field name="name">whatsapp.message.template.search</field>
+        <field name="model">whatsapp.message.template</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher Template">
+                <field name="name"/>
+                <field name="body"/>
+                <filter name="filter_active" string="Actifs" domain="[('active', '=', True)]"/>
+                <filter name="filter_archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="filter_all" string="Tous documents" domain="[('document_type', '=', 'all')]"/>
+                <filter name="filter_sale" string="Ventes" domain="[('document_type', 'in', ['sale_quotation', 'sale_order'])]"/>
+                <filter name="filter_invoice" string="Factures" domain="[('document_type', 'in', ['invoice', 'credit_note'])]"/>
+                <filter name="filter_purchase" string="Achats" domain="[('document_type', 'in', ['purchase_rfq', 'purchase_order'])]"/>
+                <group expand="0" string="Grouper par">
+                    <filter name="group_type" string="Type" context="{'group_by': 'document_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="whatsapp_message_template_action" model="ir.actions.act_window">
+        <field name="name">Templates de Messages</field>
+        <field name="res_model">whatsapp.message.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="whatsapp_message_template_view_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un template de message
+            </p>
+            <p>
+                Créez des templates de messages personnalisés
+                pour vos envois WhatsApp.
+            </p>
+        </field>
+    </record>
+
+</odoo>

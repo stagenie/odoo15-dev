@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================== -->
+    <!-- Wizard d'envoi WhatsApp                       -->
+    <!-- ============================================== -->
+
+    <record id="whatsapp_send_wizard_view_form" model="ir.ui.view">
+        <field name="name">whatsapp.send.wizard.form</field>
+        <field name="model">whatsapp.send.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Envoyer via WhatsApp">
+                <!-- Champs cachés -->
+                <field name="res_model" invisible="1"/>
+                <field name="res_id" invisible="1"/>
+                <field name="document_type" invisible="1"/>
+
+                <!-- Informations du document -->
+                <group string="Document">
+                    <group>
+                        <field name="document_name" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="amount_total" readonly="1"/>
+                    </group>
+                </group>
+
+                <!-- Destinataire - Pleine largeur -->
+                <group string="Destinataire">
+                    <group>
+                        <field name="partner_id"
+                               options="{'no_create': True, 'no_create_edit': True}"/>
+                    </group>
+                    <group>
+                        <field name="phone_number" placeholder="+213555123456"/>
+                    </group>
+                </group>
+
+                <!-- Message -->
+                <group string="Message">
+                    <field name="template_id" colspan="2"
+                           options="{'no_create': True}"
+                           domain="[('document_type', 'in', [document_type, 'all'])]"/>
+                    <field name="message" colspan="2" nolabel="1"
+                           placeholder="Saisissez votre message..."/>
+                </group>
+
+                <!-- Documents PDF -->
+                <group string="Documents PDF à joindre">
+                    <field name="report_ids" widget="many2many_tags" nolabel="1" colspan="2"
+                           domain="[('model', '=', res_model)]"
+                           options="{'no_create': True, 'no_create_edit': True}"/>
+                </group>
+
+                <div class="alert alert-info" role="alert">
+                    <i class="fa fa-info-circle"/>
+                    Les fichiers PDF seront générés et attachés au document.
+                    Vous devrez les envoyer manuellement dans la conversation WhatsApp.
+                </div>
+
+                <footer>
+                    <button name="action_send_whatsapp" string="Ouvrir WhatsApp"
+                            type="object" class="btn-primary"
+                            icon="fa-whatsapp"/>
+                    <button name="action_download_pdfs" string="Télécharger PDF"
+                            type="object" class="btn-secondary"
+                            icon="fa-download"
+                            attrs="{'invisible': [('report_ids', '=', [])]}"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

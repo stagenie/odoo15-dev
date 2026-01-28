@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================== -->
+        <!-- Templates de messages par défaut              -->
+        <!-- ============================================== -->
+
+        <record id="whatsapp_template_quotation" model="whatsapp.message.template">
+            <field name="name">Template Devis Client</field>
+            <field name="document_type">sale_quotation</field>
+            <field name="body">Bonjour {{partner_name}},
+
+Veuillez trouver ci-joint notre devis {{document_name}} d'un montant de {{amount_total}} {{currency}}.
+
+N'hésitez pas à nous contacter pour toute question.
+
+Cordialement,
+{{user_name}}
+{{company_name}}</field>
+        </record>
+
+        <record id="whatsapp_template_sale_order" model="whatsapp.message.template">
+            <field name="name">Template Bon de Commande Client</field>
+            <field name="document_type">sale_order</field>
+            <field name="body">Bonjour {{partner_name}},
+
+Veuillez trouver ci-joint votre bon de commande {{document_name}} d'un montant de {{amount_total}} {{currency}}.
+
+Cordialement,
+{{user_name}}
+{{company_name}}</field>
+        </record>
+
+        <record id="whatsapp_template_invoice" model="whatsapp.message.template">
+            <field name="name">Template Facture Client</field>
+            <field name="document_type">invoice</field>
+            <field name="body">Bonjour {{partner_name}},
+
+Veuillez trouver ci-joint votre facture {{document_name}} du {{document_date}} d'un montant de {{amount_total}} {{currency}}.
+
+Cordialement,
+{{user_name}}
+{{company_name}}</field>
+        </record>
+
+        <record id="whatsapp_template_credit_note" model="whatsapp.message.template">
+            <field name="name">Template Avoir Client</field>
+            <field name="document_type">credit_note</field>
+            <field name="body">Bonjour {{partner_name}},
+
+Veuillez trouver ci-joint votre avoir {{document_name}} d'un montant de {{amount_total}} {{currency}}.
+
+Cordialement,
+{{user_name}}
+{{company_name}}</field>
+        </record>
+
+        <record id="whatsapp_template_purchase_rfq" model="whatsapp.message.template">
+            <field name="name">Template Demande de Prix</field>
+            <field name="document_type">purchase_rfq</field>
+            <field name="body">Bonjour {{partner_name}},
+
+Veuillez trouver ci-joint notre demande de prix {{document_name}}.
+
+Merci de nous faire parvenir votre meilleure offre.
+
+Cordialement,
+{{user_name}}
+{{company_name}}</field>
+        </record>
+
+        <record id="whatsapp_template_purchase_order" model="whatsapp.message.template">
+            <field name="name">Template Bon de Commande Fournisseur</field>
+            <field name="document_type">purchase_order</field>
+            <field name="body">Bonjour {{partner_name}},
+
+Veuillez trouver ci-joint notre bon de commande {{document_name}} d'un montant de {{amount_total}} {{currency}}.
+
+Cordialement,
+{{user_name}}
+{{company_name}}</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- Configurations par défaut                     -->
+        <!-- ============================================== -->
+
+        <record id="whatsapp_config_quotation" model="whatsapp.document.config">
+            <field name="name">Devis Client</field>
+            <field name="document_type">sale_quotation</field>
+            <field name="template_id" ref="whatsapp_template_quotation"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="whatsapp_config_sale_order" model="whatsapp.document.config">
+            <field name="name">Bon de Commande Client</field>
+            <field name="document_type">sale_order</field>
+            <field name="template_id" ref="whatsapp_template_sale_order"/>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="whatsapp_config_invoice" model="whatsapp.document.config">
+            <field name="name">Facture Client</field>
+            <field name="document_type">invoice</field>
+            <field name="template_id" ref="whatsapp_template_invoice"/>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="whatsapp_config_credit_note" model="whatsapp.document.config">
+            <field name="name">Avoir Client</field>
+            <field name="document_type">credit_note</field>
+            <field name="template_id" ref="whatsapp_template_credit_note"/>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="whatsapp_config_purchase_rfq" model="whatsapp.document.config">
+            <field name="name">Demande de Prix Fournisseur</field>
+            <field name="document_type">purchase_rfq</field>
+            <field name="template_id" ref="whatsapp_template_purchase_rfq"/>
+            <field name="sequence">50</field>
+        </record>
+
+        <record id="whatsapp_config_purchase_order" model="whatsapp.document.config">
+            <field name="name">Bon de Commande Fournisseur</field>
+            <field name="document_type">purchase_order</field>
+            <field name="template_id" ref="whatsapp_template_purchase_order"/>
+            <field name="sequence">60</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================== -->
+    <!-- Bouton WhatsApp sur Commande Fournisseur      -->
+    <!-- ============================================== -->
+
+    <!-- Héritage du formulaire purchase.order -->
+    <record id="purchase_order_form_inherit_whatsapp" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.whatsapp</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter le bouton WhatsApp après le bouton d'envoi par email -->
+            <xpath expr="//button[@name='action_rfq_send']" position="after">
+                <button name="action_send_whatsapp"
+                        string="WhatsApp"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-whatsapp"
+                        attrs="{'invisible': [('partner_id', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ajout du bouton dans l'action contextuelle -->
+    <record id="action_purchase_order_whatsapp" model="ir.actions.server">
+        <field name="name">Envoyer via WhatsApp</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">
+if record:
+    action = record.action_send_whatsapp()
+        </field>
+    </record>
+
+</odoo>
