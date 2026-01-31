@@ -3,7 +3,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 import urllib.parse
-import base64
 import re
 
 
@@ -46,16 +45,6 @@ class WhatsappSendWizard(models.TransientModel):
     message = fields.Text(
         string='Message',
         required=True
-    )
-
-    # Rapports PDF à joindre
-    report_ids = fields.Many2many(
-        'ir.actions.report',
-        'whatsapp_wizard_report_rel',
-        'wizard_id',
-        'report_id',
-        string='Documents PDF à joindre',
-        domain="[('model', '=', res_model)]"
     )
 
     # Informations du document (affichage)
@@ -109,10 +98,6 @@ class WhatsappSendWizard(models.TransientModel):
         )
 
         if config:
-            # Rapports par défaut
-            if config.report_ids:
-                res['report_ids'] = [(6, 0, config.report_ids.ids)]
-
             # Template de message par défaut
             if config.template_id:
                 res['template_id'] = config.template_id.id
@@ -206,40 +191,11 @@ class WhatsappSendWizard(models.TransientModel):
         # Construire l'URL WhatsApp
         whatsapp_url = f"https://wa.me/{phone_for_url}?text={message_encoded}"
 
-        # Générer les PDFs et les stocker en attachements
-        document = self.env[self.res_model].browse(self.res_id)
-        attachment_ids = []
-
-        if self.report_ids and document.exists():
-            for report in self.report_ids:
-                try:
-                    pdf_content, _report_type = report._render_qweb_pdf(document.ids)
-                    filename = report.print_report_name
-                    if filename:
-                        # Évaluer le nom du fichier
-                        filename = self._safe_eval_filename(filename, document)
-                    else:
-                        filename = f"{report.name}_{document.name}"
-                    filename = f"{filename}.pdf"
-
-                    # Créer l'attachement
-                    attachment = self.env['ir.attachment'].create({
-                        'name': filename,
-                        'type': 'binary',
-                        'datas': base64.b64encode(pdf_content),
-                        'res_model': self.res_model,
-                        'res_id': self.res_id,
-                        'mimetype': 'application/pdf',
-                    })
-                    attachment_ids.append(attachment.id)
-                except Exception as e:
-                    # Log l'erreur mais continuer
-                    pass
-
         # Enregistrer dans le chatter du document
+        document = self.env[self.res_model].browse(self.res_id)
         if document.exists() and hasattr(document, 'message_post'):
             body = (
-                "<p><strong>Message WhatsApp envoyé</strong></p>"
+                "<p><strong>📱 Message WhatsApp envoyé</strong></p>"
                 "<p><strong>Destinataire:</strong> {} ({})</p>"
                 "<p><strong>Message:</strong></p><pre>{}</pre>"
             ).format(self.partner_id.name, self.phone_number, self.message)
@@ -248,7 +204,6 @@ class WhatsappSendWizard(models.TransientModel):
                 body=body,
                 message_type='notification',
                 subtype_xmlid='mail.mt_note',
-                attachment_ids=attachment_ids if attachment_ids else None,
             )
 
         # Retourner l'action pour ouvrir WhatsApp
@@ -257,37 +212,3 @@ class WhatsappSendWizard(models.TransientModel):
             'url': whatsapp_url,
             'target': 'new',
         }
-
-    def _safe_eval_filename(self, filename_expr, document):
-        """Évalue le nom du fichier de manière sécurisée"""
-        try:
-            # Contexte pour l'évaluation
-            eval_context = {
-                'object': document,
-                'time': __import__('time'),
-            }
-            result = eval(filename_expr, eval_context)
-            # Nettoyer le nom de fichier
-            result = re.sub(r'[<>:"/\\|?*]', '_', str(result))
-            return result
-        except Exception:
-            return document.name or 'document'
-
-    def action_download_pdfs(self):
-        """Télécharge les PDFs sélectionnés"""
-        self.ensure_one()
-
-        if not self.report_ids:
-            raise UserError("Veuillez sélectionner au moins un rapport à télécharger.")
-
-        document = self.env[self.res_model].browse(self.res_id)
-        if not document.exists():
-            raise UserError("Le document source n'existe plus.")
-
-        # Si un seul rapport, le télécharger directement
-        if len(self.report_ids) == 1:
-            return self.report_ids[0].report_action(document)
-
-        # Si plusieurs rapports, créer un ZIP ou télécharger le premier
-        # Pour simplifier, on télécharge le premier
-        return self.report_ids[0].report_action(document)

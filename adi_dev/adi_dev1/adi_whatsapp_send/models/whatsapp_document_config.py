@@ -34,16 +34,6 @@ class WhatsappDocumentConfig(models.Model):
         store=True
     )
 
-    # Rapports PDF à envoyer (Many2many filtré par modèle)
-    report_ids = fields.Many2many(
-        'ir.actions.report',
-        'whatsapp_config_report_rel',
-        'config_id',
-        'report_id',
-        string='Rapports PDF à envoyer',
-        help="Sélectionnez les rapports PDF qui seront joints lors de l'envoi WhatsApp"
-    )
-
     # Template de message par défaut
     template_id = fields.Many2one(
         'whatsapp.message.template',
@@ -78,18 +68,6 @@ class WhatsappDocumentConfig(models.Model):
         for record in self:
             record.model_name = type_to_model.get(record.document_type, '')
 
-    @api.onchange('document_type')
-    def _onchange_document_type(self):
-        """Réinitialise les rapports quand le type change et retourne le domaine"""
-        self.report_ids = [(5, 0, 0)]
-        if self.document_type:
-            return {
-                'domain': {
-                    'report_ids': [('model', '=', self.model_name)]
-                }
-            }
-        return {}
-
     @api.constrains('document_type', 'company_id')
     def _check_unique_config(self):
         """Vérifie qu'il n'y a qu'une seule configuration active par type et société"""
@@ -118,10 +96,3 @@ class WhatsappDocumentConfig(models.Model):
 
         config = self.search(domain, limit=1, order='company_id desc')
         return config
-
-    def get_available_reports(self):
-        """Retourne les rapports disponibles pour ce type de document"""
-        self.ensure_one()
-        return self.env['ir.actions.report'].search([
-            ('model', '=', self.model_name)
-        ])

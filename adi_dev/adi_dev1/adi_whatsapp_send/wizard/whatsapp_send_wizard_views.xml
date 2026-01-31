@@ -44,27 +44,18 @@
                            placeholder="Saisissez votre message..."/>
                 </group>
 
-                <!-- Documents PDF -->
-                <group string="Documents PDF à joindre">
-                    <field name="report_ids" widget="many2many_tags" nolabel="1" colspan="2"
-                           domain="[('model', '=', res_model)]"
-                           options="{'no_create': True, 'no_create_edit': True}"/>
-                </group>
-
-                <div class="alert alert-info" role="alert">
-                    <i class="fa fa-info-circle"/>
-                    Les fichiers PDF seront générés et attachés au document.
-                    Vous devrez les envoyer manuellement dans la conversation WhatsApp.
+                <div class="alert alert-success" role="alert" style="background-color: #d4edda; border-color: #c3e6cb;">
+                    <strong style="color: #25D366;">✓ Le détail des lignes est inclus automatiquement dans le message.</strong>
+                    <br/>
+                    <span class="text-muted">Le message sera ouvert dans votre WhatsApp Web - prêt à envoyer !</span>
                 </div>
 
                 <footer>
-                    <button name="action_send_whatsapp" string="Ouvrir WhatsApp"
-                            type="object" class="btn-primary"
+                    <button name="action_send_whatsapp"
+                            string="  Envoyer via WhatsApp"
+                            type="object"
+                            class="btn-success"
                             icon="fa-whatsapp"/>
-                    <button name="action_download_pdfs" string="Télécharger PDF"
-                            type="object" class="btn-secondary"
-                            icon="fa-download"
-                            attrs="{'invisible': [('report_ids', '=', [])]}"/>
                     <button string="Annuler" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

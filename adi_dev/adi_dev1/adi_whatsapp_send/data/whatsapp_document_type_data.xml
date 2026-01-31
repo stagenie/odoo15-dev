@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
-
-        <!-- ============================================== -->
-        <!-- Templates de messages par défaut              -->
-        <!-- ============================================== -->
+    <!-- ============================================== -->
+    <!-- Templates de messages par défaut              -->
+    <!-- noupdate="0" pour forcer la mise à jour       -->
+    <!-- ============================================== -->
+    <data noupdate="0">
 
         <record id="whatsapp_template_quotation" model="whatsapp.message.template">
             <field name="name">Template Devis Client</field>
             <field name="document_type">sale_quotation</field>
             <field name="body">Bonjour {{partner_name}},
 
-Veuillez trouver ci-joint notre devis {{document_name}} d'un montant de {{amount_total}} {{currency}}.
+Veuillez trouver notre devis *{{document_name}}*
+
+{{document_lines}}
 
 N'hésitez pas à nous contacter pour toute question.
 
@@ -25,7 +27,9 @@ Cordialement,
             <field name="document_type">sale_order</field>
             <field name="body">Bonjour {{partner_name}},
 
-Veuillez trouver ci-joint votre bon de commande {{document_name}} d'un montant de {{amount_total}} {{currency}}.
+Voici votre bon de commande *{{document_name}}*
+
+{{document_lines}}
 
 Cordialement,
 {{user_name}}
@@ -37,7 +41,9 @@ Cordialement,
             <field name="document_type">invoice</field>
             <field name="body">Bonjour {{partner_name}},
 
-Veuillez trouver ci-joint votre facture {{document_name}} du {{document_date}} d'un montant de {{amount_total}} {{currency}}.
+Voici votre facture *{{document_name}}* du {{document_date}}
+
+{{document_lines}}
 
 Cordialement,
 {{user_name}}
@@ -49,7 +55,9 @@ Cordialement,
             <field name="document_type">credit_note</field>
             <field name="body">Bonjour {{partner_name}},
 
-Veuillez trouver ci-joint votre avoir {{document_name}} d'un montant de {{amount_total}} {{currency}}.
+Voici votre avoir *{{document_name}}*
+
+{{document_lines}}
 
 Cordialement,
 {{user_name}}
@@ -61,7 +69,9 @@ Cordialement,
             <field name="document_type">purchase_rfq</field>
             <field name="body">Bonjour {{partner_name}},
 
-Veuillez trouver ci-joint notre demande de prix {{document_name}}.
+Voici notre demande de prix *{{document_name}}*
+
+{{document_lines}}
 
 Merci de nous faire parvenir votre meilleure offre.
 
@@ -75,16 +85,21 @@ Cordialement,
             <field name="document_type">purchase_order</field>
             <field name="body">Bonjour {{partner_name}},
 
-Veuillez trouver ci-joint notre bon de commande {{document_name}} d'un montant de {{amount_total}} {{currency}}.
+Voici notre bon de commande *{{document_name}}*
+
+{{document_lines}}
 
 Cordialement,
 {{user_name}}
 {{company_name}}</field>
         </record>
 
-        <!-- ============================================== -->
-        <!-- Configurations par défaut                     -->
-        <!-- ============================================== -->
+    </data>
+
+    <!-- ============================================== -->
+    <!-- Configurations par défaut                     -->
+    <!-- ============================================== -->
+    <data noupdate="1">
 
         <record id="whatsapp_config_quotation" model="whatsapp.document.config">
             <field name="name">Devis Client</field>

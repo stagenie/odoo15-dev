@@ -15,7 +15,7 @@
                 <button name="action_send_whatsapp"
                         string="WhatsApp"
                         type="object"
-                        class="btn-secondary"
+                        class="btn-success"
                         icon="fa-whatsapp"
                         attrs="{'invisible': ['|', ('partner_id', '=', False), ('move_type', 'not in', ['out_invoice', 'out_refund'])]}"/>
             </xpath>
