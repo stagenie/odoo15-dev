@@ -22,9 +22,14 @@
                         </div>
                         <div style="padding-top:10px;">
                             <span t-field="o.partner_id.street"/>
-                        </div>                    
-                   
-                    <!-- 
+                        </div>
+                        <div t-if="o.partner_id.state_id or o.partner_id.composition_id" style="padding-top:5px;">
+                            <span t-if="o.partner_id.state_id" t-field="o.partner_id.state_id"/>
+                            <span t-if="o.partner_id.state_id and o.partner_id.composition_id">, </span>
+                            <span t-if="o.partner_id.composition_id" t-field="o.partner_id.composition_id"/>
+                        </div>
+
+                    <!--
                         <div style="padding-top:15px;">
                         <span t-field="doc.partner_id.street2"/>
                     </div>

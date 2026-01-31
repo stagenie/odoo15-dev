@@ -14,7 +14,8 @@
                     <field name="payment_mode_id" optional="show"/>                    
                 </xpath>
                 
-                <xpath expr="//field[@name='amount_total_signed']" position="after">                    
+                <xpath expr="//field[@name='amount_total_signed']" position="after">
+                    <field name="amount_timbre" optional="show" sum="Droit de timbre"/>
                     <field name="amount_total_with_timbre" optional="show" sum="Total avec Timbre" />
                     <field name="total_paid" optional="show" sum="Total payé"/>
                 </xpath>
@@ -31,14 +32,14 @@
                 <xpath expr="//field[@name='activity_ids']" position="after">
                     <field name="payment_mode_id" optional="show"/>                    
                 </xpath>
-                <xpath expr="//field[@name='amount_total_signed']" position="after">                    
+                <xpath expr="//field[@name='amount_total_signed']" position="after">
+                    <field name="amount_timbre" optional="show" sum="Droit de timbre"/>
                     <field name="amount_total_with_timbre" optional="show" sum="Total avec Timbre" />
                     <field name="total_paid" optional="show" sum="Total payé"/>
-                   
                 </xpath>
             </field>
         </record>
- 
+
 
 <!-- REcherche  -->
   <record id="view_account_invoice_filter" model="ir.ui.view">

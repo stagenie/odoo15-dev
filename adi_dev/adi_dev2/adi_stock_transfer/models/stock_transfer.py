@@ -572,8 +572,15 @@ class StockTransfer(models.Model):
                     lambda l: l.product_id.id == move.product_id.id
                 )
                 if transfer_line:
-                    move.quantity_done = transfer_line[0].qty_sent
-            self.source_picking_id.button_validate()
+                    qty_to_set = transfer_line[0].qty_sent
+                    # Travailler directement avec les move_lines pour éviter l'erreur
+                    # "Cannot set done quantity from stock move" quand il y a plusieurs lignes
+                    if move.move_line_ids:
+                        for move_line in move.move_line_ids:
+                            move_line.qty_done = move_line.product_uom_qty
+                    else:
+                        move.quantity_done = qty_to_set
+            self.source_picking_id.with_context(skip_backorder=True).button_validate()
 
         self.state = 'in_transit'
         self.message_post(body=_("Produits envoyés - En transit"))
@@ -609,7 +616,13 @@ class StockTransfer(models.Model):
                     lambda l: l.product_id.id == move.product_id.id
                 )
                 if transfer_line:
-                    move.quantity_done = transfer_line[0].qty_received
+                    # Travailler directement avec les move_lines pour éviter l'erreur
+                    # "Cannot set done quantity from stock move" quand il y a plusieurs lignes
+                    if move.move_line_ids:
+                        for move_line in move.move_line_ids:
+                            move_line.qty_done = move_line.product_uom_qty
+                    else:
+                        move.quantity_done = transfer_line[0].qty_received
             self.dest_picking_id.with_context(skip_backorder=True).button_validate()
 
         self.state = 'done'

@@ -23,6 +23,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="supplier_return_check_qty_exceeded"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="supplier_return_check_qty_exceeded"/>
+                            <div class="text-muted">
+                                Empeche le retour d'une quantite superieure a la quantite recue
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </xpath>
         </field>

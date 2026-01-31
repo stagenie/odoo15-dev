@@ -215,6 +215,17 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
         if not selected_lines:
             raise UserError(_("Veuillez selectionner au moins un produit."))
 
+        # Verifier le controle de quantite si active
+        check_qty = self.env['ir.config_parameter'].sudo().get_param(
+            'adi_supplier_return_management.return_check_qty_exceeded', 'True'
+        )
+        if check_qty in ('True', 'true', '1', True):
+            for line in selected_lines:
+                if line.qty_received > 0 and line.qty_to_return > line.qty_received:
+                    raise UserError(_(
+                        "La quantite a retourner (%.2f) pour '%s' depasse la quantite recue (%.2f)."
+                    ) % (line.qty_to_return, line.product_id.display_name, line.qty_received))
+
         return_order = self.return_order_id
 
         for line in selected_lines:
@@ -330,4 +341,10 @@ class SupplierReturnOrderAddProductsLine(models.TransientModel):
     purchase_line_id = fields.Many2one(
         'purchase.order.line',
         string='Ligne achat'
+    )
+
+    purchase_order_id = fields.Many2one(
+        related='purchase_line_id.order_id',
+        string='Commande',
+        store=False
     )

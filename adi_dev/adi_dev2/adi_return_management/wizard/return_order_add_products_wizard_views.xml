@@ -75,6 +75,7 @@
                                attrs="{'readonly': [('selected', '=', False)]}"/>
                         <field name="price_unit" readonly="1" force_save="1"/>
                         <field name="picking_id" string="BL" optional="hide" readonly="1" force_save="1"/>
+                        <field name="sale_order_id" string="Commande" optional="hide" readonly="1"/>
                         <field name="sale_line_id" invisible="1" force_save="1"/>
                     </tree>
                 </field>

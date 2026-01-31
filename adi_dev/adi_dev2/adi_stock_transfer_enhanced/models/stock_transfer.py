@@ -371,7 +371,14 @@ class StockTransfer(models.Model):
                         lambda l: l.product_id.id == move.product_id.id
                     )
                     if transfer_line:
-                        move.quantity_done = transfer_line[0].qty_sent
+                        qty_to_set = transfer_line[0].qty_sent
+                        # Travailler directement avec les move_lines pour éviter l'erreur
+                        # "Cannot set done quantity from stock move" quand il y a plusieurs lignes
+                        if move.move_line_ids:
+                            for move_line in move.move_line_ids:
+                                move_line.qty_done = move_line.product_uom_qty
+                        else:
+                            move.quantity_done = qty_to_set
                 # IMPORTANT: skip_backorder=True pour éviter le wizard de backorder
                 # qui bloque la validation si les quantités sont partielles
                 self.source_picking_id.with_context(skip_backorder=True).button_validate()
@@ -424,7 +431,13 @@ class StockTransfer(models.Model):
                     lambda l: l.product_id.id == move.product_id.id
                 )
                 if transfer_line:
-                    move.quantity_done = transfer_line[0].qty_received
+                    # Travailler directement avec les move_lines pour éviter l'erreur
+                    # "Cannot set done quantity from stock move" quand il y a plusieurs lignes
+                    if move.move_line_ids:
+                        for move_line in move.move_line_ids:
+                            move_line.qty_done = move_line.product_uom_qty
+                    else:
+                        move.quantity_done = transfer_line[0].qty_received
 
             # IMPORTANT: skip_backorder=True pour éviter la création de reliquats Odoo
             self.dest_picking_id.with_context(skip_backorder=True).button_validate()

@@ -248,17 +248,21 @@ class StockTransfer(models.Model):
             self.source_picking_id.action_assign()
 
             # Maintenant définir les qty_done
+            # Travailler directement avec les move_lines pour éviter l'erreur
+            # "Cannot set done quantity from stock move" quand il y a plusieurs lignes
             for move in self.source_picking_id.move_lines:
                 transfer_line = self.transfer_line_ids.filtered(
                     lambda l: l.product_id.id == move.product_id.id
                 )
                 if transfer_line:
                     qty_to_send = transfer_line[0].qty_sent
-                    move.quantity_done = qty_to_send
-
-                    # Définir qty_done sur les move_lines
-                    for move_line in move.move_line_ids:
-                        move_line.qty_done = move_line.product_uom_qty
+                    # Définir qty_done sur les move_lines (prioritaire)
+                    if move.move_line_ids:
+                        for move_line in move.move_line_ids:
+                            move_line.qty_done = move_line.product_uom_qty
+                    else:
+                        # Fallback si pas de move_lines
+                        move.quantity_done = qty_to_send
 
             # Valider le picking source - SANS création de backorder
             self.source_picking_id.with_context(skip_backorder=True).button_validate()
@@ -327,17 +331,21 @@ class StockTransfer(models.Model):
             self.dest_picking_id.action_assign()
 
             # Maintenant définir les qty_done
+            # Travailler directement avec les move_lines pour éviter l'erreur
+            # "Cannot set done quantity from stock move" quand il y a plusieurs lignes
             for move in self.dest_picking_id.move_lines:
                 transfer_line = self.transfer_line_ids.filtered(
                     lambda l: l.product_id.id == move.product_id.id
                 )
                 if transfer_line:
                     qty_received = transfer_line[0].qty_received
-                    move.quantity_done = qty_received
-
-                    # Définir qty_done sur les move_lines
-                    for move_line in move.move_line_ids:
-                        move_line.qty_done = move_line.product_uom_qty
+                    # Définir qty_done sur les move_lines (prioritaire)
+                    if move.move_line_ids:
+                        for move_line in move.move_line_ids:
+                            move_line.qty_done = move_line.product_uom_qty
+                    else:
+                        # Fallback si pas de move_lines
+                        move.quantity_done = qty_received
 
             # Valider le picking destination - SANS création de backorder
             self.dest_picking_id.with_context(skip_backorder=True).button_validate()

@@ -234,7 +234,13 @@ class StockTransferFixWizard(models.TransientModel):
         new_picking = transfer.source_picking_id
         if new_picking and new_picking.state != 'done':
             for move in new_picking.move_lines:
-                move.quantity_done = move.product_uom_qty
+                # Travailler directement avec les move_lines pour éviter l'erreur
+                # "Cannot set done quantity from stock move" quand il y a plusieurs lignes
+                if move.move_line_ids:
+                    for ml in move.move_line_ids:
+                        ml.qty_done = ml.product_uom_qty
+                else:
+                    move.quantity_done = move.product_uom_qty
 
             ctx = {'skip_backorder': True} if self.skip_backorder else {}
             new_picking.with_context(**ctx).button_validate()

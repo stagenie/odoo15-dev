@@ -93,10 +93,10 @@
         action="action_return_reason"
         sequence="10"/>
 
-    <!-- Parametres -->
+    <!-- Parametres Clients -->
     <menuitem
         id="menu_return_settings"
-        name="Parametres"
+        name="Parametres Clients"
         parent="menu_return_config"
         action="action_return_config_settings"
         sequence="99"/>
