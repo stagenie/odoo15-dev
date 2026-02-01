@@ -30,7 +30,8 @@
                 <button name="action_open_costing_wizard"
                         string="Calcul Costing"
                         type="object"
-                        class="btn-secondary"
+                        class="btn-warning"
+                        icon="fa-calculator"
                         attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
             </xpath>
 
