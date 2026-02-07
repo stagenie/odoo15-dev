@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit Journal Items (account.move.line) Tree View -->
+    <record id="view_move_line_tree_inherit_exclude" model="ir.ui.view">
+        <field name="name">account.move.line.tree.inherit.exclude</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="date_maturity" position="after">
+                <field name="exclude_from_invoice_tab" optional="hide" string="Exclu rappro."/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

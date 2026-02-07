@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-extend="ShowPaymentInfo">
+        <t t-jquery="a.outstanding_credit_assign" t-operation="after">
+            <a title="Ne pas proposer pour régler les factures"
+               role="button"
+               class="outstanding_credit_exclude text-muted"
+               t-att-data-id="line.id"
+               style="margin-left: 2px; padding: 2px 4px; cursor: pointer; font-size: 0.85em;"
+               href="#">
+                <i class="fa fa-ban"/>
+            </a>
+        </t>
+    </t>
+
+</templates>
