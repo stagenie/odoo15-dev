@@ -556,6 +556,47 @@ class StockTransfer(models.Model):
         self.source_picking_id = source_picking
         self.dest_picking_id = dest_picking
 
+    def _sync_dest_picking_with_source(self):
+        """
+        Synchronise le picking d'entrée avec les quantités réellement envoyées
+        dans le picking de sortie.
+
+        Après validation du picking source avec skip_backorder=True, certains
+        moves peuvent être annulés (stock insuffisant). Cette méthode ajuste
+        le picking destination pour ne recevoir que ce qui a réellement été envoyé,
+        évitant ainsi des quants négatifs dans l'emplacement transit.
+        """
+        self.ensure_one()
+        if not self.source_picking_id or not self.dest_picking_id:
+            return
+        if self.dest_picking_id.state in ('done', 'cancel'):
+            return
+
+        for dest_move in self.dest_picking_id.move_lines.filtered(
+            lambda m: m.state not in ('done', 'cancel')
+        ):
+            product = dest_move.product_id
+
+            # Quantité réellement envoyée (move_lines done du picking source)
+            source_lines = self.source_picking_id.move_line_ids.filtered(
+                lambda ml: ml.product_id.id == product.id and ml.state == 'done'
+            )
+            actual_qty_sent = sum(source_lines.mapped('qty_done'))
+
+            if actual_qty_sent <= 0:
+                # Rien n'a été envoyé pour ce produit → annuler le move destination
+                dest_move._action_cancel()
+            elif actual_qty_sent < dest_move.product_uom_qty:
+                # Quantité partielle → ajuster le move destination
+                dest_move.product_uom_qty = actual_qty_sent
+
+            # Mettre à jour qty_sent sur la ligne de transfert
+            transfer_line = self.transfer_line_ids.filtered(
+                lambda l: l.product_id.id == product.id
+            )
+            if transfer_line:
+                transfer_line[0].qty_sent = actual_qty_sent
+
     def action_start_transit(self):
         """Démarrer le transit - L'entrepôt source envoie les produits"""
         self.ensure_one()
@@ -581,6 +622,9 @@ class StockTransfer(models.Model):
                     else:
                         move.quantity_done = qty_to_set
             self.source_picking_id.with_context(skip_backorder=True).button_validate()
+
+        # Synchroniser le picking d'entrée avec les quantités réellement envoyées
+        self._sync_dest_picking_with_source()
 
         self.state = 'in_transit'
         self.message_post(body=_("Produits envoyés - En transit"))

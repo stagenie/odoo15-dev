@@ -356,6 +356,9 @@ class StockTransfer(models.Model):
             # Mettre à jour les quantity_done dans les sources
             self._update_source_quantities_done()
 
+            # Synchroniser le picking d'entrée avec les quantités réellement envoyées
+            self._sync_dest_picking_with_source()
+
             self.state = 'in_transit'
             self.message_post(body=_("Produits envoyés - En transit"))
         else:
@@ -382,6 +385,9 @@ class StockTransfer(models.Model):
                 # IMPORTANT: skip_backorder=True pour éviter le wizard de backorder
                 # qui bloque la validation si les quantités sont partielles
                 self.source_picking_id.with_context(skip_backorder=True).button_validate()
+
+            # Synchroniser le picking d'entrée avec les quantités réellement envoyées
+            self._sync_dest_picking_with_source()
 
             self.state = 'in_transit'
             self.message_post(body=_("Produits envoyés - En transit"))

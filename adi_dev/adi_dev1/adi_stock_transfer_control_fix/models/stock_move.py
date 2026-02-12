@@ -25,6 +25,11 @@ class StockMove(models.Model):
             qty_available = 0.0
             is_insufficient = False
             if move.product_id and move.location_id:
+                # Les emplacements transit ne contiennent pas de quants fiables
+                if move.location_id.usage == 'transit':
+                    move.qty_available_source = 0.0
+                    move.is_qty_insufficient = False
+                    continue
                 # Calculer la quantité disponible dans l'emplacement source
                 quants = self.env['stock.quant'].search([
                     ('product_id', '=', move.product_id.id),
@@ -60,6 +65,11 @@ class StockMoveLine(models.Model):
             qty_available = 0.0
             is_insufficient = False
             if line.product_id and line.location_id:
+                # Les emplacements transit ne contiennent pas de quants fiables
+                if line.location_id.usage == 'transit':
+                    line.qty_available_source = 0.0
+                    line.is_qty_insufficient = False
+                    continue
                 # Calculer la quantité disponible dans l'emplacement source
                 quants = self.env['stock.quant'].search([
                     ('product_id', '=', line.product_id.id),
@@ -80,7 +90,9 @@ class StockPicking(models.Model):
         """Surcharge pour vérifier la disponibilité avant validation"""
         for picking in self:
             # Vérifier seulement pour les transferts sortants (pas les réceptions)
-            if picking.picking_type_code in ('outgoing', 'internal'):
+            # Exclure les emplacements transit (inter-société) où les quants ne reflètent pas la dispo réelle
+            if picking.picking_type_code in ('outgoing', 'internal') \
+                    and picking.location_id.usage not in ('transit',):
                 # Filtrer uniquement les mouvements actifs (pas annulés, pas faits, avec quantité > 0)
                 active_moves = picking.move_lines.filtered(
                     lambda m: m.state not in ('cancel', 'done') and m.product_uom_qty > 0
