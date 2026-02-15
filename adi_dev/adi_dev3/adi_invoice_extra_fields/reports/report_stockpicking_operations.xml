@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_document_inherit_custom" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[hasclass('page')]/div[hasclass('row')]/div[2]" position="inside">
+            <div class="row" t-if="o.purchase_order_number">
+                <div class="col-2">
+                    <strong>N° Bon de Commande:</strong>
+                </div>
+                <div class="col-10">
+                    <span t-field="o.purchase_order_number"/>
+                </div>
+            </div>
+            <div class="row" t-if="o.contract_number">
+                <div class="col-2">
+                    <strong>N° de Contrat:</strong>
+                </div>
+                <div class="col-10">
+                    <span t-field="o.contract_number"/>
+                </div>
+            </div>
+            <div class="row" t-if="o.delivery_note_number">
+                <div class="col-2">
+                    <strong>BL N°:</strong>
+                </div>
+                <div class="col-10">
+                    <span t-field="o.delivery_note_number"/>
+                </div>
+            </div>
+            <div class="row" t-if="o.invoice_object">
+                <div class="col-2">
+                    <strong>Objet:</strong>
+                </div>
+                <div class="col-10">
+                    <span t-field="o.invoice_object"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

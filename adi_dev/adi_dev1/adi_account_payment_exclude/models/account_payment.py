@@ -6,7 +6,7 @@ from odoo import models, fields, api
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
-    exclude_from_invoice_tab = fields.Boolean(
+    exclude_from_payment_widget = fields.Boolean(
         string="Ne pas proposer pour régler les factures",
         default=False,
         tracking=True,
@@ -16,15 +16,15 @@ class AccountPayment(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if 'exclude_from_invoice_tab' in vals:
-            self._sync_exclude_to_move_lines(vals['exclude_from_invoice_tab'])
+        if 'exclude_from_payment_widget' in vals:
+            self._sync_exclude_to_move_lines(vals['exclude_from_payment_widget'])
         return res
 
     @api.model_create_multi
     def create(self, vals_list):
         payments = super().create(vals_list)
         for payment, vals in zip(payments, vals_list):
-            if vals.get('exclude_from_invoice_tab'):
+            if vals.get('exclude_from_payment_widget'):
                 payment._sync_exclude_to_move_lines(True)
         return payments
 
@@ -35,4 +35,4 @@ class AccountPayment(models.Model):
                 lambda l: l.account_id.user_type_id.type in ('receivable', 'payable')
             )
             if lines:
-                lines.write({'exclude_from_invoice_tab': exclude_value})
+                lines.write({'exclude_from_payment_widget': exclude_value})

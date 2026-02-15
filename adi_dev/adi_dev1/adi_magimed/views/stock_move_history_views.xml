@@ -19,6 +19,7 @@
                            decoration-success="move_type == 'in'"
                            decoration-danger="move_type == 'out'"
                            decoration-info="move_type == 'internal'"/>
+                    <field name="partner_id" optional="show"/>
                     <field name="location_id"/>
                     <field name="location_dest_id"/>
                     <field name="warehouse_id" optional="hide"/>

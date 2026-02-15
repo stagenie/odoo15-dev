@@ -4,3 +4,4 @@ access_stock_move_history_manager,stock.move.history.manager,model_stock_move_hi
 access_lot_quick_create_wizard_user,lot.quick.create.wizard.user,model_lot_quick_create_wizard,group_magimed_user,1,1,1,1
 access_stock_move_history_wizard_user,stock.move.history.wizard.user,model_stock_move_history_wizard,group_magimed_user,1,1,1,1
 access_expiration_report_wizard_user,expiration.report.wizard.user,model_expiration_report_wizard,group_magimed_user,1,1,1,1
+access_magimed_expiry_confirmation_user,magimed.expiry.confirmation.user,model_magimed_expiry_confirmation,group_magimed_user,1,1,1,1

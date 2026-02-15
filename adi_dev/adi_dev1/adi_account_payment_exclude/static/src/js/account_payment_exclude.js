@@ -23,7 +23,7 @@ ShowPaymentLineWidget.include({
         }
         this._rpc({
             model: 'account.move.line',
-            method: 'action_exclude_from_invoice_tab',
+            method: 'action_exclude_from_payment_widget',
             args: [[id]],
         }).then(function () {
             self.trigger_up('reload');

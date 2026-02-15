@@ -44,6 +44,9 @@ class StockMoveHistory(models.Model):
         ('internal', 'Transfert')
     ], string='Type Mouvement', readonly=True)
 
+    # Partner info
+    partner_id = fields.Many2one('res.partner', string='Partenaire', readonly=True)
+
     # User info
     user_id = fields.Many2one('res.users', string='Utilisateur', readonly=True)
     company_id = fields.Many2one('res.company', string='Societe', readonly=True)
@@ -84,6 +87,7 @@ class StockMoveHistory(models.Model):
                         WHEN sl_src.usage = 'internal' THEN 'out'
                         ELSE 'internal'
                     END as move_type,
+                    COALESCE(sm.partner_id, sp.partner_id) as partner_id,
                     sm.write_uid as user_id,
                     sml.company_id as company_id,
                     sm.state as state

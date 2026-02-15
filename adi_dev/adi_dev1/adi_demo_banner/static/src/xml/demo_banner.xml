@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="adi_demo_banner.DemoBanner" owl="1">
+        <div t-if="isVisible" class="o_demo_banner">
+            <div class="o_demo_banner_ribbon">
+                <span class="o_demo_banner_icon">&#9888;</span>
+                <t t-esc="bannerText"/>
+                <span class="o_demo_banner_icon">&#9888;</span>
+            </div>
+        </div>
+    </t>
+
+</templates>

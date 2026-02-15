@@ -1,0 +1,10 @@
+<odoo>
+    <template id="report_saleorder_document_inherit_delivery_date" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//div[@id='informations']" position="inside">
+            <div t-if="doc.delivery_date" class="col-auto col-3 mw-100 mb-2">
+                <strong>Date de Livraison Prévue:</strong>
+                <p class="m-0" t-field="doc.delivery_date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

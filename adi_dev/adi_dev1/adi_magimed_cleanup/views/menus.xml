@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_adi_magimed_cleanup"
+              name="MAGIMED Cleanup"
+              parent="stock.menu_warehouse_config"
+              action="action_adi_magimed_cleanup_wizard"
+              sequence="100"
+              groups="base.group_system"/>
+
+</odoo>

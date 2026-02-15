@@ -22,13 +22,15 @@
             <field name="code">incoming</field>
             <field name="sequence_code">BE</field>
             <field name="use_create_lots">True</field>
-            <field name="use_existing_lots">True</field>
+            <field name="use_existing_lots">False</field>
             <field name="show_operations">True</field>
             <field name="show_reserved">True</field>
             <field name="default_location_src_id" ref="stock_location_production"/>
             <field name="default_location_dest_id" ref="stock.stock_location_stock"/>
             <field name="warehouse_id" ref="stock.warehouse0"/>
             <field name="sequence_id" ref="seq_stock_entry"/>
+            <field name="is_magimed_type">True</field>
+            <field name="magimed_operation">entry</field>
         </record>
 
         <!-- Picking Type: Stock Exit (Bon de Sortie) -->
@@ -44,6 +46,8 @@
             <field name="default_location_dest_id" ref="stock_location_consumption"/>
             <field name="warehouse_id" ref="stock.warehouse0"/>
             <field name="sequence_id" ref="seq_stock_exit"/>
+            <field name="is_magimed_type">True</field>
+            <field name="magimed_operation">exit</field>
         </record>
 
         <!-- Picking Type: Internal Transfer (Bon de Transfert) -->
@@ -59,6 +63,15 @@
             <field name="default_location_dest_id" ref="stock.stock_location_stock"/>
             <field name="warehouse_id" ref="stock.warehouse0"/>
             <field name="sequence_id" ref="seq_stock_transfer"/>
+            <field name="is_magimed_type">True</field>
+            <field name="magimed_operation">transfer</field>
+        </record>
+
+        <!-- Link MAGIMED picking types to warehouse0 -->
+        <record id="stock.warehouse0" model="stock.warehouse">
+            <field name="magimed_entry_type_id" ref="picking_type_stock_entry"/>
+            <field name="magimed_exit_type_id" ref="picking_type_stock_exit"/>
+            <field name="magimed_transfer_type_id" ref="picking_type_stock_transfer"/>
         </record>
 
     </data>

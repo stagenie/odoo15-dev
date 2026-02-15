@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
+from datetime import timedelta
 
 
 class StockPicking(models.Model):
@@ -65,16 +67,21 @@ class StockPicking(models.Model):
         help="Notes additionnelles pour le transfert"
     )
 
+    @api.depends('date_deadline', 'scheduled_date')
+    def _compute_has_deadline_issue(self):
+        for picking in self:
+            picking.has_deadline_issue = (
+                picking.date_deadline and picking.scheduled_date
+                and picking.date_deadline < picking.scheduled_date
+            ) or False
+
     @api.depends('picking_type_id')
     def _compute_magimed_type(self):
-        entry_type = self.env.ref('adi_magimed.picking_type_stock_entry', raise_if_not_found=False)
-        exit_type = self.env.ref('adi_magimed.picking_type_stock_exit', raise_if_not_found=False)
-        transfer_type = self.env.ref('adi_magimed.picking_type_stock_transfer', raise_if_not_found=False)
-
         for picking in self:
-            picking.is_magimed_entry = entry_type and picking.picking_type_id.id == entry_type.id
-            picking.is_magimed_exit = exit_type and picking.picking_type_id.id == exit_type.id
-            picking.is_magimed_transfer = transfer_type and picking.picking_type_id.id == transfer_type.id
+            pt = picking.picking_type_id
+            picking.is_magimed_entry = pt.is_magimed_type and pt.magimed_operation == 'entry'
+            picking.is_magimed_exit = pt.is_magimed_type and pt.magimed_operation == 'exit'
+            picking.is_magimed_transfer = pt.is_magimed_type and pt.magimed_operation == 'transfer'
 
     @api.depends('location_id', 'location_dest_id')
     def _compute_warehouses(self):
@@ -130,6 +137,81 @@ class StockPicking(models.Model):
     def action_print_bon_transfert(self):
         """Print Bon de Transfert report"""
         return self.env.ref('adi_magimed.action_report_bon_transfert').report_action(self)
+
+    def _pre_action_done_hook(self):
+        """Check for expired lots before validation"""
+        res = super()._pre_action_done_hook()
+        if res is not True:
+            return res
+
+        if self.env.context.get('skip_magimed_expiry'):
+            return True
+
+        ICP = self.env['ir.config_parameter'].sudo()
+        mode = ICP.get_param('adi_magimed.expiry_control_mode', 'block')
+        if mode == 'none':
+            return True
+
+        try:
+            check_days = int(ICP.get_param('adi_magimed.expiry_check_days', '0'))
+        except (ValueError, TypeError):
+            check_days = 0
+
+        now = fields.Datetime.now()
+        threshold_date = now + timedelta(days=check_days)
+
+        expired_info = []
+        expired_lot_ids = []
+        for picking in self:
+            for ml in picking.move_line_ids_without_package:
+                lot = ml.lot_id
+                if not lot or not lot.expiration_date:
+                    continue
+                if lot.expiration_date <= threshold_date:
+                    days_remaining = (lot.expiration_date - now).days
+                    if days_remaining < 0:
+                        status = "EXPIRE depuis %d jour(s)" % abs(days_remaining)
+                    elif days_remaining == 0:
+                        status = "Expire AUJOURD'HUI"
+                    else:
+                        status = "Expire dans %d jour(s)" % days_remaining
+                    expired_info.append(
+                        "- %s | Lot: %s | Exp: %s | %s" % (
+                            ml.product_id.display_name,
+                            lot.name,
+                            lot.expiration_date.strftime('%d/%m/%Y'),
+                            status,
+                        )
+                    )
+                    expired_lot_ids.append(lot.id)
+
+        if not expired_info:
+            return True
+
+        detail_msg = "\n".join(expired_info)
+
+        if mode == 'block':
+            raise UserError(_(
+                "Validation impossible : lots expires ou proches de l'expiration detectes.\n\n"
+                "%s\n\n"
+                "Veuillez retirer ces lots ou modifier la configuration dans "
+                "Parametres > MAGIMED > Controle Expiration."
+            ) % detail_msg)
+
+        # mode == 'warn': open confirmation wizard
+        wizard = self.env['magimed.expiry.confirmation'].create({
+            'picking_ids': [(6, 0, self.ids)],
+            'lot_ids': [(6, 0, list(set(expired_lot_ids)))],
+            'description': detail_msg,
+        })
+        return {
+            'name': _('Lots expires detectes'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'magimed.expiry.confirmation',
+            'res_id': wizard.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
 
 
 class StockPickingType(models.Model):

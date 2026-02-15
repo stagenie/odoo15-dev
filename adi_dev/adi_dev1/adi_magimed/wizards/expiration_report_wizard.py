@@ -56,8 +56,9 @@ class ExpirationReportWizard(models.TransientModel):
 
     def _get_lots(self):
         """Get lots matching the filters"""
-        today = fields.Date.today()
-        alert_date = fields.Date.add(today, days=self.days_before_expiration)
+        from datetime import timedelta
+        now = fields.Datetime.now()
+        alert_dt = now + timedelta(days=self.days_before_expiration)
 
         domain = [
             ('expiration_date', '!=', False),
@@ -65,11 +66,11 @@ class ExpirationReportWizard(models.TransientModel):
         ]
 
         if self.include_expired:
-            domain.append(('expiration_date', '<=', alert_date))
+            domain.append(('expiration_date', '<=', alert_dt))
         else:
             domain.extend([
-                ('expiration_date', '<=', alert_date),
-                ('expiration_date', '>=', today)
+                ('expiration_date', '<=', alert_dt),
+                ('expiration_date', '>=', now)
             ])
 
         if self.product_ids:
@@ -136,6 +137,7 @@ class ExpirationReportWizard(models.TransientModel):
         return self.env.ref('adi_magimed.action_report_expiration_alert').report_action(
             lots,
             data={
+                'lot_ids': lots.ids,
                 'days_before_expiration': self.days_before_expiration,
                 'include_expired': self.include_expired,
                 'filters': {

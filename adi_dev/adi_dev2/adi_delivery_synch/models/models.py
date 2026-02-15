@@ -16,9 +16,10 @@ class SaleOrder(models.Model):
         """
         res = super(SaleOrder, self).action_confirm()
         for order in self:
-            pickings = order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
-            for picking in pickings:
-                picking.scheduled_date = order.delivery_date
+            if order.delivery_date:
+                pickings = order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
+                for picking in pickings:
+                    picking.scheduled_date = order.delivery_date
         return res
 
 class StockPicking(models.Model):

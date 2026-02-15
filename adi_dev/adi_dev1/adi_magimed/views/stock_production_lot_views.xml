@@ -9,16 +9,18 @@
             <field name="inherit_id" ref="stock.view_production_lot_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//group[@name='main_group']" position="after">
-                    <group name="expiration_group" string="Expiration">
+                    <group name="expiration_group" string="Expiration &amp; Alertes">
                         <group>
-                            <field name="alert_date"/>
+                            <field name="expiration_date" string="Date de Peremption"/>
                             <field name="days_to_expiration"/>
-                        </group>
-                        <group>
                             <field name="expiration_status" widget="badge"
                                    decoration-success="expiration_status == 'ok'"
                                    decoration-warning="expiration_status == 'warning'"
                                    decoration-danger="expiration_status in ('danger', 'expired')"/>
+                        </group>
+                        <group>
+                            <field name="lot_alert_days" string="Nb Jours Avant Alerte"/>
+                            <field name="alert_date" string="Date d'Alerte"/>
                             <field name="is_expired" invisible="1"/>
                             <field name="is_expiring_soon" invisible="1"/>
                         </group>
@@ -32,11 +34,13 @@
                         </group>
                     </group>
                 </xpath>
-                <xpath expr="//header" position="inside">
-                    <button name="action_send_expiration_alert" type="object"
-                            string="Envoyer Alerte"
-                            class="btn-warning"
-                            attrs="{'invisible': [('is_expiring_soon', '=', False)]}"/>
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <button name="action_send_expiration_alert" type="object"
+                                string="Envoyer Alerte"
+                                class="btn-warning"
+                                attrs="{'invisible': [('is_expiring_soon', '=', False)]}"/>
+                    </header>
                 </xpath>
             </field>
         </record>
@@ -66,7 +70,7 @@
             <field name="model">stock.production.lot</field>
             <field name="inherit_id" ref="stock.search_product_lot_filter"/>
             <field name="arch" type="xml">
-                <xpath expr="//filter[@name='lot']" position="after">
+                <xpath expr="//field[@name='product_id']" position="after">
                     <separator/>
                     <filter name="has_stock" string="En Stock"
                             domain="[('product_qty', '>', 0)]"/>

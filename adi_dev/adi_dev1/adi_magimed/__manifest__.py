@@ -51,7 +51,6 @@ Rapports:
         'data/stock_picking_type_data.xml',
         'data/mail_template_data.xml',
         # Views
-        'views/menus.xml',
         'views/product_template_views.xml',
         'views/stock_production_lot_views.xml',
         'views/stock_picking_views.xml',
@@ -59,10 +58,14 @@ Rapports:
         'views/account_move_views.xml',
         'views/expiration_alert_views.xml',
         'views/dashboard_views.xml',
+        'views/res_config_settings_views.xml',
         # Wizards
         'wizards/lot_quick_create_wizard_views.xml',
         'wizards/stock_move_history_wizard_views.xml',
         'wizards/expiration_report_wizard_views.xml',
+        'wizards/confirm_expiry_magimed_view.xml',
+        # Menus (must be after all actions are defined)
+        'views/menus.xml',
         # Reports
         'report/report_paperformat.xml',
         'report/bon_entree_report.xml',
@@ -71,6 +74,8 @@ Rapports:
         'report/lot_list_report.xml',
         'report/expiration_alert_report.xml',
         'report/stock_history_report.xml',
+        'report/iso_bl_valorise_report.xml',
+        'report/iso_bl_non_valorise_report.xml',
     ],
     'assets': {
         'web.assets_backend': [

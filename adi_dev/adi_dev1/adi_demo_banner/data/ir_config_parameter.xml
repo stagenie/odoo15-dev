@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="demo_banner_enabled" model="ir.config_parameter">
+            <field name="key">web.demo_banner_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="demo_banner_text" model="ir.config_parameter">
+            <field name="key">web.demo_banner_text</field>
+            <field name="value">⚠ BASE DEMO - Formation ⚠</field>
+        </record>
+
+    </data>
+</odoo>

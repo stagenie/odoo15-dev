@@ -2,6 +2,165 @@
 <odoo>
     <data>
 
+        <!-- ============================================= -->
+        <!-- Actions (must be defined before menuitems)    -->
+        <!-- ============================================= -->
+
+        <!-- Stock Entry Action -->
+        <record id="action_magimed_stock_entry" model="ir.actions.act_window">
+            <field name="name">Bons d'Entree</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">tree,form,kanban,calendar</field>
+            <field name="domain">[('is_magimed_entry', '=', True)]</field>
+            <field name="context" eval="{'default_picking_type_id': ref('adi_magimed.picking_type_stock_entry'), 'default_immediate_transfer': True, 'search_default_todo': 1}"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Creer un Bon d'Entree
+                </p>
+                <p>
+                    Utilisez les Bons d'Entree pour enregistrer les entrees de production
+                    ou autres entrees manuelles de stock.
+                </p>
+            </field>
+        </record>
+
+        <!-- Stock Exit Action -->
+        <record id="action_magimed_stock_exit" model="ir.actions.act_window">
+            <field name="name">Bons de Sortie</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">tree,form,kanban,calendar</field>
+            <field name="domain">[('is_magimed_exit', '=', True)]</field>
+            <field name="context" eval="{'default_picking_type_id': ref('adi_magimed.picking_type_stock_exit'), 'default_immediate_transfer': True, 'search_default_todo': 1}"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Creer un Bon de Sortie
+                </p>
+                <p>
+                    Utilisez les Bons de Sortie pour enregistrer les consommations
+                    de matieres premieres ou les mises au rebut.
+                </p>
+            </field>
+        </record>
+
+        <!-- Stock Transfer Action -->
+        <record id="action_magimed_stock_transfer" model="ir.actions.act_window">
+            <field name="name">Bons de Transfert</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">tree,form,kanban,calendar</field>
+            <field name="domain">[('is_magimed_transfer', '=', True)]</field>
+            <field name="context" eval="{'default_picking_type_id': ref('adi_magimed.picking_type_stock_transfer'), 'default_immediate_transfer': True, 'search_default_todo': 1}"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Creer un Bon de Transfert
+                </p>
+                <p>
+                    Utilisez les Bons de Transfert pour deplacer des produits
+                    entre entrepots ou emplacements.
+                </p>
+            </field>
+        </record>
+
+        <!-- Lot List Action -->
+        <record id="action_magimed_lot_list" model="ir.actions.act_window">
+            <field name="name">Gestion des Lots</field>
+            <field name="res_model">stock.production.lot</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="context">{'search_default_has_stock': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Gerer les Lots et Numeros de Serie
+                </p>
+                <p>
+                    Consultez et gerez tous les lots de produits avec leurs
+                    dates d'expiration et quantites en stock.
+                </p>
+            </field>
+        </record>
+
+        <!-- Expiration Alerts Action -->
+        <record id="action_magimed_expiration_alerts" model="ir.actions.act_window">
+            <field name="name">Alertes Expiration</field>
+            <field name="res_model">stock.production.lot</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[
+                ('expiration_date', '!=', False),
+                ('product_qty', '>', 0),
+                ('is_expiring_soon', '=', True)
+            ]</field>
+            <field name="context">{'search_default_expiring': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune alerte d'expiration
+                </p>
+                <p>
+                    Les lots arrivant a expiration apparaitront ici.
+                </p>
+            </field>
+        </record>
+
+        <!-- Stock History Action -->
+        <record id="action_magimed_stock_history" model="ir.actions.act_window">
+            <field name="name">Historique Mouvements</field>
+            <field name="res_model">stock.move.history</field>
+            <field name="view_mode">tree,pivot,graph</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Historique des Mouvements de Stock
+                </p>
+                <p>
+                    Consultez l'historique detaille de tous les mouvements
+                    de stock avec filtrage avance.
+                </p>
+            </field>
+        </record>
+
+        <!-- Caution Invoices Action -->
+        <record id="action_magimed_caution_invoices" model="ir.actions.act_window">
+            <field name="name">Factures avec Caution</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[
+                ('has_caution', '=', True),
+                ('move_type', '=', 'out_invoice'),
+                ('state', '=', 'posted')
+            ]</field>
+            <field name="context">{'search_default_not_refunded': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune facture avec caution
+                </p>
+                <p>
+                    Les factures clients avec caution apparaitront ici.
+                </p>
+            </field>
+        </record>
+
+        <!-- Caution Alerts Action -->
+        <record id="action_magimed_caution_alerts" model="ir.actions.act_window">
+            <field name="name">Alertes Caution</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="domain">[
+                ('has_caution', '=', True),
+                ('caution_refunded', '=', False),
+                ('caution_status', 'in', ['alert', 'due']),
+                ('move_type', '=', 'out_invoice'),
+                ('state', '=', 'posted')
+            ]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune alerte de caution
+                </p>
+                <p>
+                    Les cautions arrivant a echeance apparaitront ici.
+                </p>
+            </field>
+        </record>
+
+        <!-- ============================================= -->
+        <!-- Menus                                         -->
+        <!-- ============================================= -->
+
         <!-- Main Menu: MAGIMED Interne -->
         <menuitem id="menu_magimed_root"
             name="MAGIMED Interne"
@@ -119,6 +278,12 @@
             sequence="100"
             groups="group_magimed_manager"/>
 
+        <menuitem id="menu_magimed_config_lots"
+            name="Configuration Lots"
+            parent="menu_magimed_config"
+            action="action_magimed_config_settings"
+            sequence="5"/>
+
         <menuitem id="menu_magimed_config_picking_types"
             name="Types d'Operations"
             parent="menu_magimed_config"
@@ -136,168 +301,6 @@
             parent="menu_magimed_config"
             action="stock.action_warehouse_form"
             sequence="30"/>
-
-        <!-- Actions -->
-
-        <!-- Stock Entry Action -->
-        <record id="action_magimed_stock_entry" model="ir.actions.act_window">
-            <field name="name">Bons d'Entree</field>
-            <field name="res_model">stock.picking</field>
-            <field name="view_mode">tree,form,kanban,calendar</field>
-            <field name="domain">[('picking_type_id', '=', %(adi_magimed.picking_type_stock_entry)d)]</field>
-            <field name="context">{
-                'default_picking_type_id': %(adi_magimed.picking_type_stock_entry)d,
-                'search_default_todo': 1
-            }</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Creer un Bon d'Entree
-                </p>
-                <p>
-                    Utilisez les Bons d'Entree pour enregistrer les entrees de production
-                    ou autres entrees manuelles de stock.
-                </p>
-            </field>
-        </record>
-
-        <!-- Stock Exit Action -->
-        <record id="action_magimed_stock_exit" model="ir.actions.act_window">
-            <field name="name">Bons de Sortie</field>
-            <field name="res_model">stock.picking</field>
-            <field name="view_mode">tree,form,kanban,calendar</field>
-            <field name="domain">[('picking_type_id', '=', %(adi_magimed.picking_type_stock_exit)d)]</field>
-            <field name="context">{
-                'default_picking_type_id': %(adi_magimed.picking_type_stock_exit)d,
-                'search_default_todo': 1
-            }</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Creer un Bon de Sortie
-                </p>
-                <p>
-                    Utilisez les Bons de Sortie pour enregistrer les consommations
-                    de matieres premieres ou les mises au rebut.
-                </p>
-            </field>
-        </record>
-
-        <!-- Stock Transfer Action -->
-        <record id="action_magimed_stock_transfer" model="ir.actions.act_window">
-            <field name="name">Bons de Transfert</field>
-            <field name="res_model">stock.picking</field>
-            <field name="view_mode">tree,form,kanban,calendar</field>
-            <field name="domain">[('picking_type_id', '=', %(adi_magimed.picking_type_stock_transfer)d)]</field>
-            <field name="context">{
-                'default_picking_type_id': %(adi_magimed.picking_type_stock_transfer)d,
-                'search_default_todo': 1
-            }</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Creer un Bon de Transfert
-                </p>
-                <p>
-                    Utilisez les Bons de Transfert pour deplacer des produits
-                    entre entrepots ou emplacements.
-                </p>
-            </field>
-        </record>
-
-        <!-- Lot List Action -->
-        <record id="action_magimed_lot_list" model="ir.actions.act_window">
-            <field name="name">Gestion des Lots</field>
-            <field name="res_model">stock.production.lot</field>
-            <field name="view_mode">tree,form,kanban</field>
-            <field name="context">{'search_default_has_stock': 1}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Gerer les Lots et Numeros de Serie
-                </p>
-                <p>
-                    Consultez et gerez tous les lots de produits avec leurs
-                    dates d'expiration et quantites en stock.
-                </p>
-            </field>
-        </record>
-
-        <!-- Expiration Alerts Action -->
-        <record id="action_magimed_expiration_alerts" model="ir.actions.act_window">
-            <field name="name">Alertes Expiration</field>
-            <field name="res_model">stock.production.lot</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[
-                ('expiration_date', '!=', False),
-                ('product_qty', '>', 0),
-                ('is_expiring_soon', '=', True)
-            ]</field>
-            <field name="context">{'search_default_expiring': 1}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Aucune alerte d'expiration
-                </p>
-                <p>
-                    Les lots arrivant a expiration apparaitront ici.
-                </p>
-            </field>
-        </record>
-
-        <!-- Stock History Action -->
-        <record id="action_magimed_stock_history" model="ir.actions.act_window">
-            <field name="name">Historique Mouvements</field>
-            <field name="res_model">stock.move.history</field>
-            <field name="view_mode">tree,pivot,graph</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Historique des Mouvements de Stock
-                </p>
-                <p>
-                    Consultez l'historique detaille de tous les mouvements
-                    de stock avec filtrage avance.
-                </p>
-            </field>
-        </record>
-
-        <!-- Caution Invoices Action -->
-        <record id="action_magimed_caution_invoices" model="ir.actions.act_window">
-            <field name="name">Factures avec Caution</field>
-            <field name="res_model">account.move</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[
-                ('has_caution', '=', True),
-                ('move_type', '=', 'out_invoice'),
-                ('state', '=', 'posted')
-            ]</field>
-            <field name="context">{'search_default_not_refunded': 1}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Aucune facture avec caution
-                </p>
-                <p>
-                    Les factures clients avec caution apparaitront ici.
-                </p>
-            </field>
-        </record>
-
-        <!-- Caution Alerts Action -->
-        <record id="action_magimed_caution_alerts" model="ir.actions.act_window">
-            <field name="name">Alertes Caution</field>
-            <field name="res_model">account.move</field>
-            <field name="view_mode">tree,form,kanban</field>
-            <field name="domain">[
-                ('has_caution', '=', True),
-                ('caution_refunded', '=', False),
-                ('caution_status', 'in', ['alert', 'due']),
-                ('move_type', '=', 'out_invoice'),
-                ('state', '=', 'posted')
-            ]</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Aucune alerte de caution
-                </p>
-                <p>
-                    Les cautions arrivant a echeance apparaitront ici.
-                </p>
-            </field>
-        </record>
 
     </data>
 </odoo>

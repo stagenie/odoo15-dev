@@ -22,6 +22,34 @@ class ProductTemplate(models.Model):
         help="Prefixe pour la generation automatique des numeros de lot"
     )
 
+    @api.model
+    def create(self, vals):
+        """Auto-configure expiration tracking for storable products"""
+        record = super().create(vals)
+        if record.type == 'product':
+            update_vals = {}
+            if not record.use_expiration_date:
+                update_vals['use_expiration_date'] = True
+            if not record.alert_time:
+                update_vals['alert_time'] = 30
+            if update_vals:
+                record.write(update_vals)
+        return record
+
+    def write(self, vals):
+        """Auto-configure expiration tracking when product type changes to storable"""
+        res = super().write(vals)
+        if vals.get('type') == 'product':
+            for record in self:
+                update_vals = {}
+                if not record.use_expiration_date:
+                    update_vals['use_expiration_date'] = True
+                if not record.alert_time:
+                    update_vals['alert_time'] = 30
+                if update_vals:
+                    super(ProductTemplate, record).write(update_vals)
+        return res
+
     @api.onchange('tracking')
     def _onchange_tracking_lot(self):
         """Set default expiration alert when tracking is enabled"""

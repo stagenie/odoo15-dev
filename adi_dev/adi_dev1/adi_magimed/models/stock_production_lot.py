@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
-from datetime import timedelta
+from odoo import api, fields, models, _
+from datetime import timedelta, datetime
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class StockProductionLot(models.Model):
     _inherit = 'stock.production.lot'
 
+    # Note: alert_date is already defined by product_expiry as Datetime - do not redefine it
     # Computed fields for expiration management
-    alert_date = fields.Date(
-        string='Date Alerte',
-        compute='_compute_alert_date',
-        store=True,
-        help="Date a partir de laquelle l'alerte d'expiration est declenchee"
-    )
     is_expired = fields.Boolean(
         string='Expire',
         compute='_compute_expiration_status',
@@ -29,6 +27,7 @@ class StockProductionLot(models.Model):
     days_to_expiration = fields.Integer(
         string='Jours Avant Expiration',
         compute='_compute_days_to_expiration',
+        store=True,
         help="Nombre de jours restants avant expiration"
     )
     expiration_status = fields.Selection([
@@ -36,7 +35,15 @@ class StockProductionLot(models.Model):
         ('warning', 'Attention'),
         ('danger', 'Urgent'),
         ('expired', 'Expire')
-    ], string='Statut Expiration', compute='_compute_expiration_status')
+    ], string='Statut Expiration', compute='_compute_expiration_status', store=True)
+
+    lot_alert_days = fields.Integer(
+        string="Jours Avant Alerte",
+        compute='_compute_lot_alert_days',
+        inverse='_inverse_lot_alert_days',
+        help="Nombre de jours avant la date de peremption pour declencher l'alerte. "
+             "Modifier ce champ recalcule automatiquement la date d'alerte."
+    )
 
     total_qty = fields.Float(
         string='Quantite Totale',
@@ -56,32 +63,23 @@ class StockProductionLot(models.Model):
         help="Quantites par emplacement"
     )
 
-    @api.depends('expiration_date', 'product_id.expiration_alert_days')
-    def _compute_alert_date(self):
-        for lot in self:
-            if lot.expiration_date:
-                alert_days = lot.product_id.expiration_alert_days or 30
-                lot.alert_date = lot.expiration_date - timedelta(days=alert_days)
-            else:
-                lot.alert_date = False
-
     @api.depends('expiration_date', 'alert_date')
     def _compute_expiration_status(self):
-        today = fields.Date.today()
+        now = fields.Datetime.now()
         for lot in self:
             if not lot.expiration_date:
                 lot.is_expired = False
                 lot.is_expiring_soon = False
                 lot.expiration_status = 'ok'
-            elif lot.expiration_date < today:
+            elif lot.expiration_date < now:
                 lot.is_expired = True
                 lot.is_expiring_soon = False
                 lot.expiration_status = 'expired'
-            elif lot.alert_date and lot.alert_date <= today:
+            elif lot.alert_date and lot.alert_date <= now:
                 lot.is_expired = False
                 lot.is_expiring_soon = True
                 # Determine urgency level
-                days_left = (lot.expiration_date - today).days
+                days_left = (lot.expiration_date - now).days
                 if days_left <= 7:
                     lot.expiration_status = 'danger'
                 else:
@@ -92,28 +90,78 @@ class StockProductionLot(models.Model):
                 lot.expiration_status = 'ok'
 
     def _search_is_expired(self, operator, value):
-        today = fields.Date.today()
+        now = fields.Datetime.now()
         if operator == '=' and value:
-            return [('expiration_date', '<', today)]
+            return [('expiration_date', '<', now)]
         elif operator == '=' and not value:
-            return ['|', ('expiration_date', '>=', today), ('expiration_date', '=', False)]
+            return ['|', ('expiration_date', '>=', now), ('expiration_date', '=', False)]
         return []
 
     def _search_is_expiring_soon(self, operator, value):
-        today = fields.Date.today()
+        now = fields.Datetime.now()
         if operator == '=' and value:
             return [
-                ('expiration_date', '>=', today),
-                ('alert_date', '<=', today)
+                ('expiration_date', '>=', now),
+                ('alert_date', '<=', now)
             ]
         return []
 
+    @api.depends('expiration_date', 'alert_date')
+    def _compute_lot_alert_days(self):
+        for lot in self:
+            if lot.expiration_date and lot.alert_date:
+                lot.lot_alert_days = (lot.expiration_date - lot.alert_date).days
+            elif lot.expiration_date:
+                # Default from product template
+                lot.lot_alert_days = lot.product_id.alert_time or 30
+            else:
+                lot.lot_alert_days = 0
+
+    def _inverse_lot_alert_days(self):
+        for lot in self:
+            if lot.expiration_date and lot.lot_alert_days >= 0:
+                lot.alert_date = lot.expiration_date - timedelta(days=lot.lot_alert_days)
+
+    @api.onchange('lot_alert_days')
+    def _onchange_lot_alert_days(self):
+        """Recalculate alert_date when lot_alert_days changes"""
+        if self.expiration_date and self.lot_alert_days >= 0:
+            self.alert_date = self.expiration_date - timedelta(days=self.lot_alert_days)
+
+    def _get_default_alert_days(self):
+        """Get default alert days from config parameter"""
+        try:
+            return int(self.env['ir.config_parameter'].sudo().get_param(
+                'adi_magimed.default_expiration_alert_days', '30'))
+        except (ValueError, TypeError):
+            return 30
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lots = super().create(vals_list)
+        default_days = self._get_default_alert_days()
+        for lot in lots:
+            if lot.expiration_date and lot.alert_date:
+                # If alert_date equals expiration_date (meaning alert_time=0 on product)
+                if abs((lot.alert_date - lot.expiration_date).total_seconds()) < 60:
+                    lot.alert_date = lot.expiration_date - timedelta(days=default_days)
+        return lots
+
+    @api.onchange('expiration_date')
+    def _onchange_expiration_date_default_alert(self):
+        """After product_expiry computes alert_date, ensure lot_alert_days >= default"""
+        if self.expiration_date and self.alert_date:
+            current_days = (self.expiration_date - self.alert_date).days
+            if current_days <= 0:
+                default_days = self._get_default_alert_days()
+                self.alert_date = self.expiration_date - timedelta(days=default_days)
+
     @api.depends('expiration_date')
     def _compute_days_to_expiration(self):
-        today = fields.Date.today()
+        now = fields.Datetime.now()
         for lot in self:
             if lot.expiration_date:
-                delta = lot.expiration_date - today
+                delta = lot.expiration_date - now
                 lot.days_to_expiration = delta.days
             else:
                 lot.days_to_expiration = 9999
@@ -159,8 +207,8 @@ class StockProductionLot(models.Model):
     @api.model
     def get_expiring_lots(self, days=30, product_ids=None, location_ids=None):
         """Get lots expiring within specified days"""
-        today = fields.Date.today()
-        alert_date = fields.Date.add(today, days=days)
+        today = fields.Datetime.now()
+        alert_date = today + timedelta(days=days)
 
         domain = [
             ('expiration_date', '!=', False),

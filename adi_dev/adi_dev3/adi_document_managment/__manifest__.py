@@ -1,0 +1,30 @@
+{
+    'name': 'AdI Delivery Status  ',
+    'version': '15.1.1.1',
+    'sequence': 1,
+    'category': 'Sales',
+    'summary': 'AdI Delivery Status   ',
+    'description': "AdI Delivery Status  ,...  ",
+    "author" : "ADICOPS",
+    "email": 'info@adicops.com',
+    
+    "website":'https://adicops.com/',
+    'license': "AGPL-3", 
+    'depends': [
+        'base',
+        'mail',                
+    ], 
+   'data': [
+        'security/ir.model.access.csv',
+        'views/document_views.xml',
+        'views/document_category_views.xml',  
+        'views/document_tag_views.xml',
+    ],
+    'demo': [],
+    'test': [],
+    'qweb': [],    
+    'images': [],
+    'installable': True,
+    'auto_install': False,
+    'application': True,
+}

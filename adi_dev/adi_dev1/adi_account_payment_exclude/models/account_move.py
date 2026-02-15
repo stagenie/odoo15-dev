@@ -26,7 +26,7 @@ class AccountMove(models.Model):
                 ('parent_state', '=', 'posted'),
                 ('partner_id', '=', move.commercial_partner_id.id),
                 ('reconciled', '=', False),
-                ('exclude_from_invoice_tab', '=', False),
+                ('exclude_from_payment_widget', '=', False),
                 '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
             ]
 

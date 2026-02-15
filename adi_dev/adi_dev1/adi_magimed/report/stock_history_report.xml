@@ -5,14 +5,13 @@
         <!-- Stock History Report Action -->
         <record id="action_report_stock_history" model="ir.actions.report">
             <field name="name">Historique Mouvements Stock</field>
-            <field name="model">stock.move.history</field>
+            <field name="model">stock.move.history.wizard</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">adi_magimed.report_stock_history</field>
             <field name="report_file">adi_magimed.report_stock_history</field>
             <field name="print_report_name">'Historique_Stock_%s' % time.strftime('%Y%m%d')</field>
-            <field name="binding_model_id" ref="model_stock_move_history"/>
             <field name="binding_type">report</field>
-            <field name="paperformat_id" ref="paperformat_magimed_landscape"/>
+            <field name="paperformat_id" ref="paperformat_magimed"/>
         </record>
 
         <!-- Stock History Report Template -->
@@ -58,15 +57,16 @@
                         <table class="table table-sm table-bordered" style="font-size: 0.85em;">
                             <thead class="thead-light">
                                 <tr>
-                                    <th style="width: 10%;">Date</th>
-                                    <th style="width: 10%;">Reference</th>
-                                    <th style="width: 18%;">Produit</th>
-                                    <th style="width: 10%;">N Lot</th>
+                                    <th style="width: 9%;">Date</th>
+                                    <th style="width: 9%;">Reference</th>
+                                    <th style="width: 15%;">Produit</th>
+                                    <th style="width: 9%;">N Lot</th>
                                     <th style="width: 8%;">Expiration</th>
-                                    <th style="width: 7%;" class="text-center">Qte</th>
+                                    <th style="width: 6%;" class="text-center">Qte</th>
                                     <th style="width: 5%;">Type</th>
-                                    <th style="width: 16%;">De</th>
-                                    <th style="width: 16%;">Vers</th>
+                                    <th style="width: 12%;">Partenaire</th>
+                                    <th style="width: 13%;">De</th>
+                                    <th style="width: 14%;">Vers</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -110,6 +110,12 @@
                                             <t t-else="">
                                                 <span class="badge badge-info">T</span>
                                             </t>
+                                        </td>
+                                        <td class="small">
+                                            <t t-if="move.partner_id">
+                                                <span t-field="move.partner_id.name"/>
+                                            </t>
+                                            <t t-else="">-</t>
                                         </td>
                                         <td class="small">
                                             <span t-field="move.location_id.complete_name"/>

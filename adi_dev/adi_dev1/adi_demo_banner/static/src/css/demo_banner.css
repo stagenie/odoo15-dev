@@ -1,0 +1,41 @@
+/* Conteneur du ruban - coin supérieur droit */
+.o_demo_banner {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 250px;
+    overflow: hidden;
+    z-index: 1100;
+    pointer-events: none;
+}
+
+/* Le ruban diagonal */
+.o_demo_banner_ribbon {
+    position: absolute;
+    top: 50px;
+    right: -50px;
+    width: 320px;
+    padding: 8px 0;
+    background: #dc3545;
+    color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    pointer-events: auto;
+    white-space: nowrap;
+}
+
+.o_demo_banner_icon {
+    animation: demo_banner_blink 1.5s ease-in-out infinite;
+    margin: 0 4px;
+}
+
+@keyframes demo_banner_blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}

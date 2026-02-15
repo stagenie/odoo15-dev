@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_adi_magimed_cleanup_wizard_form" model="ir.ui.view">
+        <field name="name">adi.magimed.cleanup.wizard.form</field>
+        <field name="model">adi.magimed.cleanup.wizard</field>
+        <field name="arch" type="xml">
+            <form string="MAGIMED Cleanup - Preparation base ISO">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="step1,step2,step3,step4,step5,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Nettoyage MAGIMED - Preparation base ISO</h1>
+                        <p class="text-muted">
+                            Ce wizard prepare la base dupliquee avant installation du module adi_magimed.
+                            <strong>Les operations sont irreversibles.</strong>
+                        </p>
+                    </div>
+
+                    <group string="Compteurs generaux" col="4">
+                        <field name="orphan_move_line_count"/>
+                        <field name="orphan_move_count"/>
+                        <field name="reserved_quant_count"/>
+                        <field name="pending_move_count"/>
+                        <field name="pending_picking_count"/>
+                        <field name="pending_purchase_count"/>
+                        <field name="pending_sale_count"/>
+                        <field name="lot_tracking_enabled"/>
+                        <field name="product_expiry_installed"/>
+                        <field name="untracked_product_count"/>
+                        <field name="no_expiration_product_count"/>
+                        <field name="no_alert_time_product_count"/>
+                        <field name="quant_count"/>
+                    </group>
+
+                    <separator/>
+
+                    <!-- Etape 1 -->
+                    <group string="Etape 1 : Nettoyer les enregistrements orphelins"
+                           attrs="{'invisible': [('state', 'not in', ['step1'])]}">
+                        <div colspan="2">
+                            <p>Cette etape va :</p>
+                            <ul>
+                                <li>Supprimer les move lines orphelines (move_id inexistant)</li>
+                                <li>Supprimer les moves orphelins (picking_id inexistant)</li>
+                                <li>Remettre a zero les reservations bloquees sur les quants</li>
+                            </ul>
+                            <button name="action_step1_clean_orphans"
+                                    string="Executer Etape 1"
+                                    type="object"
+                                    class="btn-primary"
+                                    confirm="Voulez-vous vraiment nettoyer les enregistrements orphelins ? Cette action est irreversible."/>
+                        </div>
+                    </group>
+
+                    <!-- Etape 2 -->
+                    <group string="Etape 2 : Terminer toutes les operations"
+                           attrs="{'invisible': [('state', 'not in', ['step2'])]}">
+                        <div colspan="2">
+                            <p>Cette etape va forcer la terminaison de :</p>
+                            <ul>
+                                <li>Move lines et stock moves</li>
+                                <li>Pickings (transferts)</li>
+                                <li>Commandes d'achat et de vente</li>
+                            </ul>
+                            <button name="action_step2_close_operations"
+                                    string="Executer Etape 2"
+                                    type="object"
+                                    class="btn-primary"
+                                    confirm="Voulez-vous vraiment terminer toutes les operations en cours ? Cette action est irreversible."/>
+                        </div>
+                    </group>
+
+                    <!-- Etape 3 -->
+                    <group string="Etape 3 : Activer les parametres de tracabilite"
+                           attrs="{'invisible': [('state', 'not in', ['step3'])]}">
+                        <div colspan="2">
+                            <p>Cette etape va activer dans les parametres :</p>
+                            <ul>
+                                <li><strong>Lots &amp; N de serie</strong> (Inventaire &gt; Configuration &gt; Parametres &gt; Tracabilite)</li>
+                                <li><strong>Module product_expiry</strong> (gestion des dates d'expiration sur les lots)</li>
+                            </ul>
+                            <p class="text-muted">Ces parametres sont prerequis avant de configurer le suivi par lot sur les produits.</p>
+                            <button name="action_step3_activate_settings"
+                                    string="Executer Etape 3"
+                                    type="object"
+                                    class="btn-primary"
+                                    confirm="Voulez-vous activer les parametres de tracabilite ?"/>
+                        </div>
+                    </group>
+
+                    <!-- Etape 4 -->
+                    <group string="Etape 4 : Configurer les produits stockables"
+                           attrs="{'invisible': [('state', 'not in', ['step4'])]}">
+                        <div colspan="2">
+                            <p>Cette etape va configurer tous les produits stockables :</p>
+                            <ul>
+                                <li><strong>Activer les dates d'expiration</strong> (use_expiration_date = Oui)</li>
+                                <li><strong>Configurer le delai d'alerte</strong> (alert_time = 30 jours par defaut)</li>
+                                <li><strong>Activer le suivi par lot</strong> (tracking = lot)</li>
+                            </ul>
+                            <button name="action_step4_configure_products"
+                                    string="Executer Etape 4"
+                                    type="object"
+                                    class="btn-primary"
+                                    confirm="Voulez-vous configurer tous les produits stockables pour le suivi par lot et les dates d'expiration ?"/>
+                        </div>
+                    </group>
+
+                    <!-- Etape 5 -->
+                    <group string="Etape 5 : Remettre le stock a zero"
+                           attrs="{'invisible': [('state', 'not in', ['step5'])]}">
+                        <div colspan="2">
+                            <p>Cette etape va :</p>
+                            <ul>
+                                <li>Supprimer tous les quants (stock remis a zero)</li>
+                                <li>Le client devra faire un inventaire physique frais avec assignation des lots</li>
+                            </ul>
+                            <button name="action_step5_reset_stock"
+                                    string="Executer Etape 5"
+                                    type="object"
+                                    class="btn-danger"
+                                    confirm="ATTENTION : Vous allez supprimer TOUT le stock. Cette action est IRREVERSIBLE. Continuer ?"/>
+                        </div>
+                    </group>
+
+                    <!-- Termine -->
+                    <group attrs="{'invisible': [('state', '!=', 'done')]}">
+                        <div colspan="2">
+                            <div class="alert alert-success" role="alert">
+                                <strong>Nettoyage termine avec succes !</strong>
+                                <p>Vous pouvez maintenant :</p>
+                                <ol>
+                                    <li>Verifier les resultats dans le journal ci-dessous</li>
+                                    <li>Faire un inventaire physique avec assignation des lots</li>
+                                    <li>Installer le module <code>adi_magimed</code></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </group>
+
+                    <separator string="Journal des actions"/>
+                    <group>
+                        <field name="log" nolabel="1" colspan="2" widget="text"/>
+                    </group>
+
+                </sheet>
+                <footer attrs="{'invisible': [('state', '!=', 'done')]}">
+                    <button string="Fermer" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_adi_magimed_cleanup_wizard" model="ir.actions.act_window">
+        <field name="name">MAGIMED Cleanup</field>
+        <field name="res_model">adi.magimed.cleanup.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

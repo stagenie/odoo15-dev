@@ -124,17 +124,19 @@ class StockMoveHistoryWizard(models.TransientModel):
         # Get records
         history = self.env['stock.move.history'].search(domain, order='date desc')
 
-        return self.env.ref('adi_magimed.action_report_stock_history').report_action(
-            history,
-            data={
-                'date_from': self.date_from,
-                'date_to': self.date_to,
-                'filters': {
-                    'products': self.product_ids.mapped('display_name'),
-                    'lots': self.lot_ids.mapped('name'),
-                    'warehouses': self.warehouse_ids.mapped('name'),
-                    'locations': self.location_ids.mapped('complete_name'),
-                    'move_type': dict(self._fields['move_type'].selection).get(self.move_type),
-                }
+        data = {
+            'history_ids': history.ids,
+            'date_from': str(self.date_from) if self.date_from else False,
+            'date_to': str(self.date_to) if self.date_to else False,
+            'filters': {
+                'products': self.product_ids.mapped('display_name'),
+                'lots': self.lot_ids.mapped('name'),
+                'warehouses': self.warehouse_ids.mapped('name'),
+                'locations': self.location_ids.mapped('complete_name'),
+                'move_type': dict(self._fields['move_type'].selection).get(self.move_type),
             }
+        }
+
+        return self.env.ref('adi_magimed.action_report_stock_history').report_action(
+            self, data=data
         )

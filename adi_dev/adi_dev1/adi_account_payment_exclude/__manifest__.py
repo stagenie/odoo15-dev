@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Exclure Paiements du Rapprochement Factures',
-    'version': '15.0.1.0.0',
+    'version': '15.0.1.1.0',
     'category': 'Accounting/Accounting',
     'summary': 'Permet d\'exclure certains paiements de la proposition de rapprochement sur les factures',
     'description': """

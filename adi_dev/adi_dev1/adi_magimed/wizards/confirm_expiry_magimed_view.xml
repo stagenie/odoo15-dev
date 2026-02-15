@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="magimed_expiry_confirmation_form" model="ir.ui.view">
+            <field name="name">magimed.expiry.confirmation.form</field>
+            <field name="model">magimed.expiry.confirmation</field>
+            <field name="arch" type="xml">
+                <form string="Confirmation Lots Expires">
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Attention !</strong>
+                        Des lots expires ou proches de l'expiration ont ete detectes dans ce transfert.
+                        Voulez-vous continuer la validation malgre tout ?
+                    </div>
+                    <group>
+                        <field name="description" widget="text" readonly="1" nolabel="1"
+                               style="font-family: monospace; white-space: pre-wrap;"/>
+                    </group>
+                    <group string="Lots concernes">
+                        <field name="lot_ids" nolabel="1" readonly="1">
+                            <tree>
+                                <field name="name" string="Lot"/>
+                                <field name="product_id"/>
+                                <field name="expiration_date" widget="date"/>
+                                <field name="days_to_expiration" string="Jours restants"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <field name="picking_ids" invisible="1"/>
+                    <footer>
+                        <button name="button_confirm" string="Confirmer malgre tout"
+                                type="object" class="btn-primary"/>
+                        <button name="button_cancel" string="Annuler"
+                                type="object" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

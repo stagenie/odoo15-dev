@@ -7,11 +7,6 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     # Display fields for lot information
-    lot_expiration_date = fields.Datetime(
-        string='Date Expiration Lot',
-        related='lot_id.expiration_date',
-        readonly=True
-    )
     lot_days_to_expiration = fields.Integer(
         string='Jours Avant Expiration',
         related='lot_id.days_to_expiration',
@@ -36,6 +31,61 @@ class StockMoveLine(models.Model):
             if not existing and self.picking_id.picking_type_id.use_create_lots:
                 # Will be created on validation
                 pass
+
+    @api.onchange('lot_name')
+    def _onchange_lot_name_duplicate_check(self):
+        """Check for duplicate lot at reception and act according to config"""
+        if not self.lot_name or not self.product_id:
+            return
+        if not self.picking_id or not self.picking_id.picking_type_id.use_create_lots:
+            return
+
+        existing_lot = self.env['stock.production.lot'].search([
+            ('name', '=', self.lot_name),
+            ('product_id', '=', self.product_id.id),
+            ('company_id', '=', self.company_id.id),
+        ], limit=1)
+
+        if not existing_lot:
+            return
+
+        action = self.env['ir.config_parameter'].sudo().get_param(
+            'adi_magimed.lot_duplicate_action', 'warn')
+
+        msg = (
+            "Le lot '%s' existe deja pour le produit '%s'.\n"
+            "Stock actuel: %s %s"
+        ) % (
+            self.lot_name,
+            self.product_id.display_name,
+            existing_lot.product_qty,
+            existing_lot.product_uom_id.name,
+        )
+
+        if action == 'block':
+            self.lot_name = False
+            return {
+                'warning': {
+                    'title': 'Lot existant - Creation bloquee',
+                    'message': msg + "\n\nLe numero de lot a ete efface.",
+                }
+            }
+        elif action == 'update':
+            self.lot_id = existing_lot
+            self.lot_name = False
+            return {
+                'warning': {
+                    'title': 'Lot existant - Lot reutilise',
+                    'message': msg + "\n\nLe lot existant a ete selectionne automatiquement.",
+                }
+            }
+        else:  # warn
+            return {
+                'warning': {
+                    'title': 'Lot existant',
+                    'message': msg,
+                }
+            }
 
     def action_quick_create_lot(self):
         """Open wizard for quick lot creation"""

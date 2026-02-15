@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Settings form view inheriting base settings -->
+        <record id="res_config_settings_view_form_magimed" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.magimed</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('settings')]" position="inside">
+                    <div class="app_settings_block" data-string="MAGIMED" string="MAGIMED" data-key="adi_magimed">
+                        <h2>Alertes et Notifications</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane"/>
+                                <div class="o_setting_right_pane">
+                                    <label for="magimed_default_expiration_alert_days"/>
+                                    <div class="text-muted">
+                                        Nombre de jours par defaut avant expiration pour l'alerte
+                                    </div>
+                                    <div class="content-group">
+                                        <field name="magimed_default_expiration_alert_days"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2>Controle des Lots</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane"/>
+                                <div class="o_setting_right_pane">
+                                    <label for="magimed_lot_duplicate_action"/>
+                                    <div class="text-muted">
+                                        Action a effectuer quand un numero de lot existant est saisi en reception
+                                    </div>
+                                    <div class="content-group">
+                                        <field name="magimed_lot_duplicate_action"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2>Controle Expiration a la Validation</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane"/>
+                                <div class="o_setting_right_pane">
+                                    <label for="magimed_expiry_control_mode"/>
+                                    <div class="text-muted">
+                                        Comportement lors de la validation d'un transfert avec des lots expires ou proches de l'expiration
+                                    </div>
+                                    <div class="content-group">
+                                        <field name="magimed_expiry_control_mode"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane"/>
+                                <div class="o_setting_right_pane">
+                                    <label for="magimed_expiry_check_days"/>
+                                    <div class="text-muted">
+                                        Bloquer/alerter si un lot expire dans X jours (0 = uniquement lots deja expires)
+                                    </div>
+                                    <div class="content-group">
+                                        <field name="magimed_expiry_check_days"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Action to open MAGIMED settings directly -->
+        <record id="action_magimed_config_settings" model="ir.actions.act_window">
+            <field name="name">Configuration Lots</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module': 'adi_magimed'}</field>
+        </record>
+
+    </data>
+</odoo>

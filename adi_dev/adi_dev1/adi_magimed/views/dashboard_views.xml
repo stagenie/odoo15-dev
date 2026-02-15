@@ -2,14 +2,7 @@
 <odoo>
     <data>
 
-        <!-- Dashboard Action -->
-        <record id="action_magimed_dashboard" model="ir.actions.client">
-            <field name="name">Tableau de Bord MAGIMED</field>
-            <field name="tag">magimed_dashboard</field>
-        </record>
-
-        <!-- Dashboard Template (using Qweb for simplicity) -->
-        <!-- Alternative: Simple redirect to main views -->
+        <!-- Dashboard redirect to expiration alerts -->
         <record id="action_magimed_dashboard_redirect" model="ir.actions.act_window">
             <field name="name">Tableau de Bord</field>
             <field name="res_model">stock.production.lot</field>

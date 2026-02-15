@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ISO BL Non Valorise Report Action -->
+        <record id="action_report_iso_bl_non_valorise" model="ir.actions.report">
+            <field name="name">ISO BL Non Valorise</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">adi_magimed.report_iso_bl_non_valorise</field>
+            <field name="report_file">adi_magimed.report_iso_bl_non_valorise</field>
+            <field name="print_report_name">'ISO_BL_Non_Valorise_%s' % object.name.replace('/', '_')</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_magimed"/>
+        </record>
+
+        <!-- ISO BL Non Valorise Report Template -->
+        <template id="report_iso_bl_non_valorise">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
+                        <t t-set="partner" t-value="o.partner_id or (o.move_lines and o.move_lines[0].partner_id) or False"/>
+
+                        <div class="page">
+                            <table style="font-size: 18px;" width="100%" class="table table-borderless">
+                                <tr>
+                                    <td class="text-left" width="65%">
+                                        <strong>
+                                            <span>Bon de Livraison Non Valorise ISO N° : </span>
+                                            <span t-field="o.name"/>
+                                        </strong>
+                                        <div name="customer">
+                                            <div>
+                                                <strong>Client : </strong>
+                                                <span t-field="o.partner_id.name"/>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <div t-if="o.state" name="div_sched_date">
+                                            <strong>Date: </strong>
+                                            <t t-if="o.state == 'done'">
+                                                <span t-field="o.date_done"/>
+                                            </t>
+                                            <t t-if="o.state != 'done'">
+                                                <span t-field="o.scheduled_date"/>
+                                            </t>
+                                        </div>
+                                        <t t-if="o.move_lines and o.move_lines[0].sale_line_id.order_id">
+                                            <div name="div_user_v">
+                                                <strong>Commercial : </strong>
+                                                <span t-field="o.move_lines[0].sale_line_id.order_id.user_id"/>
+                                            </div>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <t t-set="number_ligne" t-value="0"/>
+                            <table class="table table-sm o_main_table" name="iso_bl_nv_table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%;"><strong>N°</strong></th>
+                                        <th><strong>Description</strong></th>
+                                        <th style="width: 18%;"><strong>N° Lot</strong></th>
+                                        <th style="width: 14%;"><strong>Date Exp.</strong></th>
+                                        <th style="width: 12%;" class="text-center"><strong>Qte</strong></th>
+                                        <th style="width: 12%;"><strong>Unite</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.move_line_ids_without_package" t-as="line">
+                                        <t t-set="number_ligne" t-value="number_ligne + 1"/>
+                                        <tr>
+                                            <td><span t-esc="number_ligne"/></td>
+                                            <td>
+                                                <span t-field="line.product_id"/>
+                                            </td>
+                                            <td>
+                                                <t t-if="line.lot_id">
+                                                    <strong><span t-field="line.lot_id.name"/></strong>
+                                                </t>
+                                                <t t-elif="line.lot_name">
+                                                    <span t-esc="line.lot_name"/>
+                                                </t>
+                                                <t t-else="">-</t>
+                                            </td>
+                                            <td>
+                                                <t t-if="line.lot_id.expiration_date">
+                                                    <span t-field="line.lot_id.expiration_date" t-options="{'widget': 'date'}"/>
+                                                </t>
+                                                <t t-else="">-</t>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-field="line.qty_done"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.product_uom_id"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

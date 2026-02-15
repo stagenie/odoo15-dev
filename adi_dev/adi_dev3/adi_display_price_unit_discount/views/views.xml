@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+ <!-- Vue Vente-->
+ <record id="view_order_form_inherit" model="ir.ui.view">
+    <field name="name">sale.order.form.inherit</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='order_line']/tree" position="inside">
+            <field name="has_discount" invisible="1"/>
+            <field name="price_unit_after_discount"
+                   attrs="{'invisible': [('has_discount', '=', False)]}"
+                   optional="show"
+                   />
+        </xpath>
+    </field>
+</record>
+<!-- Vue Facture-->
+     <record id="view_invoice_form_inherit" model="ir.ui.view">
+    <field name="name">account.move.form.inherit</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='invoice_line_ids']/tree" position="inside">
+            <field name="has_discount" invisible="1"/>
+            <field name="price_unit_after_discount"
+                   attrs="{'invisible': [('has_discount', '=', False)]}"
+                   optional="show"
+                   />
+        </xpath>
+    </field>
+</record>
+   <!-- Rapport Devis 
+
+
+<template id="report_saleorder_inherit" inherit_id="sale.report_saleorder_document">
+            <xpath expr="//thead/tr/th[4]" position="after">
+                <th t-if="doc.has_discount">Prix Après Remise</th>
+            </xpath>
+            <xpath expr="//tbody/tr/td[4]" position="after">
+                <td t-if="doc.has_discount and line.discount" t-esc="line.price_unit_after_discount"/>
+            </xpath>
+    </template>
+
+     -->
+     
+    <!-- Rapport  
+
+    <template id="report_invoice_inherit" inherit_id="account.report_invoice_document">
+        <xpath expr="//thead/tr/th[4]" position="after">
+            <th t-if="doc.has_discount">Prix Après Remise</th>
+        </xpath>
+        <xpath expr="//tbody/tr/td[4]" position="after">
+            <td t-if="doc.has_discount and line.discount" t-esc="line.price_unit_after_discount"/>
+        </xpath>
+    </template>
+
+
+    Facture -->
+
+
+</odoo>

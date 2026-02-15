@@ -1,0 +1,38 @@
+
+<odoo>
+    <record id="document_category_view_form" model="ir.ui.view">
+        <field name="name">document.category.form</field>
+        <field name="model">document.category</field>
+        <field name="arch" type="xml">
+            <form string="Document Category">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="parent_id"/>  
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="document_category_view_tree" model="ir.ui.view">
+        <field name="name">document.category.tree</field>
+        <field name="model">document.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="document_category_action" model="ir.actions.act_window">
+        <field name="name">Document Categories</field>
+        <field name="res_model">document.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="document_category_menu"
+     name="Catégories"
+      parent="document_menu_root" 
+      action="document_category_action"/>  
+</odoo>

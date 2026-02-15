@@ -1,0 +1,116 @@
+<odoo>
+    <record id="document_document_view_form" model="ir.ui.view">
+        <field name="name">document.document.form</field>
+        <field name="model">document.document</field>
+        <field name="arch" type="xml">
+            <form string="Document">
+            	 <header>
+			        <button name="action_in_progress" string="Mettre en progression" type="object" class="oe_highlight" states="draft"/>
+			        <button name="action_done" string="Marquer comme fait" type="object" class="oe_highlight" states="in_progress"/>
+			        <button name="action_cancel" string="Annuler" type="object" states="draft,in_progress"/>
+			        <button name="action_draft" string="Remettre au brouillon" type="object" states="cancel"/>
+                    <button name="action_reset_to_draft" string="Remettre au brouillon" type="object" states="done,cancel"/>
+			        <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+    			</header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="category_id"/>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                        </group>
+                        <group>
+                            <field name="user_id"/>       
+                               <field name="partner_id"/>                     
+                            <field name="priority"  widget="priority" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        
+                        <!-- 
+                        	<page string="Attachments">
+                            <field name="attachment_ids"/>
+                        </page>
+
+                        -->
+                        
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="document_document_view_search" model="ir.ui.view">
+		    <field name="name">document.document.search</field>
+		    <field name="model">document.document</field>
+		    <field name="arch" type="xml">
+		        <search string="Documents">
+		            <field name="name"/>
+		            <field name="category_id"/>
+		            <field name="tag_ids" options="{'color_field': 'color'}"/>
+                     <field name="partner_id"/>
+		            <field name="state"/>
+		            
+		            <filter string="Brouillon" name="draft" domain="[('state', '=', 'draft')]"/>
+		            <filter string="En progression" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+		            <filter string="Fait" name="done" domain="[('state', '=', 'done')]"/>
+		            <filter string="Annulé" name="cancel" domain="[('state', '=', 'cancel')]"/>
+
+		            <separator/>
+		            <filter string="Mes documents" name="my_documents" domain="[('create_uid', '=', uid)]"/>
+		            
+		            <group expand="0" string="Regrouper par">
+		                <filter string="État" name="group_by_state" context="{'group_by': 'state'}"/>
+		                <filter string="Catégorie" name="group_by_category" context="{'group_by': 'category_id'}"/>
+		                <filter string="Étiquette" name="group_by_tag" context="{'group_by': 'tag_ids'}"/>
+                         <filter string="Partenaire" name="group_by_partner" context="{'group_by': 'partner_id'}"/>       
+                        <filter string="Resonsable" name="group_by_user" context="{'group_by': 'user_id'}"/>                         
+		            </group>
+		        </search>
+		    </field>
+	</record>
+
+    <record id="document_document_view_tree" model="ir.ui.view">
+        <field name="name">document.document.tree</field>
+        <field name="model">document.document</field>
+        <field name="arch" type="xml">
+            <tree>
+                     <field name="priority"  widget="priority" />
+                     <field name="name"/>
+                    <field name="category_id"/>
+                    <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'in_progress'" decoration-success="state == 'done'" decoration-danger="state == 'cancel'"/>
+                    <field name="user_id" optional="show"/>        
+                    <field name="partner_id" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="document_document_action" model="ir.actions.act_window">
+        <field name="name">Documents</field>
+        <field name="res_model">document.document</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="document_menu_root"
+    	web_icon="adi_document_managment,static/description/dossiers.png"
+         name="Documents"/>
+    <menuitem id="document_document_menu" 
+    	name="Documents"
+    	 parent="document_menu_root" 
+    	 action="document_document_action"/>
+</odoo>
+
+
