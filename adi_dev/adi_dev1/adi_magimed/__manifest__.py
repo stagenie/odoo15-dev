@@ -37,6 +37,7 @@ Rapports:
     'depends': [
         'base',
         'stock',
+        'sale_stock',
         'product',
         'product_expiry',
         'account',
@@ -58,6 +59,7 @@ Rapports:
         'views/account_move_views.xml',
         'views/expiration_alert_views.xml',
         'views/dashboard_views.xml',
+        'views/sale_order_views.xml',
         'views/res_config_settings_views.xml',
         # Wizards
         'wizards/lot_quick_create_wizard_views.xml',
