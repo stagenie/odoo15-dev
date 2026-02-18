@@ -2,24 +2,26 @@
 <odoo>
 
     <!--
-        Template amélioré pour l'en-tête des rapports AB Energie
+        Template ameliore pour l'en-tete des rapports
 
-        Structure de l'en-tête (centré) :
-        1. Activité (10pt, gras, majuscules)
+        Structure de l'en-tete (centre) :
+        1. Activite (10pt, gras, majuscules)
         2. Adresse (11pt, gras)
-        3. Email et Téléphone (10pt, gras)
+        3. Email et Telephone (10pt, gras)
+        4. Capital social (9pt)
+        5. Compte bancaire (9pt)
 
         Pied de page :
-        - Coordonnées fiscales RC/AI/NIF/NIS (relative à team_id)
+        - Coordonnees fiscales RC/AI/NIF/NIS (relative a team_id)
     -->
 
-    <!-- Désactiver le template du module parent adi_team_header -->
+    <!-- Desactiver le template du module parent adi_team_header -->
     <record id="adi_team_header.external_layout_custom_header" model="ir.ui.view">
         <field name="active" eval="False"/>
     </record>
 
     <!-- ================================================================
-         EN-TÊTE AMÉLIORÉ - Centré avec adresse/email en gras
+         EN-TETE AMELIORE - Centre avec adresse/email en gras
          ================================================================ -->
     <template id="external_layout_enhanced_header" inherit_id="web.external_layout_standard" priority="99">
         <xpath expr="//div[@name='company_address']" position="replace">
@@ -31,15 +33,15 @@
                 <t t-foreach="docs" t-as="doc">
                     <t t-if="doc.team_id">
                         <div class="company-header-enhanced" style="text-align: center; line-height: 1.5; width: 100%;">
-                            <!-- 1. Activité - réduit -->
+                            <!-- 1. Activite -->
                             <div t-if="doc.team_id.team_description" style="font-weight: bold; font-size: 10pt; color: #000; margin-bottom: 3px; text-transform: uppercase;">
                                 <t t-esc="doc.team_id.team_description"/>
                             </div>
-                            <!-- 2. Adresse - agrandi et gras -->
+                            <!-- 2. Adresse -->
                             <div t-if="doc.team_id.team_address" style="font-weight: bold; font-size: 12pt; color: #333; margin-bottom: 3px;">
                                 <t t-esc="doc.team_id.team_address"/>
                             </div>
-                            <!-- 3. Email et Téléphone - agrandi et gras -->
+                            <!-- 3. Email et Telephone -->
                             <div style="font-weight: bold; font-size: 11pt; color: #444;">
                                 <t t-if="doc.team_id.email">
                                     <span style="margin-right: 15px;">
@@ -52,6 +54,15 @@
                                     </span>
                                 </t>
                             </div>
+                            <!-- 4. Capital social -->
+                            <div t-if="doc.company_id.forme_juridique or doc.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                                <t t-if="doc.company_id.forme_juridique"><t t-esc="doc.company_id.forme_juridique.code"/></t>
+                                <t t-if="doc.company_id.capital_social"> au capital : <span t-field="doc.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></t>
+                            </div>
+                            <!-- 5. Compte bancaire -->
+                            <div t-if="doc.company_id.default_bank_account" style="font-size: 9pt; color: #555;">
+                                Compte bancaire : <t t-esc="doc.company_id.default_bank_account"/>
+                            </div>
                         </div>
                     </t>
                 </t>
@@ -62,7 +73,7 @@
                  ============================================ -->
             <t t-if="docs and len(docs) > 0 and docs[0]._name == 'stock.picking'">
                 <t t-foreach="docs" t-as="o">
-                    <!-- Avec équipe de vente -->
+                    <!-- Avec equipe de vente -->
                     <t t-if="o.sale_id and o.sale_id.team_id">
                         <div class="company-header-enhanced" style="text-align: center; line-height: 1.5; width: 100%;">
                             <div t-if="o.sale_id.team_id.team_description" style="font-weight: bold; font-size: 10pt; color: #000; margin-bottom: 3px; text-transform: uppercase;">
@@ -83,9 +94,18 @@
                                     </span>
                                 </t>
                             </div>
+                            <!-- 4. Capital social -->
+                            <div t-if="o.company_id.forme_juridique or o.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                                <t t-if="o.company_id.forme_juridique"><t t-esc="o.company_id.forme_juridique.code"/></t>
+                                <t t-if="o.company_id.capital_social"> au capital : <span t-field="o.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></t>
+                            </div>
+                            <!-- 5. Compte bancaire -->
+                            <div t-if="o.company_id.default_bank_account" style="font-size: 9pt; color: #555;">
+                                Compte bancaire : <t t-esc="o.company_id.default_bank_account"/>
+                            </div>
                         </div>
                     </t>
-                    <!-- Sans équipe - utiliser les infos société -->
+                    <!-- Sans equipe - utiliser les infos societe -->
                     <t t-else="">
                         <div class="company-header-enhanced" style="text-align: center; line-height: 1.5; width: 100%;">
                             <div t-if="o.company_id.activity_description" style="font-weight: bold; font-size: 10pt; color: #000; margin-bottom: 3px; text-transform: uppercase;">
@@ -107,6 +127,15 @@
                                         Tel: <span t-field="o.company_id.phone"/>
                                     </span>
                                 </t>
+                            </div>
+                            <!-- 4. Capital social -->
+                            <div t-if="o.company_id.forme_juridique or o.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                                <t t-if="o.company_id.forme_juridique"><t t-esc="o.company_id.forme_juridique.code"/></t>
+                                <t t-if="o.company_id.capital_social"> au capital : <span t-field="o.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></t>
+                            </div>
+                            <!-- 5. Compte bancaire -->
+                            <div t-if="o.company_id.default_bank_account" style="font-size: 9pt; color: #555;">
+                                Compte bancaire : <t t-esc="o.company_id.default_bank_account"/>
                             </div>
                         </div>
                     </t>
@@ -138,13 +167,22 @@
                                     </span>
                                 </t>
                             </div>
+                            <!-- 4. Capital social -->
+                            <div t-if="o.company_id.forme_juridique or o.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                                <t t-if="o.company_id.forme_juridique"><t t-esc="o.company_id.forme_juridique.code"/></t>
+                                <t t-if="o.company_id.capital_social"> au capital : <span t-field="o.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></t>
+                            </div>
+                            <!-- 5. Compte bancaire -->
+                            <div t-if="o.company_id.default_bank_account" style="font-size: 9pt; color: #555;">
+                                Compte bancaire : <t t-esc="o.company_id.default_bank_account"/>
+                            </div>
                         </div>
                     </t>
                 </t>
             </t>
 
             <!-- ============================================
-                 CAS PAR DÉFAUT (autres documents)
+                 CAS PAR DEFAUT (autres documents)
                  ============================================ -->
             <t t-if="docs and len(docs) > 0 and docs[0]._name not in ['sale.order', 'stock.picking', 'account.move']">
                 <t t-foreach="docs" t-as="doc">
@@ -169,6 +207,15 @@
                                 </span>
                             </t>
                         </div>
+                        <!-- 4. Capital social -->
+                        <div t-if="doc.company_id.forme_juridique or doc.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                            <t t-if="doc.company_id.forme_juridique"><t t-esc="doc.company_id.forme_juridique.code"/></t>
+                            <t t-if="doc.company_id.capital_social"> au capital : <span t-field="doc.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></t>
+                        </div>
+                        <!-- 5. Compte bancaire -->
+                        <div t-if="doc.company_id.default_bank_account_id" style="font-size: 9pt; color: #555;">
+                            Compte bancaire : <t t-esc="doc.company_id.default_bank_account_id.bank_id.name"/> n&#176; : <t t-esc="doc.company_id.default_bank_account_id.acc_number"/>
+                        </div>
                     </div>
                 </t>
             </t>
@@ -177,12 +224,12 @@
     </template>
 
     <!-- ================================================================
-         PIED DE PAGE - Coordonnées fiscales relatives à team_id
+         PIED DE PAGE - Coordonnees fiscales relatives a team_id
          ================================================================ -->
     <template id="external_layout_enhanced_footer" inherit_id="web.external_layout_standard" priority="99">
         <xpath expr="//div[contains(@t-attf-class, 'footer')]/div[@class='text-center']/ul" position="after">
 
-            <!-- Coordonnées fiscales selon le type de document -->
+            <!-- Coordonnees fiscales selon le type de document -->
             <div class="fiscal-footer" style="text-align: center; font-size: 9pt; color: #555; margin-top: 8px; padding-top: 5px;">
 
                 <!-- DEVIS / COMMANDES -->

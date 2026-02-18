@@ -30,6 +30,7 @@ Structure de l'en-tête :
         'adi_team_header',
     ],
     'data': [
+        'views/res_company_views.xml',
         'views/report_header_enhanced.xml',
     ],
     'installable': True,

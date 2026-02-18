@@ -486,6 +486,7 @@ class ReturnOrder(models.Model):
                 'product_id': line.product_id.id,
                 'quantity': line.qty_returned,
                 'price_unit': line.price_unit,
+                'discount': line.discount,
                 'name': line.product_id.display_name,
                 'tax_ids': [(6, 0, taxes.ids)],
             }))

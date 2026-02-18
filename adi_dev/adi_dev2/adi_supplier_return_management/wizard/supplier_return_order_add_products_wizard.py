@@ -102,6 +102,7 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
                 'product_id': product_data['product_id'],
                 'qty_received': product_data['qty_received'],
                 'price_unit': product_data['price_unit'],
+                'discount': product_data.get('discount', 0.0),
                 'picking_id': product_data.get('picking_id'),
                 'purchase_line_id': product_data.get('purchase_line_id'),
                 'selected': False,
@@ -131,8 +132,9 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
             for picking in return_order.picking_ids:
                 for move_line in picking.move_line_ids:
                     product = move_line.product_id
-                    # Chercher le prix dans la commande d'achat
+                    # Chercher le prix et la remise dans la commande d'achat
                     price = product.standard_price
+                    discount = 0.0
                     purchase_line = False
                     if picking.purchase_id:
                         purchase_lines = picking.purchase_id.order_line.filtered(
@@ -141,6 +143,7 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
                         if purchase_lines:
                             purchase_line = purchase_lines[0]
                             price = purchase_line.price_unit
+                            discount = getattr(purchase_line, 'discount', 0.0) or 0.0
 
                     # Verifier si le produit existe deja dans la liste
                     existing = next((p for p in products if p['product_id'] == product.id), None)
@@ -151,6 +154,7 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
                             'product_id': product.id,
                             'qty_received': move_line.qty_done,
                             'price_unit': price,
+                            'discount': discount,
                             'picking_id': picking.id,
                             'purchase_line_id': purchase_line.id if purchase_line else False,
                         })
@@ -167,8 +171,9 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
                 for move_line in picking.move_line_ids:
                     product = move_line.product_id
 
-                    # Chercher le prix dans la commande d'achat
+                    # Chercher le prix et la remise dans la commande d'achat
                     price = product.standard_price
+                    discount = 0.0
                     purchase_line = False
                     if picking.purchase_id:
                         purchase_lines = picking.purchase_id.order_line.filtered(
@@ -177,6 +182,7 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
                         if purchase_lines:
                             purchase_line = purchase_lines[0]
                             price = purchase_line.price_unit
+                            discount = getattr(purchase_line, 'discount', 0.0) or 0.0
 
                     # Verifier si le produit existe deja dans la liste
                     existing = next((p for p in products if p['product_id'] == product.id), None)
@@ -187,6 +193,7 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
                             'product_id': product.id,
                             'qty_received': move_line.qty_done,
                             'price_unit': price,
+                            'discount': discount,
                             'picking_id': picking.id,
                             'purchase_line_id': purchase_line.id if purchase_line else False,
                         })
@@ -201,6 +208,7 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
                     'product_id': product.id,
                     'qty_received': 0,
                     'price_unit': product.standard_price,
+                    'discount': 0.0,
                     'picking_id': False,
                     'purchase_line_id': False,
                 })
@@ -235,6 +243,7 @@ class SupplierReturnOrderAddProductsWizard(models.TransientModel):
                 'product_id': line.product_id.id,
                 'qty_returned': line.qty_to_return or 1.0,
                 'price_unit': line.price_unit,
+                'discount': line.discount,
             }
 
             # Ajouter le lien vers la ligne d'achat si disponible
@@ -331,6 +340,11 @@ class SupplierReturnOrderAddProductsLine(models.TransientModel):
 
     price_unit = fields.Float(
         string='Prix unitaire'
+    )
+
+    discount = fields.Float(
+        string='Remise (%)',
+        digits='Discount'
     )
 
     picking_id = fields.Many2one(

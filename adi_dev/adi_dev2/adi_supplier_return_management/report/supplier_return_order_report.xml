@@ -49,6 +49,7 @@
                             <th class="text-start">Produit</th>
                             <th class="text-center">Quantite</th>
                             <th class="text-end">Prix unitaire</th>
+                            <th class="text-end">Rem. (%)</th>
                             <th class="text-end">Sous-total</th>
                         </tr>
                     </thead>
@@ -71,6 +72,9 @@
                                 <td class="text-end">
                                     <span t-field="line.price_unit"
                                           t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.discount"/>
                                 </td>
                                 <td class="text-end">
                                     <span t-field="line.subtotal"

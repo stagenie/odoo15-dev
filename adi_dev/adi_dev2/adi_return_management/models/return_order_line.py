@@ -55,6 +55,14 @@ class ReturnOrderLine(models.Model):
         readonly=False
     )
 
+    discount = fields.Float(
+        string='Remise (%)',
+        digits='Discount',
+        compute='_compute_price_unit',
+        store=True,
+        readonly=False
+    )
+
     subtotal = fields.Monetary(
         string='Sous-total',
         compute='_compute_subtotal',
@@ -231,7 +239,7 @@ class ReturnOrderLine(models.Model):
     @api.depends('product_id', 'picking_line_id', 'origin_picking_id', 'sale_line_id')
     def _compute_price_unit(self):
         """
-        Recupere le prix de vente original depuis la commande client.
+        Recupere le prix de vente original et la remise depuis la commande client.
 
         Logique:
         - Mode STRICT: picking_line_id → picking_id → sale_id → sale.order.line
@@ -242,28 +250,35 @@ class ReturnOrderLine(models.Model):
         for line in self:
             if not line.product_id:
                 line.price_unit = 0.0
+                line.discount = 0.0
                 continue
 
             # Essayer de recuperer le prix depuis sale_line_id si deja renseigne
             if line.sale_line_id:
                 line.price_unit = line.sale_line_id.price_unit
+                line.discount = line.sale_line_id.discount
                 continue
 
             # Tenter de trouver le prix original
-            price = line._get_original_sale_price()
-            line.price_unit = price if price else line.product_id.lst_price
+            price, discount = line._get_original_sale_price()
+            if price:
+                line.price_unit = price
+                line.discount = discount
+            else:
+                line.price_unit = line.product_id.lst_price
+                line.discount = 0.0
 
     def _get_original_sale_price(self):
         """
-        Recherche le prix de vente original depuis la commande client.
+        Recherche le prix de vente original et la remise depuis la commande client.
 
-        Retourne le prix trouve ou False si non trouve.
+        Retourne un tuple (price, discount) ou (False, 0.0) si non trouve.
         Met a jour sale_line_id si une ligne de commande est trouvee.
         """
         self.ensure_one()
 
         if not self.product_id:
-            return False
+            return False, 0.0
 
         sale_line = False
         origin_mode = self.return_order_id.origin_mode
@@ -325,15 +340,16 @@ class ReturnOrderLine(models.Model):
         # Si on a trouve une ligne de commande, mettre a jour sale_line_id
         if sale_line:
             self.sale_line_id = sale_line
-            return sale_line.price_unit
+            return sale_line.price_unit, sale_line.discount
 
-        return False
+        return False, 0.0
 
-    @api.depends('qty_returned', 'price_unit')
+    @api.depends('qty_returned', 'price_unit', 'discount')
     def _compute_subtotal(self):
-        """Calcule le sous-total"""
+        """Calcule le sous-total en tenant compte de la remise"""
         for line in self:
-            line.subtotal = line.qty_returned * line.price_unit
+            price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            line.subtotal = line.qty_returned * price
 
     @api.onchange('picking_line_id')
     def _onchange_picking_line_id(self):
@@ -342,7 +358,7 @@ class ReturnOrderLine(models.Model):
             self.product_id = self.picking_line_id.product_id
             self.qty_returned = self.picking_line_id.qty_done
 
-            # Recuperer la ligne de commande d'origine pour le prix
+            # Recuperer la ligne de commande d'origine pour le prix et la remise
             picking = self.picking_line_id.picking_id
             if picking and picking.sale_id:
                 sale_line = picking.sale_id.order_line.filtered(
@@ -351,6 +367,7 @@ class ReturnOrderLine(models.Model):
                 if sale_line:
                     self.sale_line_id = sale_line[0]
                     self.price_unit = sale_line[0].price_unit
+                    self.discount = sale_line[0].discount
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -387,4 +404,5 @@ class ReturnOrderLine(models.Model):
                         self.origin_picking_id = picking
                         self.sale_line_id = sale_line[0]
                         self.price_unit = sale_line[0].price_unit
+                        self.discount = sale_line[0].discount
                         break

@@ -119,6 +119,7 @@
                                     <field name="qty_returned"/>
                                     <field name="qty_available" optional="show"/>
                                     <field name="price_unit" string="Prix achat"/>
+                                    <field name="discount" string="Rem. (%)" optional="show"/>
                                     <field name="subtotal"/>
                                     <field name="currency_id" invisible="1"/>
                                 </tree>

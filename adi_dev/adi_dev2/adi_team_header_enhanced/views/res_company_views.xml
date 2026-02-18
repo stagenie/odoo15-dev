@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_company_form_enhanced_header" model="ir.ui.view">
+        <field name="name">res.company.form.enhanced.header</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='phone']" position="after">
+                <field name="default_bank_account"
+                       placeholder="Ex: Societe Generale Algerie n° : 021000131130049222-35"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
