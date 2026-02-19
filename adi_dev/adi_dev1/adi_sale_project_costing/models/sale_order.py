@@ -63,6 +63,20 @@ class SaleOrder(models.Model):
         digits=(16, 2)
     )
 
+    # ====== SOUS-TRAITANCE ======
+    costing_subcontracting_percent = fields.Float(
+        string='% Sous-traitance',
+        digits=(16, 2),
+        default=0.0,
+    )
+
+    costing_subcontracting_amount = fields.Monetary(
+        string='Montant Sous-traitance',
+        compute='_compute_costing_totals',
+        store=True,
+        currency_field='currency_id',
+    )
+
     # ====== INDICATEUR DE SYNCHRONISATION ======
     costing_all_synced = fields.Boolean(
         string='Tout synchronisé',
@@ -86,16 +100,26 @@ class SaleOrder(models.Model):
         'costing_line_ids.subtotal_sale',
         'costing_line_ids.margin_total',
         'costing_line_ids.total_equipment_margin',
-        'costing_line_ids.total_labor_margin'
+        'costing_line_ids.total_labor_margin',
+        'costing_subcontracting_percent',
     )
     def _compute_costing_totals(self):
         for order in self:
             lines = order.costing_line_ids
             order.costing_total_cost = sum(lines.mapped('subtotal_cost'))
             order.costing_total_sale = sum(lines.mapped('subtotal_sale'))
-            order.costing_total_margin = sum(lines.mapped('margin_total'))
             order.costing_total_equipment_margin = sum(lines.mapped('total_equipment_margin'))
             order.costing_total_labor_margin = sum(lines.mapped('total_labor_margin'))
+
+            # Sous-traitance = Total M.O. × % / 100
+            order.costing_subcontracting_amount = (
+                order.costing_total_labor_margin * (order.costing_subcontracting_percent or 0.0) / 100.0
+            )
+
+            # Marge totale = somme des marges - sous-traitance
+            order.costing_total_margin = (
+                sum(lines.mapped('margin_total')) - order.costing_subcontracting_amount
+            )
 
             # % marge global (sur le coût)
             if order.costing_total_cost > 0:

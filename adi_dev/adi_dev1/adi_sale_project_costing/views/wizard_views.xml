@@ -47,7 +47,9 @@
                                     <field name="quantity"/>
                                     <field name="purchase_price" string="Coût Unit."/>
                                     <field name="equipment_margin_percent" string="% Équip."/>
+                                    <field name="total_equipment_margin" string="Mnt Équip." sum="Total Marge Équip." optional="hide"/>
                                     <field name="labor_margin_percent" string="% M.O."/>
+                                    <field name="total_labor_margin" string="Mnt M.O." sum="Total M.O." optional="hide"/>
                                     <field name="sale_price_unit" string="PV Unit." readonly="1"/>
                                     <field name="subtotal_cost" string="Total Coût" sum="Total Coût"/>
                                     <field name="subtotal_sale" string="Total Vente" sum="Total Vente"/>
@@ -59,7 +61,13 @@
                             <group class="oe_subtotal_footer oe_right">
                                 <field name="total_cost" widget="monetary"/>
                                 <field name="total_sale" widget="monetary" class="oe_subtotal_footer_separator"/>
-                                <field name="total_margin" widget="monetary"/>
+                                <field name="total_equipment_margin" widget="monetary" string="Total Marge Équipement"/>
+                                <field name="total_labor_margin" widget="monetary" string="Total Main d'Oeuvre"/>
+                                <field name="total_margin" widget="monetary" string="Marge Brute"/>
+                                <field name="subcontracting_percent" string="% Sous-traitance"/>
+                                <field name="subcontracting_amount" widget="monetary" string="Montant Sous-traitance"/>
+                                <field name="total_margin_net" widget="monetary" class="oe_subtotal_footer_separator" string="Marge Nette"/>
+                                <field name="margin_percent" string="% Marge"/>
                             </group>
                             <div class="oe_clear"/>
                         </page>

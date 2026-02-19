@@ -46,6 +46,9 @@
                     </group>
                     <group>
                         <field name="costing_total_sale" string="Total Vente"/>
+                        <field name="costing_subcontracting_percent" string="% Sous-traitance"
+                               attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"/>
+                        <field name="costing_subcontracting_amount" string="Montant Sous-traitance"/>
                         <field name="costing_total_margin" string="Marge Totale"/>
                         <field name="costing_margin_percent" string="% Marge"/>
                     </group>

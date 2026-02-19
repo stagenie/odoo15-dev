@@ -70,14 +70,69 @@ class ProjectCostingWizard(models.TransientModel):
         currency_field='currency_id'
     )
 
+    total_equipment_margin = fields.Monetary(
+        string='Total Marge Équipement',
+        compute='_compute_totals',
+        currency_field='currency_id'
+    )
+
+    total_labor_margin = fields.Monetary(
+        string="Total Main d'Oeuvre",
+        compute='_compute_totals',
+        currency_field='currency_id'
+    )
+
+    # ====== SOUS-TRAITANCE ======
+    subcontracting_percent = fields.Float(
+        string='% Sous-traitance',
+        digits=(16, 2),
+        default=0.0,
+    )
+
+    subcontracting_amount = fields.Monetary(
+        string='Montant Sous-traitance',
+        compute='_compute_totals',
+        currency_field='currency_id'
+    )
+
+    total_margin_net = fields.Monetary(
+        string='Marge Nette',
+        compute='_compute_totals',
+        currency_field='currency_id'
+    )
+
+    margin_percent = fields.Float(
+        string='% Marge',
+        compute='_compute_totals',
+        digits=(16, 2)
+    )
+
     # ====== METHODES COMPUTE ======
 
-    @api.depends('line_ids.subtotal_cost', 'line_ids.subtotal_sale')
+    @api.depends(
+        'line_ids.subtotal_cost',
+        'line_ids.subtotal_sale',
+        'line_ids.total_equipment_margin',
+        'line_ids.total_labor_margin',
+        'subcontracting_percent',
+    )
     def _compute_totals(self):
         for wizard in self:
             wizard.total_cost = sum(wizard.line_ids.mapped('subtotal_cost'))
             wizard.total_sale = sum(wizard.line_ids.mapped('subtotal_sale'))
             wizard.total_margin = wizard.total_sale - wizard.total_cost
+            wizard.total_equipment_margin = sum(wizard.line_ids.mapped('total_equipment_margin'))
+            wizard.total_labor_margin = sum(wizard.line_ids.mapped('total_labor_margin'))
+
+            # Sous-traitance
+            wizard.subcontracting_amount = (
+                wizard.total_labor_margin * (wizard.subcontracting_percent or 0.0) / 100.0
+            )
+            wizard.total_margin_net = wizard.total_margin - wizard.subcontracting_amount
+            if wizard.total_cost > 0:
+                wizard.margin_percent = (wizard.total_margin_net / wizard.total_cost) * 100
+            else:
+                wizard.margin_percent = 0.0
 
     # ====== ACTIONS ======
 
@@ -133,6 +188,10 @@ class ProjectCostingWizard(models.TransientModel):
 
         if self.order_id.state not in ('draft', 'sent'):
             raise UserError(_("Le devis doit être en état brouillon ou envoyé."))
+
+        # Reporter le % sous-traitance sur le devis
+        if self.subcontracting_percent:
+            self.order_id.costing_subcontracting_percent = self.subcontracting_percent
 
         created_lines = self.env['project.costing.line']
 
@@ -227,6 +286,20 @@ class ProjectCostingWizardLine(models.TransientModel):
         digits='Product Price'
     )
 
+    equipment_margin_amount = fields.Float(
+        string='Montant Marge Équipement',
+        compute='_compute_sale_price',
+        store=True,
+        digits='Product Price'
+    )
+
+    labor_margin_amount = fields.Float(
+        string="Montant Main d'Oeuvre",
+        compute='_compute_sale_price',
+        store=True,
+        digits='Product Price'
+    )
+
     subtotal_cost = fields.Float(
         string='Sous-total Coût',
         compute='_compute_subtotals',
@@ -235,6 +308,18 @@ class ProjectCostingWizardLine(models.TransientModel):
 
     subtotal_sale = fields.Float(
         string='Sous-total Vente',
+        compute='_compute_subtotals',
+        store=True
+    )
+
+    total_equipment_margin = fields.Float(
+        string='Total Marge Équipement',
+        compute='_compute_subtotals',
+        store=True
+    )
+
+    total_labor_margin = fields.Float(
+        string="Total Main d'Oeuvre",
         compute='_compute_subtotals',
         store=True
     )
@@ -263,15 +348,22 @@ class ProjectCostingWizardLine(models.TransientModel):
     @api.depends('purchase_price', 'equipment_margin_percent', 'labor_margin_percent')
     def _compute_sale_price(self):
         for line in self:
+            cost = line.purchase_price or 0.0
             eq_pct = (line.equipment_margin_percent or 0.0) / 100.0
             labor_pct = (line.labor_margin_percent or 0.0) / 100.0
-            line.sale_price_unit = (line.purchase_price or 0.0) * (1 + eq_pct + labor_pct)
+            line.equipment_margin_amount = cost * eq_pct
+            line.labor_margin_amount = cost * labor_pct
+            line.sale_price_unit = cost * (1 + eq_pct + labor_pct)
 
-    @api.depends('quantity', 'purchase_price', 'sale_price_unit')
+    @api.depends('quantity', 'purchase_price', 'sale_price_unit',
+                 'equipment_margin_amount', 'labor_margin_amount')
     def _compute_subtotals(self):
         for line in self:
-            line.subtotal_cost = (line.quantity or 0.0) * (line.purchase_price or 0.0)
-            line.subtotal_sale = (line.quantity or 0.0) * (line.sale_price_unit or 0.0)
+            qty = line.quantity or 0.0
+            line.subtotal_cost = qty * (line.purchase_price or 0.0)
+            line.subtotal_sale = qty * (line.sale_price_unit or 0.0)
+            line.total_equipment_margin = qty * (line.equipment_margin_amount or 0.0)
+            line.total_labor_margin = qty * (line.labor_margin_amount or 0.0)
 
     # ====== METHODES ONCHANGE ======
 
