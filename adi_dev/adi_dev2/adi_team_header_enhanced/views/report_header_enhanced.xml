@@ -55,12 +55,12 @@
                                 </t>
                             </div>
                             <!-- 4. Capital social -->
-                            <div t-if="doc.company_id.forme_juridique or doc.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                            <div t-if="doc.company_id.forme_juridique or doc.company_id.capital_social" style="font-weight: bold; font-size: 11pt; color: #444; margin-top: 2px;">
                                 <t t-if="doc.company_id.forme_juridique"><t t-esc="doc.company_id.forme_juridique.code"/></t>
                                 <t t-if="doc.company_id.capital_social"> au capital : <span t-field="doc.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></t>
                             </div>
                             <!-- 5. Compte bancaire -->
-                            <div t-if="doc.company_id.default_bank_account" style="font-size: 9pt; color: #555;">
+                            <div t-if="doc.company_id.default_bank_account" style="font-weight: bold; font-size: 11pt; color: #444;">
                                 Compte bancaire : <t t-esc="doc.company_id.default_bank_account"/>
                             </div>
                         </div>
@@ -95,12 +95,12 @@
                                 </t>
                             </div>
                             <!-- 4. Capital social -->
-                            <div t-if="o.company_id.forme_juridique or o.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                            <div t-if="o.company_id.forme_juridique or o.company_id.capital_social" style="font-weight: bold; font-size: 11pt; color: #444; margin-top: 2px;">
                                 <t t-if="o.company_id.forme_juridique"><t t-esc="o.company_id.forme_juridique.code"/></t>
                                 <t t-if="o.company_id.capital_social"> au capital : <span t-field="o.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></t>
                             </div>
                             <!-- 5. Compte bancaire -->
-                            <div t-if="o.company_id.default_bank_account" style="font-size: 9pt; color: #555;">
+                            <div t-if="o.company_id.default_bank_account" style="font-weight: bold; font-size: 11pt; color: #444;">
                                 Compte bancaire : <t t-esc="o.company_id.default_bank_account"/>
                             </div>
                         </div>
@@ -129,12 +129,12 @@
                                 </t>
                             </div>
                             <!-- 4. Capital social -->
-                            <div t-if="o.company_id.forme_juridique or o.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                            <div t-if="o.company_id.forme_juridique or o.company_id.capital_social" style="font-weight: bold; font-size: 11pt; color: #444; margin-top: 2px;">
                                 <t t-if="o.company_id.forme_juridique"><t t-esc="o.company_id.forme_juridique.code"/></t>
                                 <t t-if="o.company_id.capital_social"> au capital : <span t-field="o.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></t>
                             </div>
                             <!-- 5. Compte bancaire -->
-                            <div t-if="o.company_id.default_bank_account" style="font-size: 9pt; color: #555;">
+                            <div t-if="o.company_id.default_bank_account" style="font-weight: bold; font-size: 11pt; color: #444;">
                                 Compte bancaire : <t t-esc="o.company_id.default_bank_account"/>
                             </div>
                         </div>
@@ -168,12 +168,12 @@
                                 </t>
                             </div>
                             <!-- 4. Capital social -->
-                            <div t-if="o.company_id.forme_juridique or o.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                            <div t-if="o.company_id.forme_juridique or o.company_id.capital_social" style="font-weight: bold; font-size: 11pt; color: #444; margin-top: 2px;">
                                 <t t-if="o.company_id.forme_juridique"><t t-esc="o.company_id.forme_juridique.code"/></t>
                                 <t t-if="o.company_id.capital_social"> au capital : <span t-field="o.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/></t>
                             </div>
                             <!-- 5. Compte bancaire -->
-                            <div t-if="o.company_id.default_bank_account" style="font-size: 9pt; color: #555;">
+                            <div t-if="o.company_id.default_bank_account" style="font-weight: bold; font-size: 11pt; color: #444;">
                                 Compte bancaire : <t t-esc="o.company_id.default_bank_account"/>
                             </div>
                         </div>
@@ -208,12 +208,12 @@
                             </t>
                         </div>
                         <!-- 4. Capital social -->
-                        <div t-if="doc.company_id.forme_juridique or doc.company_id.capital_social" style="font-size: 9pt; color: #555; margin-top: 2px;">
+                        <div t-if="doc.company_id.forme_juridique or doc.company_id.capital_social" style="font-weight: bold; font-size: 11pt; color: #444; margin-top: 2px;">
                             <t t-if="doc.company_id.forme_juridique"><t t-esc="doc.company_id.forme_juridique.code"/></t>
                             <t t-if="doc.company_id.capital_social"> au capital : <span t-field="doc.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></t>
                         </div>
                         <!-- 5. Compte bancaire -->
-                        <div t-if="doc.company_id.default_bank_account_id" style="font-size: 9pt; color: #555;">
+                        <div t-if="doc.company_id.default_bank_account_id" style="font-weight: bold; font-size: 11pt; color: #444;">
                             Compte bancaire : <t t-esc="doc.company_id.default_bank_account_id.bank_id.name"/> n&#176; : <t t-esc="doc.company_id.default_bank_account_id.acc_number"/>
                         </div>
                     </div>
