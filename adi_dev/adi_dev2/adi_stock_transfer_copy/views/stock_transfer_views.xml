@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Champ product_counts_json dans le formulaire de transfert -->
+    <record id="view_stock_transfer_form_duplicate_alert" model="ir.ui.view">
+        <field name="name">adi.stock.transfer.form.duplicate.alert</field>
+        <field name="model">adi.stock.transfer</field>
+        <field name="inherit_id" ref="adi_stock_transfer.view_stock_transfer_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_inter_company']" position="after">
+                <field name="product_counts_json" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

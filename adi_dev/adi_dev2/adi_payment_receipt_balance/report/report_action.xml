@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_payment_receipt_balance" model="ir.actions.report">
+        <field name="name">Reçu de Paiement avec Solde</field>
+        <field name="model">account.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_payment_receipt_balance.report_payment_receipt_balance</field>
+        <field name="report_file">adi_payment_receipt_balance.report_payment_receipt_balance</field>
+        <field name="binding_model_id" ref="account.model_account_payment"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

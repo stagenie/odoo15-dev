@@ -213,8 +213,9 @@
                             <t t-if="doc.company_id.capital_social"> au capital : <span t-field="doc.company_id.capital_social" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></t>
                         </div>
                         <!-- 5. Compte bancaire -->
-                        <div t-if="doc.company_id.default_bank_account_id" style="font-weight: bold; font-size: 11pt; color: #444;">
-                            Compte bancaire : <t t-esc="doc.company_id.default_bank_account_id.bank_id.name"/> n&#176; : <t t-esc="doc.company_id.default_bank_account_id.acc_number"/>
+                        <t t-set="bank_account" t-value="doc.company_id.partner_id.bank_ids[:1]"/>
+                        <div t-if="bank_account" style="font-weight: bold; font-size: 11pt; color: #444;">
+                            Compte bancaire : <t t-esc="bank_account.bank_id.name"/> n&#176; : <t t-esc="bank_account.acc_number"/>
                         </div>
                     </div>
                 </t>

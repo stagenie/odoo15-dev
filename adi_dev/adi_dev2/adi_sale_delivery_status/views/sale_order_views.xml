@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue liste des commandes de vente : ajout colonne delivery_status -->
+    <record id="view_order_tree_delivery_status" model="ir.ui.view">
+        <field name="name">sale.order.tree.delivery.status</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_status']" position="after">
+                <field name="delivery_status" widget="badge" optional="show"
+                    decoration-danger="delivery_status == 'no'"
+                    decoration-warning="delivery_status == 'partial'"
+                    decoration-success="delivery_status == 'full'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue formulaire : badge dans le header -->
+    <record id="view_order_form_delivery_status" model="ir.ui.view">
+        <field name="name">sale.order.form.delivery.status</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="before">
+                <field name="delivery_status" widget="badge"
+                    decoration-danger="delivery_status == 'no'"
+                    decoration-warning="delivery_status == 'partial'"
+                    decoration-success="delivery_status == 'full'"
+                    attrs="{'invisible': [('state', 'not in', ['sale', 'done'])]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Recherche : filtres et regroupement -->
+    <record id="view_sales_order_filter_delivery_status" model="ir.ui.view">
+        <field name="name">sale.order.search.delivery.status</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <separator/>
+                <filter string="Non Livré" name="not_delivered"
+                    domain="[('delivery_status', '=', 'no')]"/>
+                <filter string="Partiellement Livré" name="partially_delivered"
+                    domain="[('delivery_status', '=', 'partial')]"/>
+                <filter string="Livré" name="fully_delivered"
+                    domain="[('delivery_status', '=', 'full')]"/>
+            </xpath>
+            <xpath expr="//filter[@name='order_month']" position="after">
+                <filter string="Statut de Livraison" name="group_delivery_status"
+                    domain="[]" context="{'group_by': 'delivery_status'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action : Commandes Livrées Non Facturées -->
+    <record id="action_orders_delivered_not_invoiced" model="ir.actions.act_window">
+        <field name="name">Commandes Livrées Non Facturées</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form,calendar,graph,pivot,kanban,activity</field>
+        <field name="context">{'create': False}</field>
+        <field name="domain">[
+            ('delivery_status', 'in', ['partial', 'full']),
+            ('invoice_status', '!=', 'invoiced'),
+            ('state', 'in', ['sale', 'done'])
+        ]</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune commande livrée non facturée trouvée.
+            </p>
+        </field>
+    </record>
+
+    <!-- Sous-menu sous "A Facturer" -->
+    <menuitem id="menu_orders_delivered_not_invoiced"
+        name="Commandes Livrées Non Facturées"
+        action="action_orders_delivered_not_invoiced"
+        parent="sale.menu_sale_invoicing"
+        sequence="3"
+        groups="sales_team.group_sale_salesman"/>
+
+</odoo>
