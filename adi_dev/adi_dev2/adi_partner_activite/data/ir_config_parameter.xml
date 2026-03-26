@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="activite_required_default" model="ir.config_parameter">
+            <field name="key">adi_partner_activite.activite_required_for_invoice</field>
+            <field name="value">True</field>
+        </record>
+    </data>
+</odoo>

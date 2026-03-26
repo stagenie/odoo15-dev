@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="adi_report_invoice_activite" inherit_id="l10n_dz_droit_timbre.adi_report_invoice_document">
+        <xpath expr="//t[@t-set='address']//div[@style='line-height: 1.5; padding-top:15px; font-size:12px;']" position="before">
+            <div t-if="o.partner_id.activite" style="padding-top:5px; font-size:13px;">
+                <strong>Activit&#233; :</strong> <span t-field="o.partner_id.activite"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

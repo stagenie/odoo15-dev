@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_activite" model="ir.ui.view">
+        <field name="name">res.partner.form.activite</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="l10n_dz_information_fiscale.view_partner_property_form_info_fiscale"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='rc']" position="before">
+                <field name="activite"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

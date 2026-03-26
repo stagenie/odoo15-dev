@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-   <data>
-    <record id="group_show_margin" model="res.groups">
-        <field name="name">Voir la Marge</field>
-        <field name="category_id" ref="base.module_category_sales"/>
+    <data>
+        <record id="group_show_cost" model="res.groups">
+            <field name="name">Voir le Coût</field>
+            <field name="category_id" ref="base.module_category_sales"/>
+        </record>
 
-    </record>
- </data>
+        <record id="group_show_margin" model="res.groups">
+            <field name="name">Voir la Marge</field>
+            <field name="category_id" ref="base.module_category_sales"/>
+        </record>
+    </data>
 </odoo>

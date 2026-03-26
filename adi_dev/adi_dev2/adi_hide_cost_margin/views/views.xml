@@ -1,96 +1,74 @@
 <odoo>
     <data>
 
-   <record id="view_users_form_inherit" model="ir.ui.view">
-    <field name="name">res.users.form.inherit.hide_margin</field>
-    <field name="model">res.users</field>
-    <field name="inherit_id" ref="base.view_users_form"/>
-    <field name="arch" type="xml">
-        <xpath expr="//notebook" position="inside">
-            <page string="Permissions Avancées">
-                <group>
-                    <field name="show_margin" readonly="1"/>
-                </group>
-            </page>
-        </xpath>
-    </field>
-</record>
+        <!-- ============================================ -->
+        <!-- Sale Order Form: hide margin/cost fields     -->
+        <!-- ============================================ -->
 
+        <!-- Hide margin + margin_percent from sale_margin view -->
+        <record id="view_order_form_inherit_margin" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.hide_margin</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_margin.sale_margin_sale_order"/>
+            <field name="arch" type="xml">
+                <xpath expr="//label[@for='margin']" position="attributes">
+                    <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
+                </xpath>
+                <xpath expr="//label[@for='margin']/following-sibling::div[1]" position="attributes">
+                    <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
+                </xpath>
+            </field>
+        </record>
 
+        <!-- Hide purchase_price (cost) in line inline form -->
+        <record id="view_order_form_inherit_line_purchase_price" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.hide_line_purchase_price</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_margin.sale_margin_sale_order_line"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='purchase_price']" position="attributes">
+                    <attribute name="groups">adi_hide_cost_margin.group_show_cost</attribute>
+                </xpath>
+            </field>
+        </record>
 
+        <!-- Hide purchase_price/margin/margin_percent in line tree -->
+        <record id="view_order_form_inherit_line_tree_margin" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.hide_line_tree_margin</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_margin.sale_margin_sale_order_line_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='purchase_price']" position="attributes">
+                    <attribute name="groups">adi_hide_cost_margin.group_show_cost</attribute>
+                </xpath>
+                <xpath expr="//field[@name='margin']" position="attributes">
+                    <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
+                </xpath>
+                <xpath expr="//field[@name='margin_percent']" position="attributes">
+                    <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
+                </xpath>
+            </field>
+        </record>
 
+        <!-- ============================================ -->
+        <!-- User Form: show permission status            -->
+        <!-- ============================================ -->
 
- <record id="view_order_form_inherit" model="ir.ui.view">
-        <field name="name">sale.order.form.inherit.hide_margin</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='margin']" position="attributes">
-                <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
-            </xpath>
-           
-         <xpath expr="//field[@name='margin_percent']" position="attributes">
-            <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
-        </xpath>
-         
+        <record id="view_users_form_inherit" model="ir.ui.view">
+            <field name="name">res.users.form.inherit.hide_margin</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Permissions Avancées">
+                        <group>
+                            <field name="show_cost" readonly="1"/>
+                            <field name="show_margin" readonly="1"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
 
-        </field>
-</record>
-
-
-
-
-<record id="view_order_form_inherit_margin_pour_inherited" model="ir.ui.view">
-    <field name="name">sale.order.form.inherit.hide_margin</field>
-    <field name="model">sale.order</field>
-    <field name="inherit_id" ref="sale_margin.sale_margin_sale_order"/>
-    <field name="arch" type="xml">             
-
-     <xpath expr="//span[field[@name='margin_percent']]" position="attributes">
-        <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
-    </xpath>
-
-    </field>
-</record>
-
-<record id="view_order_form_inherit_purchase_price_inherited" model="ir.ui.view">
-    <field name="name">sale.order.form.inherit.hide_purchase_price</field>
-    <field name="model">sale.order</field>
-    <field name="inherit_id" ref="sale.view_order_form"/>
-    <field name="arch" type="xml">
-        <!-- Masquer purchase_price dans la vue form -->
-        <xpath expr="//field[@name='order_line']/form//field[@name='purchase_price']" position="attributes">
-            <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
-            <!--<attribute name="invisible">1</attribute>-->
-        </xpath>
-
-        <!-- Masquer purchase_price dans la vue tree -->
-        <xpath expr="//field[@name='order_line']/tree//field[@name='purchase_price']" position="attributes">
-            <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
-            <!--<attribute name="invisible">1</attribute>-->
-        </xpath>
-    </field>
-</record>
-
-
-<!-- 
-
-<record id="view_order_line_form_inherit_purchase_price" model="ir.ui.view">
-    <field name="name">sale.order.line.form.inherit.hide_margin</field>
-    <field name="model">sale.order</field>
-    <field name="inherit_id" ref="sale_margin.sale_margin_sale_order_line"/>
-    <field name="arch" type="xml">
-        <xpath expr="//field[@name='purchase_price']" position="attributes">
-            <attribute name="groups">adi_hide_cost_margin.group_show_margin</attribute>
-        </xpath>
-    </field>
-</record>
-
-
-
--->
-
-
-
-    </data>  
+    </data>
 </odoo>

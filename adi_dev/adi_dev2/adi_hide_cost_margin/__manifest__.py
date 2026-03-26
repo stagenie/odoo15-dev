@@ -1,31 +1,30 @@
 {
     'name': 'ADICOPS Hide Cost and Marge',
-    'version': '1.0',
+    'version': '1.1',
     'sequence': 1,
     'category': 'Sales',
-    'summary': 'Hide Cost and Marge. ',
-    'description': "Hide Cost and Marge ",
-    "author" : "ADICOPS",
+    'summary': 'Masquer le coût et la marge pour les utilisateurs non autorisés',
+    'description': "Masquer le coût et la marge dans les ventes, produits et rapports",
+    "author": "ADICOPS",
     "email": 'info@adicops.com',
-    "website":'https://adicops.com/',
+    "website": 'https://adicops.com/',
     'license': 'AGPL-3',
     'depends': [
-        'base',        
+        'base',
         'product',
         'sale',
-        'sale_margin'        
-
-        #
-        #  'website'
-    ], 
-    "data":  [
+        'sale_margin',
+    ],
+    "data": [
         'security/groups.xml',
         'views/views.xml',
-        ],    
+        'views/product_views.xml',
+    ],
     'demo': [],
     'test': [],
-    'qweb': [],    
+    'qweb': [],
     'images': [],
+    'post_init_hook': '_assign_cost_group_to_internal_users',
     'installable': True,
     'auto_install': False,
     'application': True,

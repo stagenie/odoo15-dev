@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="invoice_print_warning_wizard_form_inherit" model="ir.ui.view">
+        <field name="name">invoice.print.warning.wizard.form.inherit.activite</field>
+        <field name="model">invoice.print.warning.wizard</field>
+        <field name="inherit_id" ref="adi_journal_report_type.invoice_print_warning_wizard_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_id']" position="after">
+                <field name="report_xmlid" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

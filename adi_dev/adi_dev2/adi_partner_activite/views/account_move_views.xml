@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Remplacer le bouton "Imprimer Sans Paiement" par un appel Python avec controle -->
+    <record id="view_move_form_activite_no_payment" model="ir.ui.view">
+        <field name="name">account.move.form.activite.no.payment</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="adi_ab_invoice_reports.view_move_form_inherit_print_no_payment"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(adi_ab_invoice_reports.action_report_ab_invoice_no_payment)d']" position="replace">
+                <button name="action_print_ab_invoice_no_payment"
+                        string="Imprimer Sans Paiement"
+                        type="object"
+                        class="btn-success"
+                        attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('invoice_report_type', '!=', 'invoice')]}"
+                        groups="account.group_account_invoice"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

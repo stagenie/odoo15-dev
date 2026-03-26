@@ -54,23 +54,6 @@
                                             <span t-field="doc.cash_from_id.code"/>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Responsable :</strong>
-                                        </td>
-                                        <td>
-                                            <span t-field="doc.cash_from_id.responsible_id.name"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Solde actuel :</strong>
-                                        </td>
-                                        <td>
-                                            <span t-esc="doc.cash_from_id.current_balance"
-                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                                        </td>
-                                    </tr>
                                 </t>
                                 <!-- Coffre source -->
                                 <t t-if="doc.transfer_type in ['safe_to_cash', 'safe_to_safe']">
@@ -94,26 +77,6 @@
                                         </td>
                                         <td>
                                             <span t-field="doc.safe_from_id.code"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Responsables :</strong>
-                                        </td>
-                                        <td>
-                                            <t t-foreach="doc.safe_from_id.responsible_ids" t-as="user">
-                                                <span t-field="user.name"/>
-                                                <t t-if="not user_last">,</t>
-                                            </t>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Solde actuel :</strong>
-                                        </td>
-                                        <td>
-                                            <span t-esc="doc.safe_from_id.current_balance"
-                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                         </td>
                                     </tr>
                                 </t>
@@ -149,23 +112,6 @@
                                             <span t-field="doc.cash_to_id.code"/>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Responsable :</strong>
-                                        </td>
-                                        <td>
-                                            <span t-field="doc.cash_to_id.responsible_id.name"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Solde actuel :</strong>
-                                        </td>
-                                        <td>
-                                            <span t-esc="doc.cash_to_id.current_balance"
-                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                                        </td>
-                                    </tr>
                                 </t>
                                 <!-- Coffre destination -->
                                 <t t-if="doc.transfer_type in ['cash_to_safe', 'safe_to_safe']">
@@ -189,26 +135,6 @@
                                         </td>
                                         <td>
                                             <span t-field="doc.safe_to_id.code"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Responsables :</strong>
-                                        </td>
-                                        <td>
-                                            <t t-foreach="doc.safe_to_id.responsible_ids" t-as="user">
-                                                <span t-field="user.name"/>
-                                                <t t-if="not user_last">,</t>
-                                            </t>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Solde actuel :</strong>
-                                        </td>
-                                        <td>
-                                            <span t-esc="doc.safe_to_id.current_balance"
-                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                         </td>
                                     </tr>
                                 </t>
@@ -236,7 +162,16 @@
                     </div>
                 </div>
 
-                <!-- Le reste du template reste identique -->
+                <!-- Description -->
+                <t t-if="doc.description">
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <strong>Description :</strong>
+                            <p t-field="doc.description"/>
+                        </div>
+                    </div>
+                </t>
+
             </div>
         </t>
     </template>
