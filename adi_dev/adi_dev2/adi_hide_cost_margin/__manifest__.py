@@ -1,6 +1,6 @@
 {
     'name': 'ADICOPS Hide Cost and Marge',
-    'version': '1.1',
+    'version': '1.2',
     'sequence': 1,
     'category': 'Sales',
     'summary': 'Masquer le coût et la marge pour les utilisateurs non autorisés',

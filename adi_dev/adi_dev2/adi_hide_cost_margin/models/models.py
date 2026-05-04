@@ -4,15 +4,16 @@ from odoo import models, fields, api
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    margin = fields.Float(groups="adi_hide_cost_margin.group_show_margin")
+    margin = fields.Float(groups="adi_hide_cost_margin.group_show_margin", copy=False)
+    margin_percent = fields.Float(groups="adi_hide_cost_margin.group_show_margin", copy=False)
 
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
-    purchase_price = fields.Float(groups="adi_hide_cost_margin.group_show_cost")
-    margin = fields.Float(groups="adi_hide_cost_margin.group_show_margin")
-    margin_percent = fields.Float(groups="adi_hide_cost_margin.group_show_margin")
+    purchase_price = fields.Float(groups="adi_hide_cost_margin.group_show_cost", copy=False)
+    margin = fields.Float(groups="adi_hide_cost_margin.group_show_margin", copy=False)
+    margin_percent = fields.Float(groups="adi_hide_cost_margin.group_show_margin", copy=False)
 
 
 class ProductTemplate(models.Model):

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====================================================== -->
+    <!-- Facture (adi_report_invoice)                            -->
+    <!-- Bloc "Mode de règlement prévu" déjà conditionné par     -->
+    <!-- t-if="not o.payment_ids and o.payment_state != 'paid'". -->
+    <!-- On remplace simplement "À définir" par "Paiement à Terme".-->
+    <!-- ====================================================== -->
+    <template id="adi_report_invoice_doc_term_fix"
+              inherit_id="l10n_dz_droit_timbre.adi_report_invoice_document"
+              priority="100">
+        <xpath expr="//span[normalize-space(text())='À définir']" position="replace">
+            <span>Paiement à Terme</span>
+        </xpath>
+        <xpath expr="//strong[normalize-space(text())='Mode de règlement prévu:']" position="replace">
+            <strong>Mode de règlement:</strong>
+        </xpath>
+    </template>
+
+    <!-- ====================================================== -->
+    <!-- Vente BL (adi_bl_report_invoice)                        -->
+    <!-- Le bloc "Mode de règlement" est ajouté sans condition.  -->
+    <!-- On masque la table quand un paiement existe sans mode   -->
+    <!-- défini, puis on remplace "Date à terme" par             -->
+    <!-- "Paiement à Terme".                                     -->
+    <!-- ====================================================== -->
+    <template id="adi_bl_report_invoice_doc_term_fix"
+              inherit_id="l10n_dz_droit_timbre.adi_bl_report_invoice_document"
+              priority="100">
+        <xpath expr="//strong[normalize-space(text())='Mode de règlement:']/ancestor::table[1]"
+               position="attributes">
+            <attribute name="t-if">o.payment_mode_id or not o.payment_ids</attribute>
+        </xpath>
+        <xpath expr="//strong[normalize-space(text())='Mode de règlement:']/ancestor::table[1]//span[normalize-space(text())='Date à terme']"
+               position="replace">
+            <span>Paiement à Terme</span>
+        </xpath>
+    </template>
+
+    <!-- ====================================================== -->
+    <!-- Vente TTC (ab_vente_ttc_report)                         -->
+    <!-- Même logique que la Vente BL.                           -->
+    <!-- ====================================================== -->
+    <template id="ab_vente_ttc_doc_term_fix"
+              inherit_id="adi_ab_invoice_reports.ab_vente_ttc_document"
+              priority="100">
+        <xpath expr="//strong[normalize-space(text())='Mode de règlement:']/ancestor::table[1]"
+               position="attributes">
+            <attribute name="t-if">o.payment_mode_id or not o.payment_ids</attribute>
+        </xpath>
+        <xpath expr="//strong[normalize-space(text())='Mode de règlement:']/ancestor::table[1]//span[normalize-space(text())='Date à terme']"
+               position="replace">
+            <span>Paiement à Terme</span>
+        </xpath>
+    </template>
+
+</odoo>
