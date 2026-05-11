@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_project_cost_analysis"
+        name="Analyse des Coûts Projets"
+        parent="project.menu_project_report"
+        action="action_project_cost_analysis_wizard"
+        sequence="50"/>
+
+</odoo>

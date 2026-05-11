@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_project_cost_analysis" model="ir.actions.report">
+        <field name="name">Analyse des Coûts Projets</field>
+        <field name="model">project.cost.analysis.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_project_cost_analysis.report_project_cost_template</field>
+        <field name="report_file">adi_project_cost_analysis.report_project_cost_template</field>
+        <field name="print_report_name">'Analyse des Coûts Projets'</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <template id="report_project_cost_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+            <t t-call="web.internal_layout">
+                <div class="page">
+
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h2 style="margin-bottom: 4px;">Analyse des Coûts Projets</h2>
+                        </div>
+                    </div>
+
+                    <!-- Filtres appliqués -->
+                    <div class="row" style="margin-bottom: 12px; font-size: 14px; color: #555;">
+                        <div class="col-12">
+                            <t t-if="o.project_ids">
+                                <strong>Projets :</strong>
+                                <t t-esc="', '.join(o.project_ids.mapped('name'))"/>
+                                <br/>
+                            </t>
+                            <t t-if="o.date_from or o.date_to">
+                                <strong>Période :</strong>
+                                <t t-if="o.date_from">
+                                    du <t t-esc="o.date_from"/>
+                                </t>
+                                <t t-else="">
+                                    Toutes les dates
+                                </t>
+                                <t t-if="o.date_to">
+                                    au <t t-esc="o.date_to"/>
+                                </t>
+                                <br/>
+                            </t>
+                            <t t-if="o.product_ids">
+                                <strong>Articles :</strong>
+                                <t t-esc="', '.join(o.product_ids.mapped('name'))"/>
+                                <br/>
+                            </t>
+                        </div>
+                    </div>
+
+                    <t t-set="data" t-value="o.get_report_data()"/>
+                    <t t-set="currency" t-value="o.get_currency()"/>
+
+                    <t t-if="not data">
+                        <p class="text-muted text-center" style="margin-top: 30px;">
+                            Aucune dépense trouvée pour les critères sélectionnés.
+                        </p>
+                    </t>
+
+                    <t t-foreach="data" t-as="proj">
+                        <div style="margin-bottom: 24px;">
+
+                            <h4 style="background-color: #f0f0f0; padding: 6px 10px; border-left: 4px solid #875A7B; margin: 0 0 0 0;">
+                                <t t-esc="proj['project'].name"/>
+                            </h4>
+
+                            <table class="table" style="font-size: 15px; margin-bottom: 0; table-layout: fixed; width: 100%;">
+                                <thead style="background-color: #f8f8f8;">
+                                    <tr>
+                                        <th style="width: 45%;">Article</th>
+                                        <th class="text-right" style="width: 15%;">Quantité</th>
+                                        <th class="text-right" style="width: 20%;">Prix Unitaire</th>
+                                        <th class="text-right" style="width: 20%;">Montant HT</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="proj['lines']" t-as="line">
+                                        <tr>
+                                            <td style="overflow-wrap: break-word; word-break: break-word;"><t t-esc="line['product'].name"/></td>
+                                            <td class="text-right">
+                                                <t t-esc="'%g' % line['qty']"/>
+                                                <t t-if="line['product'].uom_id">
+                                                    <span style="color:#888;"> <t t-esc="line['product'].uom_id.name"/></span>
+                                                </t>
+                                            </td>
+                                            <td class="text-right">
+                                                <t t-esc="'{:,.2f}'.format(line['price_unit'])"/>
+                                                <small style="color:#888;"> <t t-esc="currency.symbol"/></small>
+                                            </td>
+                                            <td class="text-right">
+                                                <strong><t t-esc="'{:,.2f}'.format(line['amount'])"/></strong>
+                                                <small style="color:#888;"> <t t-esc="currency.symbol"/></small>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background-color: #efefef; font-weight: bold;">
+                                        <td colspan="3" class="text-right">Total dépenses — <t t-esc="proj['project'].name"/></td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.2f}'.format(proj['total'])"/>
+                                            <small> <t t-esc="currency.symbol"/></small>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+                    </t>
+
+                    <!-- Grand total -->
+                    <t t-if="data and len(data) &gt; 1">
+                        <t t-set="grand_total" t-value="sum(p['total'] for p in data)"/>
+                        <table class="table" style="margin-top: 8px;">
+                            <tfoot>
+                                <tr style="background-color: #875A7B; color: white; font-weight: bold; font-size: 16px;">
+                                    <td class="text-right">TOTAL GÉNÉRAL</td>
+                                    <td class="text-right" style="width: 20%;">
+                                        <t t-esc="'{:,.2f}'.format(grand_total)"/>
+                                        <small> <t t-esc="currency.symbol"/></small>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </t>
+
+                </div>
+            </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

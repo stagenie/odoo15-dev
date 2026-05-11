@@ -1,0 +1,25 @@
+{
+    'name': 'Analyse des Coûts Projets',
+    'category': 'Project',
+    'version': '15.0.1.0',
+    'summary': 'Analyse des dépenses par projet via les comptes analytiques',
+    'description': "Wizard pour analyser les coûts par projet (factures fournisseurs avec comptes analytiques), groupés par article avec quantité, prix unitaire et montant.",
+    'author': 'ADICOPS',
+    'email': 'info@adicops.com',
+    'website': 'https://adicops.com/',
+    'license': 'AGPL-3',
+    'depends': [
+        'project',
+        'account',
+        'analytic',
+    ],
+    'data': [
+        'security/ir.model.access.csv',
+        'report/project_cost_analysis_report.xml',
+        'views/wizard_views.xml',
+        'views/menu_views.xml',
+    ],
+    'installable': True,
+    'auto_install': False,
+    'application': False,
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_project_cost_analysis_wizard_form" model="ir.ui.view">
+        <field name="name">project.cost.analysis.wizard.form</field>
+        <field name="model">project.cost.analysis.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Analyse des Coûts Projets">
+                <group>
+                    <group string="Filtres">
+                        <field name="project_ids" widget="many2many_tags"
+                            placeholder="Tous les projets"
+                            options="{'no_create': True, 'no_edit': True, 'no_create_edit': True}"/>
+                        <field name="product_ids" widget="many2many_tags"
+                            placeholder="Tous les articles"
+                            options="{'no_create': True, 'no_edit': True, 'no_create_edit': True}"/>
+                    </group>
+                    <group string="Période">
+                        <field name="date_from" placeholder="Début (optionnel)"/>
+                        <field name="date_to" placeholder="Fin (optionnel)"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print" type="object" string="Imprimer"
+                        class="btn-primary" icon="fa-print"/>
+                    <button name="action_preview" type="object" string="Visualiser"
+                        class="btn-secondary" icon="fa-eye"/>
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_project_cost_analysis_wizard" model="ir.actions.act_window">
+        <field name="name">Analyse des Coûts Projets</field>
+        <field name="res_model">project.cost.analysis.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_project_cost_analysis_detail" model="ir.actions.report">
+        <field name="name">Analyse des Coûts Projets (Détaillé)</field>
+        <field name="model">project.cost.analysis.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_project_cost_analysis_detail.report_project_cost_detail_template</field>
+        <field name="report_file">adi_project_cost_analysis_detail.report_project_cost_detail_template</field>
+        <field name="print_report_name">'Analyse des Coûts Projets - Détaillé'</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!-- Extends the base template as a primary (standalone) template -->
+    <template id="report_project_cost_detail_template" primary="True"
+              inherit_id="adi_project_cost_analysis.report_project_cost_template">
+
+        <!-- Replace the product rows loop to inject detail lines after each row -->
+        <xpath expr="//tbody/t[@t-foreach]" position="replace">
+            <t t-foreach="proj['lines']" t-as="line">
+
+                <!-- Ligne résumé article (identique à la base) -->
+                <tr>
+                    <td style="overflow-wrap: break-word; word-break: break-word;"><t t-esc="line['product'].name"/></td>
+                    <td class="text-right">
+                        <t t-esc="'%g' % line['qty']"/>
+                        <t t-if="line['product'].uom_id">
+                            <span style="color:#888;"> <t t-esc="line['product'].uom_id.name"/></span>
+                        </t>
+                    </td>
+                    <td class="text-right">
+                        <t t-esc="'{:,.2f}'.format(line['price_unit'])"/>
+                        <small style="color:#888;"> <t t-esc="currency.symbol"/></small>
+                    </td>
+                    <td class="text-right">
+                        <strong><t t-esc="'{:,.2f}'.format(line['amount'])"/></strong>
+                        <small style="color:#888;"> <t t-esc="currency.symbol"/></small>
+                    </td>
+                </tr>
+
+                <!-- Lignes détail par facture -->
+                <t t-foreach="line.get('detail_lines', [])" t-as="dline">
+                    <tr style="background-color: #fafafa; color: #444; font-size: 13px;">
+                        <td style="padding-left: 28px; border-top: none; border-bottom: 1px solid #eee; overflow-wrap: break-word; word-break: break-word;">
+                            <span style="color: #875A7B; font-weight: bold;">↳</span>
+                            <strong><t t-esc="dline['invoice_name']"/></strong>
+                            <span style="color: #777;"> — <t t-esc="dline['partner_name']"/></span>
+                            <t t-if="dline['date']">
+                                <span style="color: #aaa; margin-left: 6px;">
+                                    (<t t-esc="str(dline['date'])"/>)
+                                </span>
+                            </t>
+                        </td>
+                        <td class="text-right" style="border-top: none; border-bottom: 1px solid #eee; color: #555;">
+                            <t t-esc="'%g' % dline['qty']"/>
+                        </td>
+                        <td class="text-right" style="border-top: none; border-bottom: 1px solid #eee; color: #555;">
+                            <t t-esc="'{:,.2f}'.format(dline['price_unit'])"/>
+                        </td>
+                        <td class="text-right" style="border-top: none; border-bottom: 1px solid #eee; color: #555;">
+                            <t t-esc="'{:,.2f}'.format(dline['amount'])"/>
+                        </td>
+                    </tr>
+                </t>
+
+            </t>
+        </xpath>
+
+    </template>
+
+</odoo>

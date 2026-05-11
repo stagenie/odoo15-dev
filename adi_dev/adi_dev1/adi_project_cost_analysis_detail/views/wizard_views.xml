@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_project_cost_analysis_wizard_form_detail" model="ir.ui.view">
+        <field name="name">project.cost.analysis.wizard.form.detail</field>
+        <field name="model">project.cost.analysis.wizard</field>
+        <field name="inherit_id" ref="adi_project_cost_analysis.view_project_cost_analysis_wizard_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_ids']" position="after">
+                <field name="show_detail" string="Détailler par facture"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
