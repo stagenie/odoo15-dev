@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_balance_fix_wizard_form" model="ir.ui.view">
+        <field name="name">treasury.balance.fix.wizard.form</field>
+        <field name="model">treasury.balance.fix.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Réparation Soldes Initiaux Clôtures">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>🔧 Réparation des Soldes Initiaux</h2>
+                        <p>
+                            Cet outil détecte et corrige les clôtures dont le
+                            <strong>solde initial</strong> ne correspond pas au
+                            <strong>solde réel de la clôture précédente</strong>.
+                        </p>
+                    </div>
+                    <group>
+                        <group string="Filtres">
+                            <field name="cash_id" options="{'no_create': True}"/>
+                            <field name="date_from"/>
+                        </group>
+                        <group string="Options">
+                            <field name="dry_run"/>
+                            <field name="fix_duplicates"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="result_log" nolabel="1" widget="text"
+                               attrs="{'invisible': [('result_log','=',False)]}"
+                               readonly="1"
+                               style="font-family: monospace; font-size: 12px;"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_analyze_and_fix"
+                            string="🔍 Analyser / Réparer"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

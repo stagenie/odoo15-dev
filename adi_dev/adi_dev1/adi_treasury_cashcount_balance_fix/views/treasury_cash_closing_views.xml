@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_balance_fix_wizard" model="ir.actions.act_window">
+        <field name="name">Réparer Soldes Initiaux Clôtures</field>
+        <field name="res_model">treasury.balance.fix.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_balance_fix_wizard"
+              name="🔧 Réparer Soldes Initiaux"
+              parent="adi_treasury.menu_treasury_config"
+              action="action_balance_fix_wizard"
+              sequence="100"/>
+</odoo>
