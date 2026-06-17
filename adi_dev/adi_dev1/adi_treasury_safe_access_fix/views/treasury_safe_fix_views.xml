@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Champ Responsables en lecture seule sauf pour le groupe Admin coffres.
+         Le verrou réel est au niveau ORM (write/create) ; ceci est l'UX. -->
+    <record id="view_treasury_safe_form_responsibles_lock" model="ir.ui.view">
+        <field name="name">treasury.safe.form.responsibles.lock</field>
+        <field name="model">treasury.safe</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_safe_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='responsible_ids']" position="before">
+                <field name="can_manage_responsibles" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='responsible_ids']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('state', '=', 'locked'), ('can_manage_responsibles', '=', False)]}</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

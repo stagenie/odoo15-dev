@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ============================================================ -->
+        <!-- Groupe dédié : seul habilité à modifier la liste des          -->
+        <!-- Responsables (responsible_ids) = qui peut voir un coffre.     -->
+        <!-- ============================================================ -->
+        <record id="group_treasury_safe_admin" model="res.groups">
+            <field name="name">Admin coffres</field>
+            <field name="category_id" ref="adi_treasury.module_category_treasury"/>
+            <field name="comment">Seul groupe autorisé à définir/modifier les Responsables d'un coffre (contrôle l'accès aux coffres).</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- FIX : lecture des coffres déterminée par les Responsables     -->
+        <!-- (responsible_ids) pour TOUS les rôles, managers inclus.       -->
+        <!-- ============================================================ -->
+
+        <!-- 1) La règle de lecture par responsables s'applique aussi aux  -->
+        <!--    managers. Domaine inchangé : responsible_ids OU créateur.  -->
+        <record id="adi_treasury.treasury_safe_rule_user" model="ir.rule">
+            <field name="name">Coffres : responsables uniquement (tous rôles)</field>
+            <field name="groups" eval="[(6, 0, [
+                ref('adi_treasury.group_treasury_user'),
+                ref('adi_treasury.group_treasury_manager'),
+            ])]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- 2) La règle manager conserve write/create/unlink (pouvoirs     -->
+        <!--    CRUD des managers) mais ne donne plus la lecture globale.   -->
+        <record id="adi_treasury.treasury_safe_rule_manager" model="ir.rule">
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
