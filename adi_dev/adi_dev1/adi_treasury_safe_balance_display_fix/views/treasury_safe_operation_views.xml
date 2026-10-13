@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_treasury_safe_operation_form_balance_display_fix" model="ir.ui.view">
+        <field name="name">treasury.safe.operation.form.balance.display.fix</field>
+        <field name="model">treasury.safe.operation</field>
+        <field name="inherit_id" ref="adi_treasury.view_treasury_safe_operation_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[field[@name='balance_before']]" position="replace">
+                <group string="Soldes" col="4" attrs="{'invisible': [('show_balances', '=', False)]}">
+                    <field name="show_balances" invisible="1"/>
+                    <field name="balance_before" readonly="1"/>
+                    <field name="balance_after" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
