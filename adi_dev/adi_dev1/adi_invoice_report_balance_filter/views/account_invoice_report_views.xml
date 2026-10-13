@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Ajouter les filtres "Solde inclus" / "Hors solde" à la recherche de l'Analyse de Facture -->
+        <record id="view_account_invoice_report_search_balance" model="ir.ui.view">
+            <field name="name">account.invoice.report.search.balance</field>
+            <field name="model">account.invoice.report</field>
+            <field name="inherit_id" ref="account.view_account_invoice_report_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='creditnote']" position="after">
+                    <separator/>
+                    <filter string="Solde inclus" name="balance_included"
+                            domain="[('exclude_from_partner_ledger', '=', False)]"/>
+                    <filter string="Hors solde" name="exclude_from_balance"
+                            domain="[('exclude_from_partner_ledger', '=', True)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Filtre "Solde inclus" par défaut sur l'Analyse de Facture (Clients) -->
+        <record id="account.action_account_invoice_report_all" model="ir.actions.act_window">
+            <field name="context">{'search_default_current':1, 'search_default_customer': 1, 'search_default_balance_included': 1, 'group_by':['invoice_date'], 'group_by_no_leaf':1}</field>
+        </record>
+
+        <!-- Filtre "Solde inclus" par défaut sur l'Analyse de Facture (Fournisseurs) -->
+        <record id="account.action_account_invoice_report_all_supp" model="ir.actions.act_window">
+            <field name="context">{'search_default_current':1, 'search_default_supplier': 1, 'search_default_balance_included': 1, 'group_by':['invoice_date'], 'group_by_no_leaf':1}</field>
+        </record>
+    </data>
+</odoo>

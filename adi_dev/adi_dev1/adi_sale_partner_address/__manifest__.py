@@ -1,0 +1,25 @@
+{
+    'name': 'Adi Sale Partner Address',
+    'version': '15.0.1.0.0',
+    'sequence': 1,
+    'category': 'Sales',
+    'summary': "Affiche l'adresse du client lors de sa sélection dans le devis.",
+    'description': "ADI - Affichage de l'adresse du client sur la commande/devis.",
+    "author": "ADICOPS",
+    "email": 'info@adicops.com',
+    "website": 'https://adicops.com/',
+    'license': 'AGPL-3',
+    'depends': [
+        'sale',
+    ],
+    "data": [
+        'views/sale_order_views.xml',
+    ],
+    'demo': [],
+    'test': [],
+    'qweb': [],
+    'images': [],
+    'installable': True,
+    'auto_install': False,
+    'application': True,
+}
