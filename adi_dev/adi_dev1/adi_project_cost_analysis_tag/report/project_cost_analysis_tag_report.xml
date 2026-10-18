@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_project_cost_analysis_tag" model="ir.actions.report">
+        <field name="name">Analyse des Coûts par Dépense</field>
+        <field name="model">project.cost.analysis.tag.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">adi_project_cost_analysis_tag.report_project_cost_tag_template</field>
+        <field name="report_file">adi_project_cost_analysis_tag.report_project_cost_tag_template</field>
+        <field name="print_report_name">'Analyse des Coûts par Dépense'</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <template id="report_project_cost_tag_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+            <t t-call="web.internal_layout">
+                <div class="page">
+
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h2 style="margin-bottom: 4px;">Analyse des Coûts par Dépense</h2>
+                        </div>
+                    </div>
+
+                    <!-- Filtres appliqués -->
+                    <div class="row" style="margin-bottom: 12px; font-size: 14px; color: #555;">
+                        <div class="col-12">
+                            <t t-if="o.project_ids">
+                                <strong>Projets :</strong>
+                                <t t-esc="', '.join(o.project_ids.mapped('name'))"/>
+                                <br/>
+                            </t>
+                            <t t-if="o.date_from or o.date_to">
+                                <strong>Période :</strong>
+                                <t t-if="o.date_from">
+                                    du <t t-esc="o.date_from"/>
+                                </t>
+                                <t t-else="">
+                                    Toutes les dates
+                                </t>
+                                <t t-if="o.date_to">
+                                    au <t t-esc="o.date_to"/>
+                                </t>
+                                <br/>
+                            </t>
+                            <t t-if="o.product_ids">
+                                <strong>Articles :</strong>
+                                <t t-esc="', '.join(o.product_ids.mapped('name'))"/>
+                                <br/>
+                            </t>
+                            <t t-if="o.analytic_tag_ids">
+                                <strong>Dépenses :</strong>
+                                <t t-esc="', '.join(o.analytic_tag_ids.mapped('name'))"/>
+                                <br/>
+                            </t>
+                            <t t-elif="not o.include_untagged">
+                                <strong>Dépenses :</strong> étiquetées uniquement
+                                <br/>
+                            </t>
+                        </div>
+                    </div>
+
+                    <t t-set="data" t-value="o.get_report_data()"/>
+                    <t t-set="currency" t-value="o.get_currency()"/>
+
+                    <t t-if="not data">
+                        <p class="text-muted text-center" style="margin-top: 30px;">
+                            Aucune dépense trouvée pour les critères sélectionnés.
+                        </p>
+                    </t>
+
+                    <t t-foreach="data" t-as="proj">
+                        <div style="margin-bottom: 28px;">
+
+                            <h4 style="background-color: #f0f0f0; padding: 6px 10px; border-left: 4px solid #875A7B; margin: 0;">
+                                <t t-esc="proj['project'].name"/>
+                            </h4>
+
+                            <!-- Récapitulatif par catégorie de dépense -->
+                            <table class="table table-sm" style="font-size: 15px; margin-bottom: 8px; table-layout: fixed; width: 100%;">
+                                <thead style="background-color: #f8f8f8;">
+                                    <tr>
+                                        <th style="width: 60%;">Dépense</th>
+                                        <th class="text-right" style="width: 25%;">Montant HT</th>
+                                        <th class="text-right" style="width: 15%;">%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="proj['categories']" t-as="cat">
+                                        <td t-att-style="'font-style: italic; color: #888;' if cat['untagged'] else ''">
+                                            <t t-esc="cat['name']"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.2f}'.format(cat['total'])"/>
+                                            <small style="color:#888;"> <t t-esc="currency.symbol"/></small>
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:.1f}'.format(cat['percent'])"/> %
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background-color: #efefef; font-weight: bold;">
+                                        <td class="text-right">Total dépenses — <t t-esc="proj['project'].name"/></td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.2f}'.format(proj['total'])"/>
+                                            <small> <t t-esc="currency.symbol"/></small>
+                                        </td>
+                                        <td class="text-right">100 %</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                            <!-- Détail des articles par catégorie -->
+                            <t t-if="o.show_products">
+                                <t t-foreach="proj['categories']" t-as="cat">
+                                    <h5 style="padding: 4px 10px; border-left: 3px solid #bbb; margin: 10px 0 0 0;">
+                                        <t t-esc="cat['name']"/>
+                                    </h5>
+                                    <table class="table table-sm" style="font-size: 14px; margin-bottom: 0; table-layout: fixed; width: 100%;">
+                                        <thead style="background-color: #f8f8f8;">
+                                            <tr>
+                                                <th style="width: 45%;">Article</th>
+                                                <th class="text-right" style="width: 15%;">Quantité</th>
+                                                <th class="text-right" style="width: 20%;">Prix Unitaire</th>
+                                                <th class="text-right" style="width: 20%;">Montant HT</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="cat['lines']" t-as="line">
+                                                <td style="overflow-wrap: break-word; word-break: break-word;"><t t-esc="line['product'].name"/></td>
+                                                <td class="text-right">
+                                                    <t t-esc="'%g' % line['qty']"/>
+                                                    <t t-if="line['product'].uom_id">
+                                                        <span style="color:#888;"> <t t-esc="line['product'].uom_id.name"/></span>
+                                                    </t>
+                                                </td>
+                                                <td class="text-right">
+                                                    <t t-esc="'{:,.2f}'.format(line['price_unit'])"/>
+                                                    <small style="color:#888;"> <t t-esc="currency.symbol"/></small>
+                                                </td>
+                                                <td class="text-right">
+                                                    <t t-esc="'{:,.2f}'.format(line['amount'])"/>
+                                                    <small style="color:#888;"> <t t-esc="currency.symbol"/></small>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr style="font-weight: bold;">
+                                                <td colspan="3" class="text-right">Sous-total — <t t-esc="cat['name']"/></td>
+                                                <td class="text-right">
+                                                    <t t-esc="'{:,.2f}'.format(cat['total'])"/>
+                                                    <small> <t t-esc="currency.symbol"/></small>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </t>
+                            </t>
+
+                        </div>
+                    </t>
+
+                    <!-- Récapitulatif général (plusieurs projets) -->
+                    <t t-if="data and len(data) &gt; 1">
+                        <t t-set="grand_total" t-value="sum(p['total'] for p in data)"/>
+                        <h4 style="background-color: #875A7B; color: white; padding: 6px 10px; margin: 16px 0 0 0;">
+                            Récapitulatif général par dépense
+                        </h4>
+                        <table class="table table-sm" style="font-size: 15px; table-layout: fixed; width: 100%;">
+                            <tbody>
+                                <tr t-foreach="o.get_tag_summary(data)" t-as="cat">
+                                    <td t-att-style="'width: 60%; font-style: italic; color: #888;' if cat['untagged'] else 'width: 60%;'">
+                                        <t t-esc="cat['name']"/>
+                                    </td>
+                                    <td class="text-right" style="width: 25%;">
+                                        <t t-esc="'{:,.2f}'.format(cat['total'])"/>
+                                        <small style="color:#888;"> <t t-esc="currency.symbol"/></small>
+                                    </td>
+                                    <td class="text-right" style="width: 15%;">
+                                        <t t-esc="'{:.1f}'.format(cat['percent'])"/> %
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background-color: #875A7B; color: white; font-weight: bold; font-size: 16px;">
+                                    <td class="text-right">TOTAL GÉNÉRAL</td>
+                                    <td class="text-right">
+                                        <t t-esc="'{:,.2f}'.format(grand_total)"/>
+                                        <small> <t t-esc="currency.symbol"/></small>
+                                    </td>
+                                    <td class="text-right">100 %</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </t>
+
+                </div>
+            </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
