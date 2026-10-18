@@ -20,6 +20,27 @@
         </field>
     </record>
 
+    <!-- Default search view of account.analytic.line when hr_timesheet is installed
+         (used e.g. by the project "Gross Margin" button) -->
+    <record id="hr_timesheet_line_search_tag_groupby" model="ir.ui.view">
+        <field name="name">account.analytic.line.search.tag.groupby</field>
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="tag_ids" string="Étiquette analytique"/>
+            </xpath>
+            <xpath expr="//filter[@name='month']" position="after">
+                <separator/>
+                <filter string="Avec étiquette" name="with_tag" domain="[('tag_ids', '!=', False)]"/>
+                <filter string="Sans étiquette" name="without_tag" domain="[('tag_ids', '=', False)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='groupby_project']" position="before">
+                <filter string="Étiquette analytique" name="group_tag_ids" context="{'group_by': 'tag_ids'}"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="view_account_analytic_line_tree_tag_groupby" model="ir.ui.view">
         <field name="name">account.analytic.line.tree.tag.groupby</field>
         <field name="model">account.analytic.line</field>
